@@ -1,0 +1,15 @@
+{
+  "name": "senergunsel-flagship",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Flagship · Store 001. Sener Can Gunsel's portfolio, built as a store.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "node scripts/check-store.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.147.0"
+  }
+}

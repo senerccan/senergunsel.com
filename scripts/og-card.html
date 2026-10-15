@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- Template for /assets/img/og-card.png (1200x630).
+     scripts/render-images.py serves this file from the local dev server's origin
+     so the site's fonts and photo load, then screenshots it. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/assets/css/site.css">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #F1F1EE; }
+  .card { position: relative; width: 1200px; height: 630px; display: flex; flex-direction: column; color: #121211; font-family: var(--sans); }
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 40px 56px 0; }
+  .brand { gap: 16px; }
+  .brand-mark { width: 56px; height: 56px; }
+  .brand-mark svg { width: 24px; height: 45px; }
+  .brand-name { font-size: 22px; }
+  .brand-sub { font-size: 15px; }
+  .live { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .live i { width: 12px; height: 12px; border-radius: 50%; background: #FF4F00; display: block; }
+  .body { flex: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; padding: 0 56px 44px; }
+  h1 { margin: 0; font-size: 118px; line-height: 0.98; font-weight: 800; letter-spacing: -0.045em; }
+  .greeter { display: inline-block; position: relative; width: 0.84em; height: 0.8em; margin-left: 0.04em; vertical-align: baseline; }
+  .greeter svg { position: absolute; left: 0; bottom: 0; width: 0.42em; height: 0.8em; overflow: visible; }
+  .door { position: absolute; left: 0.46em; bottom: 0; width: 0.36em; height: 0.72em; }
+  .door .f { position: absolute; inset: 0; border: 0.035em solid #121211; }
+  .door .g { position: absolute; inset: 0.035em; background: #FF4F00; box-shadow: 0 0 0.3em #FF4F00; }
+  .door .l { position: absolute; inset: 0; background: #121211; transform-origin: 0 50%; transform: perspective(1.4em) rotateY(-78deg); }
+  .sub { margin: 26px 0 0; font-size: 28px; line-height: 1.35; color: #4A4A45; max-width: 30ch; }
+  .photo { width: 250px; height: 312px; flex: none; object-fit: cover; border: 2px solid #121211; }
+  .foot { height: 64px; background: #121211; color: #F1F1EE; display: flex; align-items: center; justify-content: space-between; padding: 0 56px; font-family: var(--mono); font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .foot b { font-family: var(--sans); text-transform: none; letter-spacing: 0.01em; font-size: 22px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <span class="brand">
+      <span class="brand-mark"><svg viewBox="0 0 42 80"><g transform="rotate(24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><g transform="rotate(-22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:#FF4F00"/></g><line x1="21.5" y1="18" x2="19" y2="47" stroke="currentColor" stroke-width="7.5" stroke-linecap="round"/><g transform="rotate(22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:#FF4F00"/></g><g transform="rotate(-24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><circle cx="22" cy="9" r="7.5" fill="currentColor"/><rect x="22" y="6.2" width="10" height="3.4" rx="1.2" style="fill:#FF4F00"/></svg></span>
+      <span class="brand-text"><span class="brand-name">Sener Can Gunsel</span><span class="brand-sub">Flagship · Store 001 · New York</span></span>
+    </span>
+    <span class="live"><i></i>Live · Door sensor 01</span>
+  </div>
+  <div class="body">
+    <div>
+      <h1>Welcome in,<br>I'm Sener<span class="greeter"><svg viewBox="0 0 42 80"><g transform="rotate(20 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="#121211" stroke-width="6.5" stroke-linecap="round"/></g><g transform="rotate(-18 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="#121211" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" fill="#FF4F00"/></g><line x1="21.5" y1="18" x2="19" y2="47" stroke="#121211" stroke-width="7.5" stroke-linecap="round"/><g transform="rotate(16 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="#121211" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" fill="#FF4F00"/></g><g transform="rotate(-72 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="#121211" stroke-width="6.5" stroke-linecap="round"/></g><circle cx="22" cy="9" r="7.5" fill="#121211"/><rect x="22" y="6.2" width="10" height="3.4" rx="1.2" fill="#FF4F00"/></svg><span class="door"><span class="f"></span><span class="g"></span><span class="l"></span></span></span></h1>
+      <p class="sub">Retail data &amp; insights. The analyst on Under Armour's first intelligent flagship.</p>
+    </div>
+    <img class="photo" src="/assets/img/sener-portrait.jpg" alt="">
+  </div>
+  <div class="foot"><span>Projects · Field notes · Resume</span><b>senergunsel.com</b></div>
+</div>
+</body>
+</html>

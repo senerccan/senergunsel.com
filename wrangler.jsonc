@@ -1,0 +1,21 @@
+{
+  // Flagship · Store 001 — Cloudflare Workers config.
+  // Static pages live in ./public. Only /api/* (the door sensor) runs the Worker.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "senergunsel",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "DOOR", "class_name": "DoorCounter" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["DoorCounter"] }],
+  "routes": [{ "pattern": "senergunsel.com", "custom_domain": true }],
+  "observability": { "enabled": true }
+}
