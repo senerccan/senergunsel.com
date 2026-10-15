@@ -48,13 +48,13 @@ function paintBand() {
   $$('[data-stat="instore"]').forEach((el) => { el.textContent = String(s.inStore); });
   $$('[data-stat="dwell"]').forEach((el) => { el.textContent = formatDwell(s.avgDwellSec); });
   if (bandEl) bandEl.classList.remove('is-offline');
-  $$('[data-sensor]').forEach((el) => { el.textContent = 'Door sensor 01'; });
+  $$('[data-sensor]').forEach((el) => { el.textContent = 'Door counter'; });
 }
 
 function paintOffline() {
   const bandEl = $('.band');
   if (bandEl) bandEl.classList.add('is-offline');
-  $$('[data-sensor]').forEach((el) => { el.textContent = 'Door sensor resting'; });
+  $$('[data-sensor]').forEach((el) => { el.textContent = 'Door counter resting'; });
   $$('[data-stat="footfall"]').forEach((el) => { el.textContent = '––––'; });
   $$('[data-stat="instore"]').forEach((el) => { el.textContent = '–'; });
   $$('[data-stat="dwell"]').forEach((el) => { el.textContent = '–:––'; });
@@ -95,21 +95,27 @@ function initBand() {
 
 /* =========================================================================
    Headline: the comma becomes a man, the period is a door. Each time he
-   walks in, the next line rotates in.
+   walks in, the next line rotates in. Each line holds long enough to read,
+   and the dots, arrows and pause let visitors move at their own pace.
+   The intro line underneath stays put, so the name never moves around.
    ========================================================================= */
 const LINES = [
-  { before: 'Welcome in', after: " I'm Sener", size: 'min(112px, calc((100vw - 80px) / 11.2))', text: "Welcome in, I'm Sener.", sub: "Sneakerhead since childhood, tennis player, and the analyst on Under Armour's first intelligent flagship." },
-  { before: 'I lined up for drops', after: ' now I read the line', size: 'min(68px, calc((100vw - 80px) / 18.6))', text: 'I lined up for drops, now I read the line.', sub: "I'm Sener. Now I study how people move, browse and buy, and build the tools that turn it into decisions." },
-  { before: 'Most walk past', after: ' some walk in', size: 'min(86px, calc((100vw - 80px) / 14.2))', text: 'Most walk past, some walk in.', sub: "I'm Sener, and I find out why: from the sneaker line outside to the sensors on a flagship's floor." },
-  { before: 'Four languages', after: ' one question', size: 'min(86px, calc((100vw - 80px) / 14.1))', text: 'Four languages, one question.', sub: "I'm Sener. In any language, I'm asking the same thing on every shop floor: what made them walk in?" },
-  { before: 'Baseline first', after: ' then the rally', size: 'min(86px, calc((100vw - 80px) / 13.1))', text: 'Baseline first, then the rally.', sub: "I'm Sener. Tennis taught me the method: set the baseline first, then keep the rally going until the answer holds." }
+  { before: 'Welcome in', after: " I'm Sener", size: 'min(112px, calc((100vw - 80px) / 11.2))', text: "Welcome in, I'm Sener." },
+  { before: 'I lined up for drops', after: ' now I read the line', size: 'min(68px, calc((100vw - 80px) / 18.6))', text: 'I lined up for drops, now I read the line.' },
+  { before: 'Most walk past', after: ' some walk in', size: 'min(86px, calc((100vw - 80px) / 14.2))', text: 'Most walk past, some walk in.' },
+  { before: 'Four languages', after: ' one question', size: 'min(86px, calc((100vw - 80px) / 14.1))', text: 'Four languages, one question.' },
+  { before: 'Baseline first', after: ' then the rally', size: 'min(86px, calc((100vw - 80px) / 13.1))', text: 'Baseline first, then the rally.' }
 ];
+const LINE_HOLD_MS = 6500;        // a line stays up this long before the man walks in again
+const LINE_HOLD_PHONE_MS = 8500;  // phones fade from line to line
+const LINE_MANUAL_MS = 14000;     // after someone picks a line, give them time to read it
+const LINE_FIRST_MS = 2600;       // the welcome line gets a moment before the first walk-in
+const LINE_FIRST_PHONE_MS = 7000;
 
 const HL = {
   idx: 0,
   playing: false,
   paused: false,
-  lastEnd: 0,
   timers: [],
   loop: null,
   visible: true,
@@ -117,7 +123,7 @@ const HL = {
   firstWalkDone: false
 };
 
-let stage, walker, commaEl, doorEl, subEl, textEl, beforeEl, afterEl;
+let stage, walker, commaEl, doorEl, textEl, beforeEl, afterEl;
 
 function clearTimers() {
   HL.timers.forEach((id) => clearTimeout(id));
@@ -145,21 +151,16 @@ function setLine(i) {
   beforeEl.textContent = line.before;
   afterEl.textContent = line.after;
   textEl.textContent = line.text;
-  subEl.textContent = line.sub;
   stage.style.fontSize = line.size;
-  $$('.hl-dots span').forEach((d, k) => d.classList.toggle('on', k === i));
-  const next = $('#hl-next');
-  if (next) next.setAttribute('aria-label', 'Show the next line, line ' + (i + 1) + ' of ' + LINES.length);
+  $$('#hl-dots .hl-dot').forEach((d, k) => d.setAttribute('aria-pressed', String(k === i)));
 }
 function fadeTo(i, done) {
   stage.classList.add('is-fading');
-  subEl.classList.add('is-fading');
   HL.timers.push(setTimeout(() => {
     setLine(i);
     stage.classList.remove('is-fading');
-    subEl.classList.remove('is-fading');
     if (done) done();
-  }, 320));
+  }, 300));
 }
 function schedule(ms) {
   clearTimeout(HL.loop);
@@ -221,8 +222,7 @@ function afterWalk() {
     setPhase('rest');
     setWalker(0, 1, 0, 'linear');
     HL.playing = false;
-    HL.lastEnd = Date.now();
-    schedule(2900);
+    schedule(LINE_HOLD_MS);
   });
 }
 function stepCompact() {
@@ -230,8 +230,18 @@ function stepCompact() {
   HL.playing = true;
   fadeTo((HL.idx + 1) % LINES.length, () => {
     HL.playing = false;
-    HL.lastEnd = Date.now();
-    schedule(5200);
+    schedule(LINE_HOLD_PHONE_MS);
+  });
+}
+// A visitor picked a line (a dot or an arrow): go there now, no walk, and hold it.
+function goTo(i) {
+  const n = LINES.length;
+  const next = ((i % n) + n) % n;
+  resetStage();
+  HL.playing = true;
+  fadeTo(next, () => {
+    HL.playing = false;
+    schedule(LINE_MANUAL_MS);
   });
 }
 function paintPause() {
@@ -247,7 +257,6 @@ function resetStage() {
   clearTimeout(HL.loop);
   HL.playing = false;
   stage.classList.remove('is-fading');
-  subEl.classList.remove('is-fading');
   setPhase('rest');
   setDoor(false);
   setWalker(0, 1, 0, 'linear');
@@ -262,27 +271,22 @@ function initHeadline() {
   beforeEl = $('.hl-before', stage);
   afterEl = $('.hl-after', stage);
   textEl = $('.hl-text', stage);
-  subEl = $('#hl-sub');
   setLine(0);
   paintPause();
 
-  $('#hl-next').addEventListener('click', () => {
-    if (HL.playing) return;
-    if (compact() || reduced()) {
-      HL.playing = true;
-      fadeTo((HL.idx + 1) % LINES.length, () => { HL.playing = false; HL.lastEnd = Date.now(); schedule(compact() ? 5200 : 2900); });
-    } else {
-      play();
-    }
+  $('#hl-next').addEventListener('click', () => goTo(HL.idx + 1));
+  $('#hl-prev').addEventListener('click', () => goTo(HL.idx - 1));
+  $$('#hl-dots .hl-dot').forEach((d) => {
+    d.addEventListener('click', () => {
+      const i = Number(d.dataset.line);
+      if (i !== HL.idx || HL.playing) goTo(i);
+    });
   });
   $('#hl-pause').addEventListener('click', () => {
     HL.paused = !HL.paused;
     paintPause();
     if (HL.paused) clearTimeout(HL.loop);
-    else if (!HL.playing) schedule(400);
-  });
-  stage.addEventListener('mouseenter', () => {
-    if (!HL.playing && !compact() && !reduced() && Date.now() - HL.lastEnd > 1200) play();
+    else if (!HL.playing) schedule(600);
   });
 
   if ('IntersectionObserver' in window) {
@@ -290,63 +294,30 @@ function initHeadline() {
       const was = HL.visible;
       HL.visible = entries[0].isIntersecting;
       if (!HL.visible) clearTimeout(HL.loop);
-      else if (!was && HL.started && !HL.playing) schedule(900);
+      else if (!was && HL.started && !HL.playing) schedule(1500);
     }, { threshold: 0.15 }).observe(stage);
   }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      if (!HL.playing) schedule(1200);
+      if (!HL.playing) schedule(2000);
     } else {
       clearTimeout(HL.loop);
     }
   });
-  compactMQ.addEventListener('change', () => { resetStage(); schedule(1200); });
-  reduceMQ.addEventListener('change', () => { resetStage(); schedule(1200); });
+  compactMQ.addEventListener('change', () => { resetStage(); schedule(2000); });
+  reduceMQ.addEventListener('change', () => { resetStage(); schedule(2000); });
 
-  // On phones there is no walk, so the welcome line gets a longer moment first.
   const go = () => {
     HL.started = true;
-    schedule(compact() ? 4800 : 1100);
+    schedule(compact() ? LINE_FIRST_PHONE_MS : LINE_FIRST_MS);
   };
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(go, go);
   else go();
 }
 
 /* =========================================================================
-   Window: Same store, two streets. Same build, conversion and basket;
-   only the footfall changes. Break-even sales $1.2M / $80 basket / 20% buy.
-   ========================================================================= */
-const STREETS = {
-  busy: { traffic: 12800000, trafficVal: '12.8M' },
-  quiet: { traffic: 1100000, trafficVal: '1.1M' }
-};
-const BREAK_EVEN = 1200000;
-const BASKET = 80;
-const BUY_RATE = 0.2;
-
-function initWindow() {
-  const buttons = $$('[data-street]');
-  if (!buttons.length) return;
-  const visitsNeeded = BREAK_EVEN / BASKET / BUY_RATE;
-  const pick = (key) => {
-    const st = STREETS[key];
-    const cap = (visitsNeeded / st.traffic) * 100;
-    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.street === key)));
-    $('#capture').textContent = cap.toFixed(1) + '%';
-    $('#one-in').textContent = '1 in ' + Math.round(100 / cap);
-    $('#traffic-val').textContent = st.trafficVal;
-    const left = Math.min(100, cap * 10).toFixed(1) + '%';
-    $('#track-fill').style.width = left;
-    $('#track-knob').style.left = left;
-  };
-  buttons.forEach((b) => b.addEventListener('click', () => pick(b.dataset.street)));
-  pick('busy');
-}
-
-/* =========================================================================
    Floor plan
    ========================================================================= */
-const FMT_TAG = { SPLUS: 'tag tag-ink', S: 'tag', D: 'tag tag-dash', TBA: 'tag tag-accent' };
 const HOT = [[4, 1, 1], [11, 3, 0.9], [8, 2, 0.6], [14, 0, 0.5]];
 const CELLS = (() => {
   const out = [];
@@ -476,10 +447,21 @@ function youSummary(code) {
   const secs = Math.round(live.totalMs(code) / 1000);
   return secs + (secs === 1 ? ' second' : ' seconds') + ' over ' + n + (n === 1 ? ' stop' : ' stops');
 }
+// Each zone says what it is in plain words (its kind) and where it stands (its tag).
+const TAG_CLASS = { 'Case study': 'tag tag-ink', Playable: 'tag tag-accent', Read: 'tag', Soon: 'tag tag-dash', TBA: 'tag tag-dash' };
+function tagHtml(z) {
+  return '<span class="' + (TAG_CLASS[z.tag] || 'tag') + '">' + esc(z.tag) + '</span>';
+}
+// Real work and grad school get a solid chip, things still to come a dashed one.
+function kindClass(z) {
+  if (/^(Work|Grad school)/.test(z.kind)) return 'k-work';
+  if (/^Coming/.test(z.kind)) return 'k-later';
+  return 'k-own';
+}
 function statusLine(z) {
-  if (z.status === 'soon') return 'Opening soon';
-  if (z.status === 'tba') return 'Release date: TBA';
-  return z.proofs.join(' · ');
+  if (z.status === 'soon') return z.kind + '. Opening soon';
+  if (z.status === 'tba') return z.kind + '. Release date: TBA';
+  return z.kind + '. ' + z.tag;
 }
 // The live layers inside a zone: the bloom for the stop you're on and the
 // ripples it sends out. They sit behind the zone's text.
@@ -490,91 +472,73 @@ function liveClasses(code) {
   const s = live.active && live.active.code === code ? live.active : null;
   return [s ? 'is-dwelling' : '', s && s.back ? 'is-return' : ''];
 }
-function zoneButton(z, selKey) {
+function zoneButton(z, selKey, n) {
   const lang = currentLang();
   const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : '', z.w <= 2 ? 'is-narrow' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
   return '<button type="button" class="' + cls + '" data-zone="' + esc(z.key) + '" data-code="' + esc(z.code) + '" aria-pressed="' + (z.key === selKey) + '"' +
     ' aria-label="' + esc(z.code + ', ' + z.title + '. ' + statusLine(z)) + '"' +
-    ' style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    ' style="' + heatVars(z) + '--i:' + n + ';grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
     (z.hatch ? '<span class="zone-hatch" aria-hidden="true"></span>' : '') +
     '<span class="zone-heat breathe" aria-hidden="true"></span>' + bloom('top:' + z.g.top + ';bottom:' + z.g.bottom) +
     '<span class="zone-hint" aria-hidden="true" style="top:' + z.g.top + ';bottom:' + z.g.bottom + '">' + (HINTS[z.hint] ? HINTS[z.hint]() : '') + '</span>' +
-    '<span class="zone-top" aria-hidden="true"><span class="zone-label"><span class="zl-sign">' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span>' +
+    '<span class="zone-top" aria-hidden="true"><span class="zone-label"><span class="zl-sign">' + esc(z.code) + '<span class="zl-place"> · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span></span>' +
     '<span class="zl-dwell"><span class="zl-code">' + esc(z.code) + ' · </span><i></i><span class="zl-word"><span class="zl-first">Dwell </span><span class="zl-back">Back </span></span><b class="dwell-time">' + fmtDwell(live.stopMs(z.code) / 1000, true) + '</b></span></span>' +
-    '<span class="' + FMT_TAG[z.format] + '">' + esc(z.format) + '</span></span>' +
-    '<span class="zone-bottom" aria-hidden="true"><span class="zone-title" style="font-size:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
+    tagHtml(z) + '</span>' +
+    '<span class="zone-bottom" aria-hidden="true"><span class="zone-kind ' + kindClass(z) + '">' + esc(z.kind) + '</span><span class="zone-title" style="font-size:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
     '</button>';
 }
-function fillerCell(f) {
-  return '<div class="filler" aria-hidden="true" style="grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"><span><b>Next drop</b><span>Space available</span></span></div>';
-}
-function storefront() {
-  const lang = currentLang();
-  const featured = FLOORS[0].zones.find((z) => z.featured) || FLOORS[0].zones[0];
-  return '<div class="storefront">' +
-    '<a class="sf-window" href="#window"><span class="sf-k"><span lang="' + langTag() + '">' + esc(sign(lang, 'window')) + '</span> · Now showing</span><span class="sf-v">' + esc(featured.title) + ' ↑</span></a>' +
-    '<div class="sf-door"><span class="sf-k" lang="' + langTag() + '">' + esc(sign(lang, 'door')) + '</span><span class="sf-count" data-stat="footfall">' + esc(band.stats ? pad4(band.selfPending && !band.selfShown ? band.stats.footfall - 1 : band.stats.footfall) : '––––') + '</span><span class="leaf-l" aria-hidden="true"></span><span class="leaf-r" aria-hidden="true"></span></div>' +
-    '<a class="sf-register" href="#register"><span><span class="sf-k"><span lang="' + langTag() + '">' + esc(sign(lang, 'register')) + '</span> · POS</span><span class="sf-v">Resume &amp; contact</span></span>' + ARROW + '</a>' +
-    '<span class="sf-gap" aria-hidden="true"></span></div>';
-}
-function landing() {
-  const lang = currentLang();
-  return '<div class="landing"><button type="button" data-to-ground><span class="sf-k" lang="' + langTag() + '">' + esc(sign(lang, 'elevator')) + '</span><b>Back to the ground floor ↓</b></button>' +
-    '<div class="stairs" aria-hidden="true"><span class="sf-k">Stairs</span></div></div>';
+function fillerCell(f, n) {
+  return '<div class="filler" aria-hidden="true" style="--i:' + n + ';grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"><span><b>Next drop</b><span>Room for the next project</span></span></div>';
 }
 function panelInner(z) {
   const lang = currentLang();
   let dwell = '';
   if (floorState.heatOn && band.heatMode === 'actual' && band.heat && band.heat[z.code] != null) {
-    dwell = '<p class="zp-dwell">Relative dwell ' + Math.round(band.heat[z.code] * 100) + ' of 100 · last 30 days</p>';
+    dwell = '<p class="zp-dwell">Heat ' + Math.round(band.heat[z.code] * 100) + ' of 100 · time visitors spend here, last 30 days</p>';
   }
   const back = live.active && live.active.code === z.code && live.active.back;
-  dwell += '<p class="zp-dwell zp-you' + (back ? ' is-return' : '') + '" data-you-for="' + esc(z.code) + '"><span class="zy-k">Your dwell</span>' +
+  dwell += '<p class="zp-dwell zp-you' + (back ? ' is-return' : '') + '" data-you-for="' + esc(z.code) + '"><span class="zy-k">Your time here</span>' +
     '<span class="visually-hidden">this visit: ' + esc(youSummary(z.code)) + '</span>' +
     '<span class="zy-v" aria-hidden="true">' + youLine(z.code) + '</span></p>';
   const facts = z.facts && z.facts.length
     ? '<dl class="zp-facts">' + z.facts.map((f) => '<div><dt>' + esc(f.v) + '</dt><dd>' + esc(f.k) + '</dd></div>').join('') + '</dl>'
     : '';
   let action;
-  if (z.href && (z.status === 'open' || z.status === 'window')) {
+  if (z.href && z.status === 'open') {
     action = '<a class="zp-cta" href="' + esc(z.href) + '">' + esc(z.cta) + ARROW + '</a>';
   } else {
     const subject = encodeURIComponent('About ' + z.title);
     action = '<div class="zp-soon"><span>' + esc(z.status === 'tba' ? 'Release date: TBA' : 'Opening soon') + '</span><span class="sign" style="color:var(--muted)">' + esc(z.code) + '</span></div>' +
       '<a class="zp-ask" href="mailto:' + EMAIL + '?subject=' + subject + '">Ask me about it before it opens</a>';
   }
-  return '<div class="zp-top"><span>' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span><span class="' + FMT_TAG[z.format] + '">' + esc(z.format) + '</span></div>' +
-    '<div class="zp-head"><h3 class="zp-title">' + esc(z.title) + '</h3><p class="zp-meta">' + esc(z.meta) + '</p></div>' +
+  return '<div class="zp-top"><span>' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span>' + tagHtml(z) + '</div>' +
+    '<div class="zp-head"><p class="zp-kind ' + kindClass(z) + '">' + esc(z.kind) + '</p><h3 class="zp-title">' + esc(z.title) + '</h3><p class="zp-meta">' + esc(z.meta) + '</p></div>' +
     '<p class="zp-body">' + esc(z.body) + '</p>' + facts + dwell +
-    '<div class="zp-foot"><div class="zp-proofs">' + z.proofs.map((p) => '<span>' + esc(p) + '</span>').join('') + '</div>' + action + '</div>';
+    '<div class="zp-foot">' + action + '</div>';
 }
-function aisleRow(z, selKey, isCompact) {
+function aisleRow(z, selKey, isCompact, n) {
   const lang = currentLang();
   const open = isCompact && floorState.expanded === z.key;
   const attrs = isCompact
     ? ' aria-expanded="' + open + '" aria-controls="aisle-' + esc(z.key) + '"'
     : ' aria-current="' + (z.key === selKey) + '"';
-  return '<li><button type="button" class="aisle-row" data-zone="' + esc(z.key) + '"' + attrs + '>' +
+  return '<li style="--i:' + n + '"><button type="button" class="aisle-row" data-zone="' + esc(z.key) + '"' + attrs + '>' +
     '<span class="aisle-code">' + esc(z.code) + '</span>' +
     '<span class="aisle-sign" lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span>' +
-    '<span class="aisle-name"><b>' + esc(z.title) + '</b><span>' + esc(isCompact ? sign(lang, z.place) + ' · ' + statusLine(z) : z.meta) + '</span></span>' +
-    '<span class="' + FMT_TAG[z.format] + '">' + esc(z.format) + '</span>' +
-    '<span class="aisle-proof">' + esc(statusLine(z)) + '</span>' +
+    '<span class="aisle-name"><b>' + esc(z.title) + '</b><span>' + esc(isCompact ? z.kind : z.kind + ' · ' + z.zoneMeta) + '</span></span>' +
+    tagHtml(z) +
     (isCompact ? CHEV : ARROW) + '</button>' +
     (isCompact ? '<div class="aisle-detail" id="aisle-' + esc(z.key) + '"' + (open ? '' : ' hidden') + '>' + (open ? panelInner(z) : '') + '</div>' : '') +
     '</li>';
 }
 function miniPlan(placed, fillers, fl, selKey) {
-  const cells = placed.map((z) => {
+  const cells = placed.map((z, n) => {
     const cls = [z.key === selKey ? 'is-sel' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
-    return '<span class="' + cls + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    return '<span class="' + cls + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + '--i:' + n + ';grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
       (z.hatch ? '<span class="zone-hatch"></span>' : '') +
       '<span class="zone-heat"></span>' + bloom('') + '<b>' + esc(z.code) + '</b></span>';
   }).join('') + fillers.map((f) => '<span class="mini-filler" style="grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"></span>').join('');
-  const base = fl.key === 'G'
-    ? '<div class="mini-front"><span class="mf-1"></span><span class="mf-2"></span><span class="mf-3"></span><span class="mf-gap"></span></div>'
-    : '<div class="mini-landing"></div>';
-  return '<div class="mini-plan" aria-hidden="true"><div class="mini-grid">' + cells + '</div>' + base + '</div>';
+  return '<div class="mini-plan" aria-hidden="true"><div class="mini-grid">' + cells + '</div></div>';
 }
 
 function renderElevator() {
@@ -609,18 +573,17 @@ function renderFloor() {
   nameEl.setAttribute('lang', langTag());
   $('#floor-code').textContent = fl.label;
   $('#floor-purpose').textContent = fl.purpose;
-  $('#tb-drawing').textContent = fl.drawing;
 
   let html = '';
   if (isCompact) {
     html = miniPlan(placed, fillers, fl, floorState.expanded) +
-      '<ul class="aisle" aria-label="Zones on this floor">' + placed.map((z) => aisleRow(z, selKey, true)).join('') + '</ul>';
+      '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, true, n)).join('') + '</ul>';
   } else if (floorState.view === 'aisle') {
-    html = '<ul class="aisle" aria-label="Zones on this floor">' + placed.map((z) => aisleRow(z, selKey, false)).join('') + '</ul>';
+    html = '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, false, n)).join('') + '</ul>';
   } else {
     html = '<div class="plan-scroll"><div class="plan' + (floorState.view === 'model' ? ' model' : '') + '">' +
-      '<div class="plan-grid">' + placed.map((z) => zoneButton(z, selKey)).join('') + fillers.map(fillerCell).join('') + '</div>' +
-      (fl.key === 'G' ? storefront() : landing()) + '</div></div>';
+      '<div class="plan-grid">' + placed.map((z, n) => zoneButton(z, selKey, n)).join('') + fillers.map((f, n) => fillerCell(f, placed.length + n)).join('') + '</div>' +
+      '</div></div>';
   }
   stageEl.innerHTML = html;
   renderPanel();
@@ -638,18 +601,19 @@ function renderPanel() {
 }
 function renderNote() {
   const v = floorState.view;
-  const key = floorState.heatOn ? ': <span class="key key-first">first stop</span> <span class="key key-back">return</span>' : '';
-  let note = v === 'model'
-    ? 'Model view · zones rise with dwell, yours included' + key
+  const key = floorState.heatOn ? ': <span class="key key-first">first stop</span> <span class="key key-back">coming back</span>' : '';
+  let how = v === 'model'
+    ? '3D view · zones rise with the time visitors spend in them, yours included' + key
     : v === 'aisle'
-      ? 'Aisle view · every zone on this floor as a list'
-      : 'Plan view · rest on a zone and its clock starts' + key;
+      ? 'List view · every project on this floor'
+      : 'Click a zone to see the project. Rest on one and its clock starts' + key;
+  let heat = '';
   if (floorState.heatOn) {
-    note += band.heatMode === 'actual'
-      ? ' · Heat: real dwell, last 30 days'
-      : ' · Heat: forecast until ' + (Number(band.heatNeed) || 0) + ' visits are counted (' + (Math.min(Number(band.heatHave) || 0, Number(band.heatNeed) || 0)) + ' so far)';
+    heat = band.heatMode === 'actual'
+      ? 'Heat map · where visitors spend the most time, last 30 days'
+      : 'Heat map · where visitors spend the most time. My forecast until ' + (Number(band.heatNeed) || 0) + ' visits are counted (' + (Math.min(Number(band.heatHave) || 0, Number(band.heatNeed) || 0)) + ' so far)';
   }
-  $('#view-note').innerHTML = note;
+  $('#view-note').innerHTML = '<span class="vn">' + how + '</span>' + (heat ? '<span class="vn">' + heat + '</span>' : '');
   $('#floor').classList.toggle('heat-off', !floorState.heatOn);
   const ht = $('#heat-toggle');
   ht.setAttribute('aria-pressed', String(floorState.heatOn));
@@ -699,6 +663,7 @@ function goFloor(key, zoneKey, after) {
     if (zoneKey) floorState.sel[key] = zoneKey;
     renderFloor();
     stageEl.classList.remove('is-moving');
+    if (stageEl.classList.contains('is-shown')) enterZones();
     if (after) after();
   }, reduced() ? 0 : 180);
 }
@@ -895,6 +860,19 @@ const live = {
   }
 };
 
+// Zones appear one after another the first time the floor comes into view,
+// and again whenever you take the elevator to another floor.
+let enterTimer = null;
+function enterZones() {
+  const stageEl = $('#floor-stage');
+  if (!stageEl) return;
+  stageEl.classList.add('is-shown');
+  if (reduced() || !document.documentElement.classList.contains('reveal-on')) return;
+  stageEl.classList.add('zones-enter');
+  clearTimeout(enterTimer);
+  enterTimer = setTimeout(() => stageEl.classList.remove('zones-enter'), 1800);
+}
+
 function handleHash() {
   const m = /^#zone-([a-z0-9]+)$/i.exec(location.hash || '');
   if (!m) return;
@@ -914,6 +892,16 @@ function initFloor() {
   if (!$('#floor-stage')) return;
   renderElevator();
   renderFloor();
+  if ('IntersectionObserver' in window && document.documentElement.classList.contains('reveal-on')) {
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      enterZones();
+    }, { threshold: 0.12 });
+    io.observe($('#floor-stage'));
+  } else {
+    $('#floor-stage').classList.add('is-shown');
+  }
 
   $('#floor').addEventListener('click', (e) => {
     const zoneBtn = e.target.closest('.zone, .aisle-row');
@@ -925,10 +913,6 @@ function initFloor() {
     if (floorBtn) {
       const fl = FLOORS.find((f) => f.key === floorBtn.dataset.floor);
       goFloor(fl.key, floorState.sel[fl.key] || fl.zones[0].key);
-      return;
-    }
-    if (e.target.closest('[data-to-ground]')) {
-      goFloor('G', floorState.sel.G);
       return;
     }
     const viewBtn = e.target.closest('[data-view]');
@@ -1045,7 +1029,6 @@ function initReceipt() {
 
 initBand();
 initHeadline();
-initWindow();
 initFloor();
 initLocator();
 initReceipt();

@@ -4,20 +4,23 @@ The portfolio of **Sener Can Gunsel**, retail data and insights analyst in New Y
 Live at **[senergunsel.com](https://senergunsel.com)**.
 
 You walk in through the headline (the comma is a man, the period is a door), the projects are zones on a
-floor plan, the resume is the register, and a door sensor counts footfall anonymously in the band at the top.
+floor plan, the resume is the register, and a door counter tallies visits anonymously in the band at the top.
+Every label leads with plain words and keeps the store word second, so a recruiter who has never worked in
+retail can follow it, and the Express lane is always one click away.
 The [Director's Cut](https://senergunsel.com/notes/directors-cut/) explains how and why it was built.
 
 ## What's in the store
 
 | Where | What |
 |---|---|
-| `public/index.html` | The homepage: door band, walk-in headline, window, floor plan, store locator, register |
+| `public/index.html` | The homepage: door band, walk-in headline, floor plan, store locator, register |
 | `public/express/` | The Express lane: everything a recruiter needs in 30 seconds |
-| `public/projects/` | Case studies (one folder per project) |
+| `public/projects/` | One folder per project: the Under Armour case study, the playable store model |
 | `public/notes/` | Field notes, starting with the Director's Cut |
 | `public/assets/js/store.js` | **The floor plan.** Every zone and floor is defined here and nowhere else |
 | `public/assets/js/signs.js` | Store signage in English, Turkish, French and Chinese |
-| `public/assets/js/home.js` | Homepage behaviour: headline, window model, floor plan, dwell tracking |
+| `public/assets/js/home.js` | Homepage behaviour: headline, floor plan, dwell tracking |
+| `public/assets/js/window.js` | The playable model on `/projects/same-store-two-streets/` |
 | `public/assets/js/door.js` | The browser side of the door sensor |
 | `src/worker.js` | The door sensor: a Cloudflare Worker and a Durable Object that count visits |
 | `wrangler.jsonc` | Cloudflare configuration |
@@ -29,7 +32,9 @@ without upkeep.
 
 1. Add a zone to a floor in `public/assets/js/store.js`. Pick a `format` for its footprint:
    `SPLUS` (6×3), `S` (4×2), `D` (2×2) or `TBA` (2×2, hatched). The plan packs zones in the order listed,
-   and the "Next drop" hoarding shrinks around the new one.
+   and the "Next drop" hoarding shrinks around the new one. Give it a `kind` that says plainly what it is
+   ("Work · Company", "Grad school · …", "Personal project", "Writing", "Coming later") and a short `tag`
+   for its status (Case study, Playable, Read, Soon, TBA).
 2. Give it a page under `public/projects/<name>/index.html` (copy the Under Armour one), set
    `status: 'open'`, `href` and `cta`.
 3. Add the page to `public/sitemap.xml`, and to the Express lane if it belongs in the 30-second version.

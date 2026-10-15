@@ -98,7 +98,30 @@ function wireMenu() {
   });
 }
 
+/* ---------- Scroll reveals ----------
+   Anything marked data-reveal fades up as it comes into view; a --rd delay in
+   its style staggers it against its neighbours. Without JavaScript, or when a
+   visitor asks for reduced motion, everything is simply there. */
+function initReveal() {
+  const els = Array.from(document.querySelectorAll('[data-reveal]'));
+  if (!els.length || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    root.classList.remove('reveal-on');
+    return;
+  }
+  window.scgReveal = true;
+  root.classList.add('reveal-on');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-in');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  els.forEach((el) => io.observe(el));
+}
+
 function init() {
+  initReveal();
   paintThemeButtons();
   document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => setTheme(currentTheme() === 'open' ? 'after' : 'open'));

@@ -28,6 +28,8 @@ for (const floor of FLOORS) {
     if ((z.status === 'open' || z.status === 'window') && (!z.href || !z.cta)) problems.push(`${where}: open zones need both href and cta.`);
     if (!(z.forecast >= 0 && z.forecast <= 1)) problems.push(`${where}: forecast should be between 0 and 1.`);
     if (!z.title || !z.body) problems.push(`${where}: needs a title and a body.`);
+    if (!z.kind) problems.push(`${where}: needs a kind, in plain words (Work · Company, Grad school, Personal project, Writing, Coming later).`);
+    if (!z.tag || z.tag.length > 12) problems.push(`${where}: needs a short tag (Case study, Playable, Read, Soon, TBA).`);
   }
   const { placed, fillers } = packFloor(floor);
   const rows = Math.max(...placed.map((z) => z.row + z.h - 1));

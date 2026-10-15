@@ -22,6 +22,11 @@ keeps creative control: propose, then build what he approves. Address him as Sen
 ## Writing rules
 
 - Write in Sener's voice: first person, plain, confident, specific. No corporate filler.
+- Visitors are a mix of industry pros and recruiters who don't know retail jargon. Plain words come first and
+  the store word second ("Projects · Floor plan", "Resume & contact · Register"). Explain or drop terms like
+  footfall, dwell, SKU, floorset, ATV, UPT. The store concept stays; it just has to make sense on first read.
+- Every zone says what it is (`kind`: Work · Company, Grad school, Personal project, Writing, Coming later)
+  so nobody mistakes the store for one project, and the Express lane stays the simple way out.
 - Avoid em dashes in all copy. Use commas, colons, periods or parentheses instead.
 - Only claim what is on his resume or he has confirmed. Under Armour store data stays private: describe
   scope, never results or numbers that aren't already public or on the resume.
