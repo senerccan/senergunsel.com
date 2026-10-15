@@ -294,37 +294,76 @@
 .plan.model .zone.is-sel { box-shadow: 0 var(--h) 0 0 var(--accent); }
 .plan.model .zone.is-sel:hover { box-shadow: 0 calc(var(--h) + 12px) 0 0 var(--accent); }
 .zone-hatch { position: absolute; inset: 0; background-image: repeating-linear-gradient(135deg, var(--hair) 0 1px, transparent 1px 9px); pointer-events: none; }
+/* Live dwell colours: orange for a first stop, hard-court blue for a return. */
+:root { --bloom-in: 62%; --bloom-mid: 26%; --bloom-line: 62%; }
+:root[data-theme="after"] { --bloom-in: 80%; --bloom-mid: 36%; --bloom-line: 85%; }
+[data-code], [data-you-for] { --dwell: var(--accent); --dtext: var(--atext); }
+[data-code].is-return, [data-you-for].is-return { --dwell: var(--revisit); --dtext: var(--rtext); }
+
+/* Store heat (forecast or real), warmed by your earlier stops this visit. */
 .zone-heat {
   position: absolute; left: 12%; top: 6%; width: 76%; height: 88%;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 52%, transparent), transparent);
   opacity: var(--heat, 0);
   pointer-events: none;
-  transition: opacity 0.35s linear;
+  transition: opacity 0.6s ease;
 }
-/* Your own dwell: a hotter core that deepens the longer you stay. */
-.zone-core {
-  position: absolute; left: 27%; top: 20%; width: 46%; height: 60%;
+/* The stop you're on: a bloom centred on the zone's preview that grows while
+   you stay, beats, and sends out ripples. It settles when you step off. */
+.zone-bloom { position: absolute; left: 0; right: 0; top: 0; bottom: 0; container-type: size; pointer-events: none; }
+.zone-core, .zone-ring {
+  --s: calc(0.16 + 0.84 * var(--grow, 0));
+  position: absolute; left: 50%; top: 50%;
+  width: calc(var(--s) * 80cqw); height: calc(var(--s) * 100cqh);
+  translate: -50% -50%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 92%, transparent), color-mix(in srgb, var(--accent) 35%, transparent) 60%, transparent);
-  opacity: var(--you, 0);
-  pointer-events: none;
-  transition: opacity 0.35s linear;
 }
-.zone.is-dwelling .zone-core { animation: sflglow 1.4s ease-in-out infinite; }
-@keyframes sflglow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18); } }
+.zone-core {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--dwell) var(--bloom-in), transparent), color-mix(in srgb, var(--dwell) var(--bloom-mid), transparent) 55%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--dwell) var(--bloom-line), transparent);
+  opacity: 0;
+  transition: width 0.9s cubic-bezier(.3,.7,.3,1), height 0.9s cubic-bezier(.3,.7,.3,1), opacity 0.9s ease;
+}
+.is-dwelling .zone-core {
+  opacity: calc(0.65 + 0.35 * var(--grow, 0));
+  transition: width 0.12s linear, height 0.12s linear, opacity 0.25s ease;
+  animation: sflbeat 1.4s ease-in-out infinite;
+}
+/* While you're on a zone its ambient heat steps back, so your bloom reads on its own. */
+.is-dwelling .zone-heat { opacity: calc(var(--heat, 0) * 0.35); }
+.zone-ring { border: 1.5px solid var(--dwell); opacity: 0; }
+.is-dwelling .zone-ring { animation: sflripple 1.4s cubic-bezier(.2,.6,.3,1) infinite; }
+/* Coming back beats twice: a double ripple instead of one. */
+.is-return.is-dwelling .zone-core { animation-name: sflbeat2; }
+.is-return.is-dwelling .zone-ring.r2 { animation-delay: 0.24s; }
+.is-dwelling:not(.is-return) .zone-ring.r2 { animation: none; }
+@keyframes sflbeat { 0%, 100% { scale: 1; } 16% { scale: 1.07; } 36% { scale: 1; } }
+@keyframes sflbeat2 { 0%, 100% { scale: 1; } 12% { scale: 1.07; } 24% { scale: 1; } 34% { scale: 1.05; } 50% { scale: 1; } }
+@keyframes sflripple { 0% { opacity: 0.7; scale: 1; } 100% { opacity: 0; scale: 1.4; } }
+.heat-off .zone-bloom { display: none; }
 .zone-hint { position: absolute; left: 16px; right: 16px; display: flex; align-items: center; pointer-events: none; }
+/* A halo in the floor colour keeps small labels readable where the bloom or a ripple passes behind them. */
+.zone-hint, .zone-top { text-shadow: 0 0 1px var(--surface), 0 0 2px var(--surface), 0 0 4px var(--surface); }
+.zone-hint svg text { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.zone-top .tag { text-shadow: none; }
 .zone-top { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-family: var(--mono); font-size: 11px; line-height: 1.3; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .zone-top .tag { flex: none; padding: 1px 7px; letter-spacing: 0.1em; }
-/* The zone's sign swaps to a live dwell timer while you rest on it. */
+/* The zone's sign swaps to the stop's clock while you rest on it ("Dwell" on
+   a first stop, "Back" on a return). Step off and the time stays up, dimmed,
+   for a moment before the sign comes back. */
 .zone-label { display: grid; min-width: 0; }
 .zone-label > span { grid-area: 1 / 1; align-self: start; transition: opacity 0.2s ease; }
-.zl-dwell { opacity: 0; color: var(--atext); font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
-.zl-dwell i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+.zl-dwell { opacity: 0; color: var(--dtext); font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.zl-dwell i { width: 6px; height: 6px; border-radius: 50%; background: var(--dwell); flex: none; }
 .zl-dwell b { font-weight: 600; text-transform: none; font-variant-numeric: tabular-nums; }
-.zone.is-dwelling .zl-sign { opacity: 0; }
+.zl-back { display: none; }
+.is-return .zl-first { display: none; }
+.is-return .zl-back { display: inline; }
+.zone.is-dwelling .zl-sign, .zone.is-settling .zl-sign { opacity: 0; }
 .zone.is-dwelling .zl-dwell { opacity: 1; }
-.zone.is-dwelling .zl-dwell i { animation: sflpulse 1s ease-in-out infinite; }
+.zone.is-settling .zl-dwell { opacity: 0.6; }
+.zone.is-dwelling .zl-dwell i { animation: sflpulse 1.4s ease-in-out infinite; }
 .zl-code, .zl-word { white-space: pre; }
 .zone.is-narrow .zl-code, .zone.is-narrow .zl-word { display: none; }
 .zone-bottom { position: relative; display: flex; flex-direction: column; gap: 6px; }
@@ -455,6 +494,9 @@
 .aisle-detail { padding: 4px 8px 22px; }
 
 .view-note { margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.view-note .key { white-space: nowrap; }
+.view-note .key::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 5px 1px 3px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
+.view-note .key-back::before { background: var(--revisit); }
 .title-block { display: flex; flex-wrap: wrap; border: 1px solid var(--line); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; }
 .title-block > span { flex: 1 1 110px; padding: 8px 12px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
 .title-block > span:last-child { border-right: 0; }
@@ -478,7 +520,11 @@
 .zp-soon { min-height: 52px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px dashed var(--muted); color: var(--ink2); font-size: 15px; font-weight: 650; }
 .zp-ask { font-size: 14px; font-weight: 650; text-underline-offset: 3px; align-self: flex-start; }
 .zp-dwell { margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.zp-you b { margin-left: 6px; color: var(--atext); font-weight: 600; text-transform: none; font-variant-numeric: tabular-nums; }
+.zp-you .zy-k { margin-right: 10px; }
+.zp-you b { color: var(--ink); font-weight: 600; text-transform: none; font-variant-numeric: tabular-nums; }
+.zp-you .zy-now { white-space: nowrap; }
+.zp-you .zy-now::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--dwell); vertical-align: 1px; }
+.zp-you .zy-now b { color: var(--dtext); }
 
 .mini-plan { display: none; }
 
@@ -542,7 +588,9 @@
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .zone-core, .zl-dwell i { animation: none !important; }
+  .zone-core, .zone-ring, .zl-dwell i { animation: none !important; }
+  .zone-ring { display: none; }
+  .zone-core, .zone-heat { transition: opacity 0.2s linear !important; }
   .pulse, .breathe, .man *, .tick { animation: none !important; }
   .plan, .zone, .wc-k, .wc-f, .track-fill, .track-knob, .floor-stage { transition: none !important; }
 }
@@ -615,7 +663,7 @@
   .mini-grid > span { position: relative; overflow: hidden; background: var(--surface); padding: 3px 5px; font-family: var(--mono); font-size: 9px; color: var(--muted); }
   .mini-grid > span.is-sel { color: var(--atext); font-weight: 600; box-shadow: inset 0 0 0 2px var(--accent); }
   .mini-grid > span .zone-heat { left: 10%; top: 0; width: 80%; height: 100%; }
-  .mini-grid > span .zone-core { left: 25%; top: 5%; width: 50%; height: 90%; }
+  .mini-grid > span .zone-core, .mini-grid > span .zone-ring { width: calc(var(--s) * 92cqw); height: calc(var(--s) * 120cqh); }
   .mini-grid > span .zone-hatch { background-image: repeating-linear-gradient(135deg, var(--hair) 0 1px, transparent 1px 6px); }
   .mini-grid > span b { position: relative; font-weight: inherit; }
   .mini-grid > .mini-filler { background: var(--ground); }

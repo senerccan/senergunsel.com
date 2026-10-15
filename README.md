@@ -57,8 +57,11 @@ static pages straight from `public/` and only runs code for `/api/door/*`.
   that identifies a person is stored.
 - Footfall is counted once per tab visit. "In store now" is visits with a heartbeat in the last 75 seconds.
 - Zone dwell is attention that follows the pointer: resting on a zone or its details panel, focusing it
-  with the keyboard, opening its row on a phone, or reading its page. While you rest on a zone, a live
-  timer counts your seconds and its heat builds (your dwell for the visit stays in `sessionStorage`).
+  with the keyboard, opening its row on a phone, or reading its page. A stop counts after one second, so
+  pass-bys are ignored.
+- Each stop gets its own clock from zero while a bloom pulses and grows: orange on a first stop, blue on a
+  return. Stepping off leaves a little warmth on the zone, and the details panel keeps the running total.
+  Your stops and total per zone stay in `sessionStorage` (`scg.dwell`) for that tab only.
 - The store-wide heat shows a forecast until 50 visits are counted in the last 30 days, then real dwell.
 - Sessions are deleted after two days; daily totals are kept.
 

@@ -84,6 +84,8 @@
   --onband: #F1F1EE;
   --bandmuted: #A9A9A2;
   --atext: #B33800;
+  --revisit: #2D5BFF;
+  --rtext: #2346E0;
   --sans: "Archivo", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --mono: "IBM Plex Mono", "PingFang SC", "Noto Sans SC", ui-monospace, monospace;
   --wrap: 1360px;
@@ -105,6 +107,8 @@
   --onband: #F1F1EE;
   --bandmuted: #A9A9A2;
   --atext: var(--accent);
+  --revisit: #6A88FF;
+  --rtext: #7F98FF;
   color-scheme: dark;
 }
 @supports (color: color-mix(in srgb, red 50%, blue)) {

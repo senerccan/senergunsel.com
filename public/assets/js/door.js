@@ -56,8 +56,9 @@ export function onDoor(fn) {
   return () => listeners.delete(fn);
 }
 
-// Your own dwell per zone for this visit (this tab only), so the floor plan
-// can show your trail and pick up where you left off after a reload.
+// Your own dwell per zone for this visit (this tab only): the total time and
+// the number of stops, so the floor plan can tell a first stop from a return
+// and pick up where you left off after a reload.
 const MINE_KEY = 'scg.dwell';
 let mine = {};
 try {
@@ -68,16 +69,35 @@ try {
 function saveMine() {
   try { sessionStorage.setItem(MINE_KEY, JSON.stringify(mine)); } catch (e) { /* the trail is a nicety */ }
 }
+function record(code) {
+  let r = mine[code];
+  if (typeof r === 'number') r = { t: r, n: r > 0 ? 1 : 0 }; // earlier format kept the total only
+  if (!r || typeof r !== 'object') r = { t: 0, n: 0 };
+  r.t = r.t > 0 ? r.t : 0;
+  r.n = r.n > 0 ? r.n : 0;
+  mine[code] = r;
+  return r;
+}
 
 export function myDwellMs(code) {
-  return mine[code] || 0;
+  return mine[code] ? record(code).t : 0;
+}
+
+export function myStops(code) {
+  return mine[code] ? record(code).n : 0;
+}
+
+export function addZoneStop(code) {
+  if (!code) return;
+  record(code).n += 1;
+  saveMine();
 }
 
 export function addZoneDwell(code, ms) {
   if (!code || !(ms > 0)) return;
   const add = Math.round(ms);
   pending[code] = (pending[code] || 0) + add;
-  mine[code] = (mine[code] || 0) + add;
+  record(code).t += add;
   saveMine();
 }
 
@@ -142,6 +162,9 @@ export async function startDoor(options = {}) {
   if (started) return;
   started = true;
   pageZone = options.zone || null;
+  // Opening a project's own page counts as a stop at its zone, so the floor
+  // plan greets you as a return when you come back to it.
+  if (pageZone) addZoneStop(pageZone);
   if (pageZone && document.visibilityState === 'visible') pageVisibleSince = Date.now();
 
   document.addEventListener('visibilitychange', () => {

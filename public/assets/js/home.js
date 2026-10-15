@@ -2,7 +2,7 @@
 import { FLOORS, FLOORSET, packFloor, findZone } from './store.js';
 import { sign, floorName, LANG_TAGS } from './signs.js';
 import { currentLang } from './site.js';
-import { onDoor, onCollect, addZoneDwell, myDwellMs, formatDwell, pad4 } from './door.js';
+import { onDoor, onCollect, addZoneDwell, addZoneStop, myDwellMs, myStops, formatDwell, pad4 } from './door.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -413,48 +413,94 @@ function heatOf(z) {
   if (band.heatMode === 'actual' && band.heat) return Math.max(0, Math.min(1, band.heat[z.code] || 0));
   return z.forecast || 0;
 }
-// Heat = the store's dwell (forecast or real) blended with yours, live.
-// Your seconds on a zone push its heat toward full; TAU is how fast.
-const TAU = 15;
-const MAX_REST_MS = 90000; // one continuous rest counts for at most 90 seconds
+// Live dwell, in three layers:
+//   heat   the store's dwell (forecast or real), warmed by your earlier stops
+//          on the zone this visit. Your trail stays on the floor in orange.
+//   grow   the stop you're on now: a bloom that pulses and grows while you
+//          stay, orange on a first stop and blue when you come back.
+//   rise   both together, for the zone's height in Model view.
+// Each stop has its own clock that starts at zero. Under a second is a
+// pass-by, like a shopper walking past the door, and doesn't count.
+const STOP_MIN_MS = 1000;   // a stop counts once you've stayed this long
+const MAX_STOP_MS = 90000;  // one stop counts for at most 90 seconds
+const HOLD_MS = 1500;       // moving between a zone and its details panel keeps the stop going
+const JITTER_MS = 300;      // so does brushing off the edge of a zone and straight back
+const SETTLE_MS = 1300;     // after you step off, the stop's time stays up for a moment
+
+function growOf(ms) {
+  const t = ms / 1000;
+  // Quick at first so you see it start, then slower so it keeps growing for a minute.
+  return 0.62 * (1 - Math.exp(-t / 4)) + 0.38 * (1 - Math.exp(-t / 30));
+}
+function trailOf(ms) {
+  return 0.5 * (1 - Math.exp(-ms / 20000));
+}
 function intensity(z) {
-  if (!floorState.heatOn) return { heat: 0, you: 0 };
-  const base = heatOf(z);
-  const you = 1 - Math.exp(-live.seconds(z.code) / TAU);
-  return { heat: 1 - (1 - 0.65 * base) * (1 - you), you };
+  if (!floorState.heatOn) return { heat: 0, grow: 0, rise: 0 };
+  const base = 0.65 * heatOf(z);
+  const heat = 1 - (1 - base) * (1 - trailOf(live.trailMs(z.code)));
+  const grow = live.growFor(z.code);
+  return { heat, grow, rise: 1 - (1 - heat) * (1 - 0.75 * grow) };
 }
 function heatVars(z) {
-  const { heat, you } = intensity(z);
-  const h = floorState.heatOn ? Math.round(4 + heat * 16) : 6;
-  return '--heat:' + heat.toFixed(3) + ';--you:' + you.toFixed(3) + ';--h:' + h + 'px;';
+  const { heat, grow, rise } = intensity(z);
+  const h = floorState.heatOn ? Math.round(4 + rise * 16) : 6;
+  return '--heat:' + heat.toFixed(3) + ';--grow:' + grow.toFixed(3) + ';--h:' + h + 'px;';
 }
 function applyHeat(el, z) {
-  const { heat, you } = intensity(z);
+  const { heat, grow, rise } = intensity(z);
   el.style.setProperty('--heat', heat.toFixed(3));
-  el.style.setProperty('--you', you.toFixed(3));
-  el.style.setProperty('--h', (floorState.heatOn ? Math.round(4 + heat * 16) : 6) + 'px');
+  el.style.setProperty('--grow', grow.toFixed(3));
+  el.style.setProperty('--h', (floorState.heatOn ? Math.round(4 + rise * 16) : 6) + 'px');
 }
 function fmtDwell(secs, precise) {
   if (secs < 60) return (precise ? secs.toFixed(1) : String(Math.floor(secs))) + 's';
   return Math.floor(secs / 60) + 'm ' + String(Math.floor(secs % 60)).padStart(2, '0') + 's';
+}
+// The "Your dwell" line in a zone's details: this stop, your total, your stops.
+function youLine(code) {
+  const now = live.active && live.active.code === code ? live.active : null;
+  const earlier = live.trailMs(code);
+  const n = myStops(code);
+  const parts = [];
+  if (now) parts.push('<span class="zy-now">This stop <b>' + fmtDwell(live.stopMs(code) / 1000, true) + '</b></span>');
+  if (earlier > 0 || (!now && n > 0)) {
+    parts.push('<span>Total <b>' + fmtDwell(live.totalMs(code) / 1000, true) + '</b></span>');
+    parts.push('<span>' + n + (n === 1 ? ' stop' : ' stops') + '</span>');
+  }
+  return parts.length ? parts.join('<span class="zy-sep"> · </span>') : '<span>Not yet</span>';
+}
+function youSummary(code) {
+  const n = myStops(code);
+  if (!n) return 'none yet';
+  const secs = Math.round(live.totalMs(code) / 1000);
+  return secs + (secs === 1 ? ' second' : ' seconds') + ' over ' + n + (n === 1 ? ' stop' : ' stops');
 }
 function statusLine(z) {
   if (z.status === 'soon') return 'Opening soon';
   if (z.status === 'tba') return 'Release date: TBA';
   return z.proofs.join(' · ');
 }
+// The live layers inside a zone: the bloom for the stop you're on and the
+// ripples it sends out. They sit behind the zone's text.
+function bloom(style) {
+  return '<span class="zone-bloom" aria-hidden="true"' + (style ? ' style="' + style + '"' : '') + '><span class="zone-core"></span><span class="zone-ring"></span><span class="zone-ring r2"></span></span>';
+}
+function liveClasses(code) {
+  const s = live.active && live.active.code === code ? live.active : null;
+  return [s ? 'is-dwelling' : '', s && s.back ? 'is-return' : ''];
+}
 function zoneButton(z, selKey) {
   const lang = currentLang();
-  const secs = live.seconds(z.code);
-  const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : '', z.w <= 2 ? 'is-narrow' : '', secs >= 0.5 ? 'has-dwell' : ''].filter(Boolean).join(' ');
+  const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : '', z.w <= 2 ? 'is-narrow' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
   return '<button type="button" class="' + cls + '" data-zone="' + esc(z.key) + '" data-code="' + esc(z.code) + '" aria-pressed="' + (z.key === selKey) + '"' +
     ' aria-label="' + esc(z.code + ', ' + z.title + '. ' + statusLine(z)) + '"' +
     ' style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
     (z.hatch ? '<span class="zone-hatch" aria-hidden="true"></span>' : '') +
-    '<span class="zone-heat breathe" aria-hidden="true"></span><span class="zone-core" aria-hidden="true"></span>' +
+    '<span class="zone-heat breathe" aria-hidden="true"></span>' + bloom('top:' + z.g.top + ';bottom:' + z.g.bottom) +
     '<span class="zone-hint" aria-hidden="true" style="top:' + z.g.top + ';bottom:' + z.g.bottom + '">' + (HINTS[z.hint] ? HINTS[z.hint]() : '') + '</span>' +
     '<span class="zone-top" aria-hidden="true"><span class="zone-label"><span class="zl-sign">' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span>' +
-    '<span class="zl-dwell"><span class="zl-code">' + esc(z.code) + ' · </span><i></i><span class="zl-word">Dwell </span><b class="dwell-time">' + fmtDwell(secs, false) + '</b></span></span>' +
+    '<span class="zl-dwell"><span class="zl-code">' + esc(z.code) + ' · </span><i></i><span class="zl-word"><span class="zl-first">Dwell </span><span class="zl-back">Back </span></span><b class="dwell-time">' + fmtDwell(live.stopMs(z.code) / 1000, true) + '</b></span></span>' +
     '<span class="' + FMT_TAG[z.format] + '">' + esc(z.format) + '</span></span>' +
     '<span class="zone-bottom" aria-hidden="true"><span class="zone-title" style="font-size:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
     '</button>';
@@ -482,7 +528,10 @@ function panelInner(z) {
   if (floorState.heatOn && band.heatMode === 'actual' && band.heat && band.heat[z.code] != null) {
     dwell = '<p class="zp-dwell">Relative dwell ' + Math.round(band.heat[z.code] * 100) + ' of 100 · last 30 days</p>';
   }
-  dwell += '<p class="zp-dwell zp-you">Your dwell this visit <b data-dwell-for="' + esc(z.code) + '" aria-hidden="true">' + fmtDwell(live.seconds(z.code), false) + '</b></p>';
+  const back = live.active && live.active.code === z.code && live.active.back;
+  dwell += '<p class="zp-dwell zp-you' + (back ? ' is-return' : '') + '" data-you-for="' + esc(z.code) + '"><span class="zy-k">Your dwell</span>' +
+    '<span class="visually-hidden">this visit: ' + esc(youSummary(z.code)) + '</span>' +
+    '<span class="zy-v" aria-hidden="true">' + youLine(z.code) + '</span></p>';
   const facts = z.facts && z.facts.length
     ? '<dl class="zp-facts">' + z.facts.map((f) => '<div><dt>' + esc(f.v) + '</dt><dd>' + esc(f.k) + '</dd></div>').join('') + '</dl>'
     : '';
@@ -517,9 +566,10 @@ function aisleRow(z, selKey, isCompact) {
 }
 function miniPlan(placed, fillers, fl, selKey) {
   const cells = placed.map((z) => {
-    return '<span class="' + (z.key === selKey ? 'is-sel' : '') + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    const cls = [z.key === selKey ? 'is-sel' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
+    return '<span class="' + cls + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
       (z.hatch ? '<span class="zone-hatch"></span>' : '') +
-      '<span class="zone-heat"></span><span class="zone-core"></span><b>' + esc(z.code) + '</b></span>';
+      '<span class="zone-heat"></span>' + bloom('') + '<b>' + esc(z.code) + '</b></span>';
   }).join('') + fillers.map((f) => '<span class="mini-filler" style="grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"></span>').join('');
   const base = fl.key === 'G'
     ? '<div class="mini-front"><span class="mf-1"></span><span class="mf-2"></span><span class="mf-3"></span><span class="mf-gap"></span></div>'
@@ -588,17 +638,19 @@ function renderPanel() {
 }
 function renderNote() {
   const v = floorState.view;
+  const key = floorState.heatOn ? ': <span class="key key-first">first stop</span> <span class="key key-back">return</span>' : '';
   let note = v === 'model'
-    ? 'Model view · each zone rises with how long visitors stay, you included, live'
+    ? 'Model view · zones rise with dwell, yours included' + key
     : v === 'aisle'
       ? 'Aisle view · every zone on this floor as a list'
-      : 'Plan view · rest on a zone: the timer counts your dwell and the heat builds';
+      : 'Plan view · rest on a zone and its clock starts' + key;
   if (floorState.heatOn) {
     note += band.heatMode === 'actual'
       ? ' · Heat: real dwell, last 30 days'
-      : ' · Heat: forecast until ' + band.heatNeed + ' visits are counted (' + Math.min(band.heatHave, band.heatNeed) + ' so far)';
+      : ' · Heat: forecast until ' + (Number(band.heatNeed) || 0) + ' visits are counted (' + (Math.min(Number(band.heatHave) || 0, Number(band.heatNeed) || 0)) + ' so far)';
   }
-  $('#view-note').textContent = note;
+  $('#view-note').innerHTML = note;
+  $('#floor').classList.toggle('heat-off', !floorState.heatOn);
   const ht = $('#heat-toggle');
   ht.setAttribute('aria-pressed', String(floorState.heatOn));
   $('[data-heat-state]', ht).textContent = floorState.heatOn ? 'on' : 'off';
@@ -653,77 +705,191 @@ function goFloor(key, zoneKey, after) {
 
 // Live dwell: attention follows the pointer. Resting on a zone or on its
 // details panel, focusing it with the keyboard, or opening its row on a phone
-// all count. The seconds tick on the zone and its heat builds while you stay.
+// all count. Every stop gets its own clock from zero; step off and the bloom
+// settles, leaving a little warmth behind. Come back and it glows blue.
+//
+// A stop: { code, start, end, flushed, counted, back, via, capped }
+//   start/end  performance.now() times (end is 0 while you're still there)
+//   flushed    ms of this stop already sent to the door sensor and your total
+//   counted    true once it passed STOP_MIN_MS and became a real stop
+//   back       true if you had stopped at this zone before (a return)
+//   via        what started it: zone, panel, focus, tap or scroll
 const live = {
   active: null,
+  held: new Map(),     // stops you just stepped off, kept briefly in case you come straight back
+  settling: new Map(), // zones whose last time is still up after you stepped off
   timer: null,
   floorVisible: false,
-  start(code) {
-    if (!code || (this.active && this.active.code === code)) return;
-    this.stop();
-    if (document.visibilityState !== 'visible') return;
-    this.active = { code, since: performance.now(), began: performance.now() };
-    this.mark(code, true);
-    this.timer = setInterval(() => {
-      if (!this.active) return;
-      if (performance.now() - this.active.began > MAX_REST_MS) { this.stop(); return; }
-      this.paint(this.active.code);
-    }, 100);
-    this.paint(code);
+
+  start(code, via) {
+    if (!code || document.visibilityState !== 'visible') return;
+    const now = performance.now();
+    if (this.active) {
+      if (this.active.code === code) return;
+      this.release(now);
+    }
+    const h = this.held.get(code);
+    const grace = via === 'panel' || via === 'scroll' || (h && h.via === 'panel') ? HOLD_MS : JITTER_MS;
+    let s;
+    if (h && !h.capped && now - h.end < grace) {
+      // Straight back to the same stop: pick it up where it was. The time away doesn't count.
+      this.unhold(code);
+      s = h;
+      s.start += now - s.end;
+      s.end = 0;
+      s.via = via;
+    } else {
+      if (h) this.finish(code);
+      s = { code, start: now, end: 0, flushed: 0, counted: false, back: myStops(code) > 0, via, capped: false };
+    }
+    this.active = s;
+    this.mark(code);
+    this.tick();
+    if (!this.timer) this.timer = setInterval(() => this.tick(), 100);
   },
-  stop() {
-    if (!this.active) return;
-    const { code, since } = this.active;
-    addZoneDwell(code, performance.now() - since);
+  // Step off the stop you're on. It's held for a moment in case you come straight back.
+  release(at) {
+    const s = this.active;
+    if (!s) return;
     this.active = null;
     clearInterval(this.timer);
-    this.mark(code, false);
+    this.timer = null;
+    s.end = Math.min(at || performance.now(), s.start + MAX_STOP_MS);
+    s.hold = setTimeout(() => this.finish(s.code), HOLD_MS);
+    this.held.set(s.code, s);
+    this.unmark(s.code, s.counted);
+    this.paint(s.code);
+  },
+  unhold(code) {
+    const h = this.held.get(code);
+    if (!h) return;
+    clearTimeout(h.hold);
+    this.held.delete(code);
+  },
+  // Close a stop for good. A pass-by leaves nothing; a real stop adds its time to your total.
+  finish(code) {
+    const s = this.held.get(code);
+    if (!s) return;
+    this.unhold(code);
+    if (s.counted) this.flush(s, s.end);
     this.paint(code);
   },
+  flush(s, end) {
+    const ms = end - s.start;
+    if (ms > s.flushed) {
+      addZoneDwell(s.code, ms - s.flushed);
+      s.flushed = ms;
+    }
+  },
+  // Every 100 ms while you rest: count the stop once it passes a second, and repaint.
+  tick() {
+    const s = this.active;
+    if (!s) return;
+    const ms = performance.now() - s.start;
+    if (ms >= MAX_STOP_MS) {
+      s.capped = true;
+      this.release(s.start + MAX_STOP_MS);
+      return;
+    }
+    if (!s.counted && ms >= STOP_MIN_MS) {
+      s.counted = true;
+      addZoneStop(s.code);
+    }
+    this.paint(s.code);
+  },
+  // Right before the door sensor sends, so no dwell is left behind.
   collect() {
-    if (!this.active) return;
-    const now = performance.now();
-    addZoneDwell(this.active.code, now - this.active.since);
-    this.active.since = now;
+    const s = this.active;
+    if (s && s.counted) this.flush(s, Math.min(performance.now(), s.start + MAX_STOP_MS));
+    this.held.forEach((h) => { if (h.counted) this.flush(h, h.end); });
   },
-  seconds(code) {
+  // The stop you're on, or the one you just stepped off.
+  stopMs(code) {
+    const s = this.active && this.active.code === code ? this.active : this.held.get(code);
+    return s ? (s.end || performance.now()) - s.start : 0;
+  },
+  // Your earlier stops on this zone this visit, not counting the one you're on.
+  trailMs(code) {
     let ms = myDwellMs(code);
-    if (this.active && this.active.code === code) ms += performance.now() - this.active.since;
-    return ms / 1000;
+    const s = this.active;
+    if (s && s.code === code) ms -= s.flushed;
+    const h = this.held.get(code);
+    if (h && h.counted) ms += h.end - h.start - h.flushed;
+    return Math.max(0, ms);
   },
-  mark(code, on) {
-    $$('#floor [data-code="' + code + '"]').forEach((el) => el.classList.toggle('is-dwelling', on));
+  // Everything this visit, the stop you're on included.
+  totalMs(code) {
+    const s = this.active;
+    return this.trailMs(code) + (s && s.code === code && s.counted ? performance.now() - s.start : 0);
+  },
+  growFor(code) {
+    const s = this.active;
+    return s && s.code === code ? growOf(Math.min(performance.now() - s.start, MAX_STOP_MS)) : 0;
+  },
+  els(code) {
+    return $$('#floor [data-code="' + code + '"]');
+  },
+  mark(code) {
+    const s = this.active;
+    clearTimeout(this.settling.get(code));
+    this.settling.delete(code);
+    this.els(code).forEach((el) => {
+      el.classList.remove('is-settling');
+      el.classList.toggle('is-return', !!(s && s.back));
+      el.classList.add('is-dwelling');
+    });
+  },
+  unmark(code, settle) {
+    this.els(code).forEach((el) => {
+      el.classList.remove('is-dwelling');
+      el.classList.toggle('is-settling', !!settle);
+    });
+    clearTimeout(this.settling.get(code));
+    this.settling.delete(code);
+    if (settle) {
+      this.settling.set(code, setTimeout(() => {
+        this.settling.delete(code);
+        this.els(code).forEach((el) => el.classList.remove('is-settling'));
+      }, SETTLE_MS));
+    }
   },
   paint(code) {
     const z = currentFloor().zones.find((x) => x.code === code);
-    if (!z) return;
-    const secs = this.seconds(code);
-    const precise = !!(this.active && this.active.code === code);
-    $$('#floor [data-code="' + code + '"]').forEach((el) => {
-      applyHeat(el, z);
-      el.classList.toggle('has-dwell', secs >= 0.5);
-      const t = $('.dwell-time', el);
-      if (t) t.textContent = fmtDwell(secs, precise);
+    const s = this.active && this.active.code === code ? this.active : this.held.get(code);
+    const stop = fmtDwell(this.stopMs(code) / 1000, true);
+    if (z) {
+      this.els(code).forEach((el) => {
+        applyHeat(el, z);
+        const t = s ? $('.dwell-time', el) : null;
+        if (t) t.textContent = stop;
+      });
+    }
+    $$('#floor [data-you-for="' + code + '"]').forEach((el) => {
+      el.classList.toggle('is-return', !!(this.active && this.active.code === code && this.active.back));
+      const v = $('.zy-v', el);
+      if (v) v.innerHTML = youLine(code);
     });
-    $$('#floor [data-dwell-for="' + code + '"]').forEach((el) => { el.textContent = fmtDwell(secs, precise); });
   },
   // Phones have no hover: an open row counts while the floor is on screen.
-  syncCompact() {
+  syncCompact(via) {
     if (!compact()) return;
     const fl = currentFloor();
     const z = floorState.expanded ? fl.zones.find((x) => x.key === floorState.expanded) : null;
-    if (z && this.floorVisible && document.visibilityState === 'visible') this.start(z.code);
-    else this.stop();
+    if (z && this.floorVisible && document.visibilityState === 'visible') this.start(z.code, via || 'tap');
+    else this.release();
   },
   afterRender() {
     if (compact()) {
-      if (this.active && !currentFloor().zones.some((x) => x.code === this.active.code)) this.stop();
-      this.syncCompact();
-    } else if (this.active && !$('#floor [data-code="' + this.active.code + '"]')) {
-      this.stop();
+      this.syncCompact('tap');
+    } else if (this.active && this.active.via !== 'panel' && !$('#floor-stage [data-code="' + this.active.code + '"]')) {
+      this.release();
+    } else if (this.active && this.active.via === 'focus') {
+      // A re-render replaces the focused zone, so keyboard focus has moved on.
+      const f = document.activeElement;
+      if (!f || !f.closest || !f.closest('[data-code="' + this.active.code + '"]')) this.release();
     }
     if (this.active) {
-      this.mark(this.active.code, true);
+      this.mark(this.active.code);
       this.paint(this.active.code);
     }
   }
@@ -787,25 +953,25 @@ function initFloor() {
   stage.addEventListener('pointerover', (e) => {
     if (e.pointerType === 'touch') return;
     const zone = zoneAt(e.target);
-    if (zone) live.start(zone.dataset.code);
+    if (zone) live.start(zone.dataset.code, 'zone');
   });
   stage.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch' || live.active) return;
     const zone = zoneAt(e.target);
-    if (zone) live.start(zone.dataset.code);
+    if (zone) live.start(zone.dataset.code, 'zone');
   });
   stage.addEventListener('pointerout', (e) => {
     const zone = zoneAt(e.target);
     if (!zone || zone.contains(e.relatedTarget)) return;
-    if (live.active && live.active.code === zone.dataset.code) live.stop();
+    if (live.active && live.active.code === zone.dataset.code) live.release();
   });
   stage.addEventListener('focusin', (e) => {
     const zone = zoneAt(e.target);
-    if (zone && zone.matches(':focus-visible')) live.start(zone.dataset.code);
+    if (zone && zone.matches(':focus-visible')) live.start(zone.dataset.code, 'focus');
   });
   stage.addEventListener('focusout', (e) => {
     const zone = zoneAt(e.target);
-    if (zone && live.active && live.active.code === zone.dataset.code && !zone.matches(':hover')) live.stop();
+    if (zone && live.active && live.active.code === zone.dataset.code && !zone.matches(':hover')) live.release();
   });
   const panel = $('#zone-panel');
   if (panel) {
@@ -814,20 +980,20 @@ function initFloor() {
       const z = fl.zones.find((x) => x.key === floorState.sel[fl.key]);
       return z ? z.code : null;
     };
-    panel.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') live.start(selectedCode()); });
-    panel.addEventListener('pointerleave', () => { if (live.active && live.active.code === selectedCode()) live.stop(); });
+    panel.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') live.start(selectedCode(), 'panel'); });
+    panel.addEventListener('pointerleave', () => { if (live.active && live.active.code === selectedCode()) live.release(); });
   }
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
       live.floorVisible = entries[0].isIntersecting;
-      live.syncCompact();
+      live.syncCompact('scroll');
     }, { threshold: 0.35 }).observe($('#floor'));
   }
   onCollect(() => live.collect());
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'visible') live.stop();
-    else live.syncCompact();
+    if (document.visibilityState !== 'visible') live.release();
+    else live.syncCompact('scroll');
   });
 
   compactMQ.addEventListener('change', () => {
