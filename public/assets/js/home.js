@@ -2,7 +2,7 @@
 import { FLOORS, FLOORSET, packFloor, findZone } from './store.js';
 import { sign, floorName, LANG_TAGS } from './signs.js';
 import { currentLang } from './site.js';
-import { onDoor, onCollect, addZoneDwell, formatDwell, pad4 } from './door.js';
+import { onDoor, onCollect, addZoneDwell, myDwellMs, formatDwell, pad4 } from './door.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -413,6 +413,31 @@ function heatOf(z) {
   if (band.heatMode === 'actual' && band.heat) return Math.max(0, Math.min(1, band.heat[z.code] || 0));
   return z.forecast || 0;
 }
+// Heat = the store's dwell (forecast or real) blended with yours, live.
+// Your seconds on a zone push its heat toward full; TAU is how fast.
+const TAU = 15;
+const MAX_REST_MS = 90000; // one continuous rest counts for at most 90 seconds
+function intensity(z) {
+  if (!floorState.heatOn) return { heat: 0, you: 0 };
+  const base = heatOf(z);
+  const you = 1 - Math.exp(-live.seconds(z.code) / TAU);
+  return { heat: 1 - (1 - 0.65 * base) * (1 - you), you };
+}
+function heatVars(z) {
+  const { heat, you } = intensity(z);
+  const h = floorState.heatOn ? Math.round(4 + heat * 16) : 6;
+  return '--heat:' + heat.toFixed(3) + ';--you:' + you.toFixed(3) + ';--h:' + h + 'px;';
+}
+function applyHeat(el, z) {
+  const { heat, you } = intensity(z);
+  el.style.setProperty('--heat', heat.toFixed(3));
+  el.style.setProperty('--you', you.toFixed(3));
+  el.style.setProperty('--h', (floorState.heatOn ? Math.round(4 + heat * 16) : 6) + 'px');
+}
+function fmtDwell(secs, precise) {
+  if (secs < 60) return (precise ? secs.toFixed(1) : String(Math.floor(secs))) + 's';
+  return Math.floor(secs / 60) + 'm ' + String(Math.floor(secs % 60)).padStart(2, '0') + 's';
+}
 function statusLine(z) {
   if (z.status === 'soon') return 'Opening soon';
   if (z.status === 'tba') return 'Release date: TBA';
@@ -420,16 +445,17 @@ function statusLine(z) {
 }
 function zoneButton(z, selKey) {
   const lang = currentLang();
-  const heat = heatOf(z);
-  const h = (floorState.heatOn ? Math.round(4 + heat * 10) : 6) + 'px';
-  const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : ''].filter(Boolean).join(' ');
-  return '<button type="button" class="' + cls + '" data-zone="' + esc(z.key) + '" aria-pressed="' + (z.key === selKey) + '"' +
+  const secs = live.seconds(z.code);
+  const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : '', z.w <= 2 ? 'is-narrow' : '', secs >= 0.5 ? 'has-dwell' : ''].filter(Boolean).join(' ');
+  return '<button type="button" class="' + cls + '" data-zone="' + esc(z.key) + '" data-code="' + esc(z.code) + '" aria-pressed="' + (z.key === selKey) + '"' +
     ' aria-label="' + esc(z.code + ', ' + z.title + '. ' + statusLine(z)) + '"' +
-    ' style="--h:' + h + ';grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    ' style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
     (z.hatch ? '<span class="zone-hatch" aria-hidden="true"></span>' : '') +
-    '<span class="zone-heat breathe" aria-hidden="true" style="opacity:' + heat + '"></span>' +
+    '<span class="zone-heat breathe" aria-hidden="true"></span><span class="zone-core" aria-hidden="true"></span>' +
     '<span class="zone-hint" aria-hidden="true" style="top:' + z.g.top + ';bottom:' + z.g.bottom + '">' + (HINTS[z.hint] ? HINTS[z.hint]() : '') + '</span>' +
-    '<span class="zone-top" aria-hidden="true"><span>' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span><span class="' + FMT_TAG[z.format] + '">' + esc(z.format) + '</span></span>' +
+    '<span class="zone-top" aria-hidden="true"><span class="zone-label"><span class="zl-sign">' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span>' +
+    '<span class="zl-dwell"><span class="zl-code">' + esc(z.code) + ' · </span><i></i><span class="zl-word">Dwell </span><b class="dwell-time">' + fmtDwell(secs, false) + '</b></span></span>' +
+    '<span class="' + FMT_TAG[z.format] + '">' + esc(z.format) + '</span></span>' +
     '<span class="zone-bottom" aria-hidden="true"><span class="zone-title" style="font-size:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
     '</button>';
 }
@@ -456,6 +482,7 @@ function panelInner(z) {
   if (floorState.heatOn && band.heatMode === 'actual' && band.heat && band.heat[z.code] != null) {
     dwell = '<p class="zp-dwell">Relative dwell ' + Math.round(band.heat[z.code] * 100) + ' of 100 · last 30 days</p>';
   }
+  dwell += '<p class="zp-dwell zp-you">Your dwell this visit <b data-dwell-for="' + esc(z.code) + '" aria-hidden="true">' + fmtDwell(live.seconds(z.code), false) + '</b></p>';
   const facts = z.facts && z.facts.length
     ? '<dl class="zp-facts">' + z.facts.map((f) => '<div><dt>' + esc(f.v) + '</dt><dd>' + esc(f.k) + '</dd></div>').join('') + '</dl>'
     : '';
@@ -490,10 +517,9 @@ function aisleRow(z, selKey, isCompact) {
 }
 function miniPlan(placed, fillers, fl, selKey) {
   const cells = placed.map((z) => {
-    const heat = heatOf(z);
-    return '<span class="' + (z.key === selKey ? 'is-sel' : '') + '" style="grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    return '<span class="' + (z.key === selKey ? 'is-sel' : '') + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + 'grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
       (z.hatch ? '<span class="zone-hatch"></span>' : '') +
-      '<span class="zone-heat" style="opacity:' + heat + '"></span><b>' + esc(z.code) + '</b></span>';
+      '<span class="zone-heat"></span><span class="zone-core"></span><b>' + esc(z.code) + '</b></span>';
   }).join('') + fillers.map((f) => '<span class="mini-filler" style="grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"></span>').join('');
   const base = fl.key === 'G'
     ? '<div class="mini-front"><span class="mf-1"></span><span class="mf-2"></span><span class="mf-3"></span><span class="mf-gap"></span></div>'
@@ -551,7 +577,7 @@ function renderFloor() {
   renderNote();
   $$('.floor-btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.floor === fl.key)));
   $$('[data-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === floorState.view)));
-  dwell.retarget();
+  live.afterRender();
 }
 function renderPanel() {
   const panel = $('#zone-panel');
@@ -563,10 +589,10 @@ function renderPanel() {
 function renderNote() {
   const v = floorState.view;
   let note = v === 'model'
-    ? 'Model view · each zone rises with how long visitors stay'
+    ? 'Model view · each zone rises with how long visitors stay, you included, live'
     : v === 'aisle'
       ? 'Aisle view · every zone on this floor as a list'
-      : 'Plan view · hover a zone to lift it and preview what is inside';
+      : 'Plan view · rest on a zone: the timer counts your dwell and the heat builds';
   if (floorState.heatOn) {
     note += band.heatMode === 'actual'
       ? ' · Heat: real dwell, last 30 days'
@@ -579,16 +605,8 @@ function renderNote() {
 }
 function refreshHeat() {
   if (!$('#floor-stage')) return;
-  const fl = currentFloor();
-  const { placed } = packFloor(fl);
-  placed.forEach((z) => {
-    const heat = heatOf(z);
-    const btn = $('.zone[data-zone="' + z.key + '"]');
-    if (btn) {
-      btn.style.setProperty('--h', (floorState.heatOn ? Math.round(4 + heat * 10) : 6) + 'px');
-      const blob = $('.zone-heat', btn);
-      if (blob) blob.style.opacity = String(heat);
-    }
+  currentFloor().zones.forEach((z) => {
+    $$('#floor [data-code="' + z.code + '"]').forEach((el) => applyHeat(el, z));
   });
   renderNote();
   if (!compact()) renderPanel();
@@ -614,7 +632,6 @@ function selectZone(key, opts = {}) {
   });
   $$('.aisle-row').forEach((b) => b.setAttribute('aria-current', String(b.dataset.zone === key)));
   renderPanel();
-  dwell.retarget();
 }
 function goFloor(key, zoneKey, after) {
   const stageEl = $('#floor-stage');
@@ -634,31 +651,81 @@ function goFloor(key, zoneKey, after) {
   }, reduced() ? 0 : 180);
 }
 
-// Dwell: how long a zone holds attention. The selected zone counts while the
-// floor is on screen; a hover counts once it lasts longer than a glance.
-const dwell = {
-  code: null,
-  since: 0,
+// Live dwell: attention follows the pointer. Resting on a zone or on its
+// details panel, focusing it with the keyboard, or opening its row on a phone
+// all count. The seconds tick on the zone and its heat builds while you stay.
+const live = {
+  active: null,
+  timer: null,
   floorVisible: false,
-  hover: null,
+  start(code) {
+    if (!code || (this.active && this.active.code === code)) return;
+    this.stop();
+    if (document.visibilityState !== 'visible') return;
+    this.active = { code, since: performance.now(), began: performance.now() };
+    this.mark(code, true);
+    this.timer = setInterval(() => {
+      if (!this.active) return;
+      if (performance.now() - this.active.began > MAX_REST_MS) { this.stop(); return; }
+      this.paint(this.active.code);
+    }, 100);
+    this.paint(code);
+  },
+  stop() {
+    if (!this.active) return;
+    const { code, since } = this.active;
+    addZoneDwell(code, performance.now() - since);
+    this.active = null;
+    clearInterval(this.timer);
+    this.mark(code, false);
+    this.paint(code);
+  },
   collect() {
-    if (this.code && this.since) {
-      const now = Date.now();
-      addZoneDwell(this.code, now - this.since);
-      this.since = now;
-    }
+    if (!this.active) return;
+    const now = performance.now();
+    addZoneDwell(this.active.code, now - this.active.since);
+    this.active.since = now;
   },
-  flush() {
-    this.collect();
-    this.since = 0;
+  seconds(code) {
+    let ms = myDwellMs(code);
+    if (this.active && this.active.code === code) ms += performance.now() - this.active.since;
+    return ms / 1000;
   },
-  retarget() {
-    this.flush();
+  mark(code, on) {
+    $$('#floor [data-code="' + code + '"]').forEach((el) => el.classList.toggle('is-dwelling', on));
+  },
+  paint(code) {
+    const z = currentFloor().zones.find((x) => x.code === code);
+    if (!z) return;
+    const secs = this.seconds(code);
+    const precise = !!(this.active && this.active.code === code);
+    $$('#floor [data-code="' + code + '"]').forEach((el) => {
+      applyHeat(el, z);
+      el.classList.toggle('has-dwell', secs >= 0.5);
+      const t = $('.dwell-time', el);
+      if (t) t.textContent = fmtDwell(secs, precise);
+    });
+    $$('#floor [data-dwell-for="' + code + '"]').forEach((el) => { el.textContent = fmtDwell(secs, precise); });
+  },
+  // Phones have no hover: an open row counts while the floor is on screen.
+  syncCompact() {
+    if (!compact()) return;
     const fl = currentFloor();
-    const key = compact() ? floorState.expanded : floorState.sel[fl.key];
-    const z = key ? fl.zones.find((x) => x.key === key) : null;
-    this.code = z ? z.code : null;
-    if (this.code && this.floorVisible && document.visibilityState === 'visible') this.since = Date.now();
+    const z = floorState.expanded ? fl.zones.find((x) => x.key === floorState.expanded) : null;
+    if (z && this.floorVisible && document.visibilityState === 'visible') this.start(z.code);
+    else this.stop();
+  },
+  afterRender() {
+    if (compact()) {
+      if (this.active && !currentFloor().zones.some((x) => x.code === this.active.code)) this.stop();
+      this.syncCompact();
+    } else if (this.active && !$('#floor [data-code="' + this.active.code + '"]')) {
+      this.stop();
+    }
+    if (this.active) {
+      this.mark(this.active.code, true);
+      this.paint(this.active.code);
+    }
   }
 };
 
@@ -715,28 +782,53 @@ function initFloor() {
     const z = currentFloor().zones.find((x) => x.key === zoneBtn.dataset.zone);
     if (z && z.href && (z.status === 'open' || z.status === 'window')) location.href = z.href;
   });
-  $('#floor').addEventListener('mouseover', (e) => {
-    const zoneBtn = e.target.closest('.zone');
-    if (!zoneBtn || (dwell.hover && dwell.hover.key === zoneBtn.dataset.zone)) return;
-    dwell.hover = { key: zoneBtn.dataset.zone, since: Date.now() };
+  const stage = $('#floor-stage');
+  const zoneAt = (el) => (el && el.closest ? el.closest('.zone') : null);
+  stage.addEventListener('pointerover', (e) => {
+    if (e.pointerType === 'touch') return;
+    const zone = zoneAt(e.target);
+    if (zone) live.start(zone.dataset.code);
   });
-  $('#floor').addEventListener('mouseout', (e) => {
-    const zoneBtn = e.target.closest('.zone');
-    if (!zoneBtn || !dwell.hover || zoneBtn.contains(e.relatedTarget)) return;
-    const z = currentFloor().zones.find((x) => x.key === dwell.hover.key);
-    const ms = Date.now() - dwell.hover.since;
-    if (z && ms >= 300 && z.key !== floorState.sel[currentFloor().key]) addZoneDwell(z.code, ms);
-    dwell.hover = null;
+  stage.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch' || live.active) return;
+    const zone = zoneAt(e.target);
+    if (zone) live.start(zone.dataset.code);
   });
+  stage.addEventListener('pointerout', (e) => {
+    const zone = zoneAt(e.target);
+    if (!zone || zone.contains(e.relatedTarget)) return;
+    if (live.active && live.active.code === zone.dataset.code) live.stop();
+  });
+  stage.addEventListener('focusin', (e) => {
+    const zone = zoneAt(e.target);
+    if (zone && zone.matches(':focus-visible')) live.start(zone.dataset.code);
+  });
+  stage.addEventListener('focusout', (e) => {
+    const zone = zoneAt(e.target);
+    if (zone && live.active && live.active.code === zone.dataset.code && !zone.matches(':hover')) live.stop();
+  });
+  const panel = $('#zone-panel');
+  if (panel) {
+    const selectedCode = () => {
+      const fl = currentFloor();
+      const z = fl.zones.find((x) => x.key === floorState.sel[fl.key]);
+      return z ? z.code : null;
+    };
+    panel.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') live.start(selectedCode()); });
+    panel.addEventListener('pointerleave', () => { if (live.active && live.active.code === selectedCode()) live.stop(); });
+  }
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
-      dwell.floorVisible = entries[0].isIntersecting;
-      dwell.retarget();
+      live.floorVisible = entries[0].isIntersecting;
+      live.syncCompact();
     }, { threshold: 0.35 }).observe($('#floor'));
   }
-  onCollect(() => dwell.collect());
-  document.addEventListener('visibilitychange', () => dwell.retarget());
+  onCollect(() => live.collect());
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') live.stop();
+    else live.syncCompact();
+  });
 
   compactMQ.addEventListener('change', () => {
     floorState.expanded = null;

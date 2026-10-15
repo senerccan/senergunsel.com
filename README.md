@@ -56,8 +56,10 @@ static pages straight from `public/` and only runs code for `/api/door/*`.
 - A random visit id lives in `sessionStorage` for one browser tab. No cookies, no IP addresses, nothing
   that identifies a person is stored.
 - Footfall is counted once per tab visit. "In store now" is visits with a heartbeat in the last 75 seconds.
-- Zone dwell is the time a zone is selected or hovered on the floor plan, or the time spent on its page.
-  The heat map shows a forecast until 50 visits are counted in the last 30 days, then real dwell.
+- Zone dwell is attention that follows the pointer: resting on a zone or its details panel, focusing it
+  with the keyboard, opening its row on a phone, or reading its page. While you rest on a zone, a live
+  timer counts your seconds and its heat builds (your dwell for the visit stays in `sessionStorage`).
+- The store-wide heat shows a forecast until 50 visits are counted in the last 30 days, then real dwell.
 - Sessions are deleted after two days; daily totals are kept.
 
 ## Credits

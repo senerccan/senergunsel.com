@@ -298,16 +298,39 @@
   position: absolute; left: 12%; top: 6%; width: 76%; height: 88%;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 52%, transparent), transparent);
+  opacity: var(--heat, 0);
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.35s linear;
 }
+/* Your own dwell: a hotter core that deepens the longer you stay. */
+.zone-core {
+  position: absolute; left: 27%; top: 20%; width: 46%; height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 92%, transparent), color-mix(in srgb, var(--accent) 35%, transparent) 60%, transparent);
+  opacity: var(--you, 0);
+  pointer-events: none;
+  transition: opacity 0.35s linear;
+}
+.zone.is-dwelling .zone-core { animation: sflglow 1.4s ease-in-out infinite; }
+@keyframes sflglow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18); } }
 .zone-hint { position: absolute; left: 16px; right: 16px; display: flex; align-items: center; pointer-events: none; }
 .zone-top { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-family: var(--mono); font-size: 11px; line-height: 1.3; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .zone-top .tag { flex: none; padding: 1px 7px; letter-spacing: 0.1em; }
+/* The zone's sign swaps to a live dwell timer while you rest on it. */
+.zone-label { display: grid; min-width: 0; }
+.zone-label > span { grid-area: 1 / 1; align-self: start; transition: opacity 0.2s ease; }
+.zl-dwell { opacity: 0; color: var(--atext); font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.zl-dwell i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+.zl-dwell b { font-weight: 600; text-transform: none; font-variant-numeric: tabular-nums; }
+.zone.is-dwelling .zl-sign { opacity: 0; }
+.zone.is-dwelling .zl-dwell { opacity: 1; }
+.zone.is-dwelling .zl-dwell i { animation: sflpulse 1s ease-in-out infinite; }
+.zl-code, .zl-word { white-space: pre; }
+.zone.is-narrow .zl-code, .zone.is-narrow .zl-word { display: none; }
 .zone-bottom { position: relative; display: flex; flex-direction: column; gap: 6px; }
 .zone-title { align-self: flex-start; padding: 0 2px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; color: var(--ink); }
 .zone-meta { align-self: flex-start; padding: 0 2px; font-family: var(--mono); font-size: 10.5px; line-height: 1.45; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); }
-.zone.is-hatched .zone-title, .zone.is-hatched .zone-meta, .zone.is-hatched .zone-top > span:first-child { background: var(--surface); }
+.zone.is-hatched .zone-title, .zone.is-hatched .zone-meta, .zone.is-hatched .zone-label > span { background: var(--surface); }
 
 /* Zone previews */
 .hint-regions { width: 100%; display: flex; flex-direction: column; gap: 8px; }
@@ -455,6 +478,7 @@
 .zp-soon { min-height: 52px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px dashed var(--muted); color: var(--ink2); font-size: 15px; font-weight: 650; }
 .zp-ask { font-size: 14px; font-weight: 650; text-underline-offset: 3px; align-self: flex-start; }
 .zp-dwell { margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.zp-you b { margin-left: 6px; color: var(--atext); font-weight: 600; text-transform: none; font-variant-numeric: tabular-nums; }
 
 .mini-plan { display: none; }
 
@@ -518,6 +542,7 @@
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
+  .zone-core, .zl-dwell i { animation: none !important; }
   .pulse, .breathe, .man *, .tick { animation: none !important; }
   .plan, .zone, .wc-k, .wc-f, .track-fill, .track-knob, .floor-stage { transition: none !important; }
 }
@@ -590,6 +615,7 @@
   .mini-grid > span { position: relative; overflow: hidden; background: var(--surface); padding: 3px 5px; font-family: var(--mono); font-size: 9px; color: var(--muted); }
   .mini-grid > span.is-sel { color: var(--atext); font-weight: 600; box-shadow: inset 0 0 0 2px var(--accent); }
   .mini-grid > span .zone-heat { left: 10%; top: 0; width: 80%; height: 100%; }
+  .mini-grid > span .zone-core { left: 25%; top: 5%; width: 50%; height: 90%; }
   .mini-grid > span .zone-hatch { background-image: repeating-linear-gradient(135deg, var(--hair) 0 1px, transparent 1px 6px); }
   .mini-grid > span b { position: relative; font-weight: inherit; }
   .mini-grid > .mini-filler { background: var(--ground); }

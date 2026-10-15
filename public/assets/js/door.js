@@ -56,9 +56,29 @@ export function onDoor(fn) {
   return () => listeners.delete(fn);
 }
 
+// Your own dwell per zone for this visit (this tab only), so the floor plan
+// can show your trail and pick up where you left off after a reload.
+const MINE_KEY = 'scg.dwell';
+let mine = {};
+try {
+  mine = JSON.parse(sessionStorage.getItem(MINE_KEY) || '{}') || {};
+} catch (e) {
+  mine = {};
+}
+function saveMine() {
+  try { sessionStorage.setItem(MINE_KEY, JSON.stringify(mine)); } catch (e) { /* the trail is a nicety */ }
+}
+
+export function myDwellMs(code) {
+  return mine[code] || 0;
+}
+
 export function addZoneDwell(code, ms) {
   if (!code || !(ms > 0)) return;
-  pending[code] = (pending[code] || 0) + Math.round(ms);
+  const add = Math.round(ms);
+  pending[code] = (pending[code] || 0) + add;
+  mine[code] = (mine[code] || 0) + add;
+  saveMine();
 }
 
 function flushPageZone() {
