@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en" data-theme="open">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Which streets earn a flagship? · Sener Can Gunsel</title>
+<meta name="description" content="A Tableau dashboard by Sener Can Gunsel: 78 street locations in central Melbourne sorted into store sizes by how many people walk past and how they move, then tested against store economics you can change.">
+<link rel="canonical" href="https://senergunsel.com/projects/melbourne-site-tiering/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Which streets earn a flagship? · a Tableau dashboard">
+<meta property="og:description" content="78 Melbourne street locations sorted into flagship, standard and small stores, then tested against store economics you can change.">
+<meta property="og:url" content="https://senergunsel.com/projects/melbourne-site-tiering/">
+<meta property="og:image" content="https://senergunsel.com/assets/img/og-melbourne-site-tiering.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Which streets earn a flagship? A Tableau dashboard of 78 street locations in central Melbourne, by Sener Can Gunsel.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F1F1EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E0E0D" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>try{var t=localStorage.getItem('scg.theme');if(t!=='open'&&t!=='after'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'after':'open'}document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+<script type="module" src="/assets/js/site.js"></script>
+<script type="module" src="/assets/js/viz.js"></script>
+</head>
+<body data-zone="G06">
+<a class="skip-link" href="#dashboard">Skip to the dashboard</a>
+
+<header class="fascia">
+  <div class="wrap fascia-in">
+    <a class="brand" href="/" aria-label="Sener Can Gunsel, back to the store">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 42 80"><g transform="rotate(24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><g transform="rotate(-22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:var(--accent)"/></g><line x1="21.5" y1="18" x2="19" y2="47" stroke="currentColor" stroke-width="7.5" stroke-linecap="round"/><g transform="rotate(22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:var(--accent)"/></g><g transform="rotate(-24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><circle cx="22" cy="9" r="7.5" fill="currentColor"/><rect x="22" y="6.2" width="10" height="3.4" rx="1.2" style="fill:var(--accent)"/></svg></span>
+      <span class="brand-text">
+        <span class="brand-name">Sener Can Gunsel</span>
+        <span class="brand-sub">G06 · <span data-sign="drop">New drop</span></span>
+      </span>
+    </a>
+    <div class="fascia-tools">
+      <button type="button" class="theme-toggle" data-theme-toggle><span class="theme-dot" aria-hidden="true"></span><span data-theme-label>Open</span></button>
+      <a class="btn back-link" href="/#zone-G06"><span class="long">Back to the floor plan</span><span class="short">Store</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <article>
+    <div class="subhead">
+      <div class="wrap">
+        <p class="crumbs"><a href="/">Store</a><a href="/#floor">Ground floor</a><span>G06 · Personal project</span></p>
+        <h1 class="page-title">Which streets earn a flagship?</h1>
+        <p class="lede">A busy street isn't automatically a flagship street: the people walking past have to be the kind who stop. I took two years of hourly counts from Melbourne's public pedestrian sensors, sorted 78 street locations into the store size each one can carry, and tested every one against store economics you can change.</p>
+        <p class="article-meta"><span>Personal project</span><span>Tableau · Python</span><span>Live on Tableau Public</span></p>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="wrap viz-wrap">
+        <figure class="viz" id="dashboard" data-viz data-mode="tab" data-viz-src="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:embed=y&amp;:showVizHome=no&amp;:tabs=no&amp;:toolbar=yes&amp;:display_count=no&amp;:device=desktop&amp;:language=en-US">
+          <div class="viz-head sign">
+            <span><span data-sign="drop">New drop</span> · Try it</span>
+            <span class="tag tag-accent">Playable</span>
+          </div>
+          <div class="viz-stage" data-viz-stage>
+            <img class="viz-poster" src="/assets/img/melbourne-site-tiering-1200.webp" srcset="/assets/img/melbourne-site-tiering-1200.webp 1200w, /assets/img/melbourne-site-tiering-2160.webp 2160w" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1280px) calc(100vw - 80px), 1200px" width="1200" height="800" alt="The dashboard: a map of 78 street locations in central Melbourne shaded by the store size each earns, a grid of how seven kinds of street fill their day hour by hour, a payback chart where 59 of 78 locations pay back within three years, and the resulting mix of stores worth opening: 24% flagship, 49% standard, 27% small.">
+            <div class="viz-cover">
+              <div class="viz-card">
+                <a class="btn btn-ink btn-lg viz-load" data-viz-load href="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:language=en-US&amp;:display_count=n&amp;:origin=viz_share_link" target="_blank" rel="noopener" aria-describedby="viz-note">
+                  <span class="viz-inline">Load the live dashboard</span>
+                  <span class="viz-tab">Open the dashboard<span class="visually-hidden"> on Tableau Public, in a new tab</span></span>
+                  <svg class="viz-tab" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 11 11 5M6 5h5v5"/></svg>
+                </a>
+                <p class="viz-status" data-viz-status role="status" aria-live="polite"></p>
+                <p class="viz-note" id="viz-note"><span class="viz-inline">It runs on Tableau Public, which may set its own cookies. Nothing loads from Tableau until you click.</span><span class="viz-tab">It opens on Tableau Public, which may set its own cookies. On a phone you get the phone layout.</span></p>
+              </div>
+            </div>
+          </div>
+          <figcaption class="viz-foot">
+            <span>Hourly counts: City of Melbourne Open Data · Store economics: illustrative</span>
+            <a href="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:language=en-US&amp;:display_count=n&amp;:origin=viz_share_link" target="_blank" rel="noopener">Open on Tableau Public<span class="visually-hidden"> (new tab)</span><svg aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="wrap two-col">
+        <div class="main">
+          <div class="prose">
+            <h2 id="how">How to read it</h2>
+            <p>Start with the map. Every dot is a street sensor, shaded by the store size its location earns (SPLUS for a flagship, S for a standard store, D for a small one) and sized by how many people walk past in a year. Click one and the strip along the bottom shows its day hour by hour, weekdays against weekends.</p>
+            <p>Next to the map is the idea the whole dashboard rests on: seven kinds of street, each with its own daily rhythm. Commuter corridors spike at 8am and 5pm. Destination streets fill up through the afternoon and get busier at the weekend. Click a row to light up those streets on the map.</p>
+            <p>Underneath, every location takes a payback test: the share of people walking past who would have to come in for the store to earn back its build cost in three years. Anything left of the 3% line passes. The sliders change the traffic a flagship needs, the average spend, how many visitors buy, the margin, the payback period and the share you think you can win, and the store sizes and the mix move with them.</p>
+
+            <h2>Busy isn't enough</h2>
+            <p>A commuter corridor can be one of the busiest streets in the city and still be the wrong place for a flagship: the people on it are on their way somewhere, on a schedule. A flagship needs people who come to browse, eat, meet and wander. So every location gets two labels instead of one.</p>
+            <p>The first is its kind of street, set by rules on when and how people move. The rule doing the most work is direction. On a commuter route the morning crowd walks one way and the evening crowd walks back; on a destination street the flow stays balanced all day. How weekends compare with weekdays, and how much of the day comes after 6pm, do the rest.</p>
+            <p>The second is its traffic: at least 12,000 people on an average weekday for a flagship, 5,000 for a standard store, and a small store below that.</p>
+            <p>The kind of street sets the ceiling and the traffic sets the level under it. Only destination streets, the all-day city core and evening strips can reach flagship. Commuter corridors, transit spines and office streets top out at a standard store however busy they get, and the quietest streets stay small. At the default settings that makes 14 flagship locations, 34 standard and 30 small.</p>
+
+            <figure class="rules-fig">
+              <table class="rules">
+                <caption>The seven kinds of street. The rules run in this order and the first one that fits wins.</caption>
+                <thead>
+                  <tr><th scope="col">Kind of street</th><th scope="col">How it's spotted</th><th scope="col" class="num">Sites</th><th scope="col">Biggest store</th></tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row">Low Activity</th><td>Fewer than 2,000 people on an average weekday</td><td class="num">6</td><td>Small</td></tr>
+                  <tr><th scope="row">Commuter Corridor</th><td>Morning and evening crowds walk opposite ways, and weekends drop below 85% of weekdays</td><td class="num">11</td><td>Standard</td></tr>
+                  <tr><th scope="row">Evening / Entertainment</th><td>34% or more of weekday traffic comes after 6pm</td><td class="num">8</td><td class="top">Flagship</td></tr>
+                  <tr><th scope="row">Destination Retail</th><td>Weekends at least 10% busier than weekdays, with balanced flow</td><td class="num">17</td><td class="top">Flagship</td></tr>
+                  <tr><th scope="row">Office / Weekday Core</th><td>Weekends below 85% of weekdays, without the commuter swing</td><td class="num">9</td><td>Standard</td></tr>
+                  <tr><th scope="row">Transit Spine</th><td>Busy all week, but one-way at the peaks</td><td class="num">11</td><td>Standard</td></tr>
+                  <tr><th scope="row">CBD Core / All-Day</th><td>Busy all week, in both directions</td><td class="num">16</td><td class="top">Flagship</td></tr>
+                </tbody>
+              </table>
+            </figure>
+            <p>I wrote rules instead of letting a clustering algorithm group the streets, on purpose. You can disagree with a threshold and change it. You can't argue with a cluster centre.</p>
+
+            <h2>Where the data comes from</h2>
+            <p>The City of Melbourne publishes hourly counts from pedestrian sensors across its city centre, which makes it one of the few places where a question like this can be tested on open data. I used two years of it, 23 August 2024 to 22 August 2026: 1.6 million hourly counts from 103 sensors, cleaned in Python.</p>
+            <p>When a sensor goes down its hours go missing rather than reading zero, so I measured how complete each sensor was and kept the 78 that reported at least 90% of their hours and were running from the start. Three of them send counts but are missing from the city's location file. I recovered their names from the city's 2009 to 2022 archive and placed them by landmark. They're the hollow dots on the map.</p>
+            <p>Build costs and store economics are illustrative placeholders, not Under Armour's figures, and most of them sit on the sliders so you can put in your own.</p>
+
+            <h2>What it changes in the model</h2>
+            <p>My store rollout model in Excel assumed an illustrative mix of 30% flagships, 50% standard stores and 20% small ones. The streets disagree. Of the locations that pay back at the default settings, 24% are flagship, 49% standard and 27% small: fewer flagships and more small stores than the model assumed.</p>
+            <p>Every flagship location passes the payback test at the defaults. The 19 that fail are all standard or small stores on quieter streets.</p>
+            <p>That mix is the output that matters. It replaces the hard-coded weights in the Excel model, which is what <a href="/projects/same-store-two-streets/">Same store, two streets</a> is built on.</p>
+
+            <h2>What's next</h2>
+            <p>The Excel rollout model itself, anonymized, with these weights plugged in. Then the Python prep goes up on GitHub, with the full rule set and every data decision.</p>
+
+            <div class="next-links">
+              <a class="btn btn-ink" href="/projects/same-store-two-streets/">Play Same store, two streets<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+              <a class="btn" href="mailto:hello@senergunsel.com?subject=About%20Which%20streets%20earn%20a%20flagship%3F">Ask me about it</a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side" aria-label="Project details">
+          <div class="side-card">
+            <h2>At a glance</h2>
+            <dl>
+              <dt>What</dt><dd>A dashboard that sorts streets into store sizes</dd>
+              <dt>Type</dt><dd>Personal project</dd>
+              <dt>Built with</dt><dd>Tableau, Python</dd>
+              <dt>Data</dt><dd>City of Melbourne pedestrian counts, 2024 to 2026</dd>
+              <dt>Status</dt><dd>Live on Tableau Public</dd>
+            </dl>
+          </div>
+          <div class="side-card">
+            <h2>The other half</h2>
+            <p>Same store, two streets is the store side of this project: what share of the people walking past a store needs to come in for it to break even.</p>
+            <a class="btn" href="/projects/same-store-two-streets/" style="align-self:flex-start">Play the model</a>
+          </div>
+          <div class="side-card">
+            <h2>Want the short version?</h2>
+            <p>The Express lane has every project and the resume on one page.</p>
+            <a class="btn" href="/express/" style="align-self:flex-start">Express lane</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span data-year>2026</span> Sener Can Gunsel · Floorset FA26</span>
+    <nav aria-label="Footer">
+      <a href="/">Store</a>
+      <a href="/express/">Express lane</a>
+      <a href="mailto:hello@senergunsel.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<nav class="dock" aria-label="Quick actions">
+  <a class="dock-primary" href="/resume/Sener-Can-Gunsel-Resume.pdf" target="_blank" rel="noopener">Resume (PDF)<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg></a>
+  <a class="dock-secondary" href="mailto:hello@senergunsel.com">Email me</a>
+</nav>
+</body>
+</html>

@@ -15,12 +15,13 @@ The [Director's Cut](https://senergunsel.com/notes/directors-cut/) explains how 
 |---|---|
 | `public/index.html` | The homepage: door band, walk-in headline, floor plan, store locator, register |
 | `public/express/` | The Express lane: everything a recruiter needs in 30 seconds |
-| `public/projects/` | One folder per project: the Under Armour case study, the playable store model |
+| `public/projects/` | One folder per project: the Under Armour case study, the playable store model, the Melbourne Tableau dashboard |
 | `public/notes/` | Field notes, starting with the Director's Cut |
 | `public/assets/js/store.js` | **The floor plan.** Every zone and floor is defined here and nowhere else |
 | `public/assets/js/signs.js` | Store signage in English, Turkish, French and Chinese |
 | `public/assets/js/home.js` | Homepage behaviour: headline, floor plan, dwell tracking |
 | `public/assets/js/window.js` | The playable model on `/projects/same-store-two-streets/` |
+| `public/assets/js/viz.js` | The click-to-load Tableau dashboard on `/projects/melbourne-site-tiering/` |
 | `public/assets/js/door.js` | The browser side of the door sensor |
 | `src/worker.js` | The door sensor: a Cloudflare Worker and a Durable Object that count visits |
 | `wrangler.jsonc` | Cloudflare configuration |

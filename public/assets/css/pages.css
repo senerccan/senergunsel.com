@@ -137,6 +137,80 @@
   .track-fill, .track-knob { transition: none !important; }
 }
 
+/* ---------- G06 · Which streets earn a flagship? (the dashboard) ----------
+   The Tableau dashboard is 1200 x 800. It loads only when asked: until then the
+   stage shows a picture of it. viz.js sets data-mode (inline on wide screens,
+   tab on narrow ones, where the link opens Tableau Public) and data-state. */
+.page-body .viz-wrap { padding-bottom: 0; }
+.viz { margin: 0; display: flex; flex-direction: column; background: var(--surface); outline: 3px solid var(--line); scroll-margin-top: 24px; }
+.viz-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--line); }
+/* The dashboard is drawn on white, so its stage stays white in both themes. */
+.viz-stage { position: relative; overflow: hidden; background: #FFFFFF; }
+.viz-poster { display: block; width: 100%; max-width: 1200px; height: auto; margin: 0 auto; }
+.viz-cover { padding: 16px 20px 18px; border-top: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.viz-card { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.viz-load::after { content: ""; position: absolute; inset: 0; }
+.viz-note { margin: 0; max-width: 50ch; font-family: var(--mono); font-size: 11.5px; line-height: 1.55; letter-spacing: 0.03em; color: var(--ink2); }
+.viz-status { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 650; }
+.viz-status:empty { display: none; }
+.viz[data-state="loading"] .viz-status::before { content: ""; width: 14px; height: 14px; flex: none; border-radius: 50%; border: 2px solid var(--hair); border-top-color: var(--accent); animation: vizspin 0.8s linear infinite; }
+@keyframes vizspin { to { transform: rotate(360deg); } }
+.viz-inline { display: none; }
+.viz[data-mode="inline"] .viz-inline { display: inline; }
+.viz[data-mode="inline"] .viz-tab { display: none; }
+.viz[data-mode="inline"] .viz-cover {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; border: 0;
+  background: color-mix(in srgb, var(--ground) var(--scrim), transparent);
+  transition: background-color 0.25s ease;
+}
+.viz { --scrim: 30%; --scrim-hover: 8%; }
+:root[data-theme="after"] .viz { --scrim: 16%; --scrim-hover: 5%; }
+.viz[data-mode="inline"] .viz-cover:hover { background: color-mix(in srgb, var(--ground) var(--scrim-hover), transparent); }
+.viz[data-mode="inline"] .viz-card { align-items: center; padding: 22px 26px 20px; border: 1.5px solid var(--line); background: var(--surface); text-align: center; box-shadow: 6px 6px 0 var(--line); }
+.viz[data-mode="inline"] .viz-note { max-width: 44ch; }
+.viz[data-state="loading"] .viz-load, .viz[data-state="loading"] .viz-note { display: none; }
+.viz-frame { position: absolute; left: 0; right: 0; top: 0; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+.viz-frame iframe { position: absolute; top: 0; left: 0; display: block; border: 0; background: #FFFFFF; transform-origin: 0 0; }
+.viz[data-state="live"] .viz-poster, .viz[data-state="live"] .viz-cover { display: none; }
+.viz[data-state="live"] .viz-frame { position: relative; opacity: 1; pointer-events: auto; }
+.viz-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 20px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.viz-foot a { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); }
+.viz-foot a:hover { color: var(--atext); }
+@media (prefers-reduced-motion: reduce) {
+  .viz-frame, .viz[data-mode="inline"] .viz-cover { transition: none; }
+  .viz[data-state="loading"] .viz-status::before { animation: none; border-color: var(--accent); }
+}
+
+/* The rules table on G06 */
+.prose .rules-fig { margin: 28px 0 24px; }
+.rules { width: 100%; border-collapse: collapse; border-top: 3px solid var(--line); font-size: 15px; line-height: 1.45; }
+.rules caption { caption-side: bottom; padding-top: 10px; text-align: left; font-family: var(--mono); font-size: 12px; line-height: 1.6; letter-spacing: 0.04em; color: var(--muted); }
+.rules th, .rules td { padding: 11px 14px 11px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--hair); }
+.rules th:last-child, .rules td:last-child { padding-right: 0; }
+.rules thead th { padding-top: 10px; padding-bottom: 10px; border-bottom-color: var(--line); font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; color: var(--muted); }
+.rules thead th.num { color: var(--muted); }
+.rules tbody th { font-weight: 750; }
+.rules td { color: var(--ink2); }
+.rules .num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.rules td.top { color: var(--atext); font-weight: 650; }
+
+@media (max-width: 760px) {
+  .viz-head, .viz-foot { padding: 9px 14px; }
+  .viz-cover { padding: 14px 14px 16px; }
+  .viz .btn-lg { min-height: 52px; padding: 0 18px; font-size: 15px; }
+  .rules { font-size: 14px; }
+  .rules thead { display: none; }
+  .rules tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--hair); }
+  .rules tbody th, .rules tbody td { padding: 0; border: 0; }
+  .rules tbody td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .rules tbody td.num { grid-column: 2; grid-row: 1; font-size: 12px; }
+  .rules tbody td.num::after { content: " sites"; color: var(--muted); }
+  .rules tbody td:last-child { grid-column: 1 / -1; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .rules tbody td:last-child::before { content: "Biggest store: "; color: var(--muted); }
+}
+
 /* ---------- 404 ---------- */
 .lost { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding-top: 64px; padding-bottom: 80px; }
 .lost h1 { margin: 0; font-size: clamp(48px, 8vw, 112px); line-height: 0.95; font-weight: 800; letter-spacing: -0.045em; }

@@ -20,7 +20,7 @@
 //   tag       its status in a word or two: Case study, Playable, Read, Soon, TBA
 //   format    footprint: SPLUS (6x3), S (4x2), D (2x2), TBA (2x2, hatched)
 //   hint      the preview drawn inside the zone (regions, curve, sliders, dots,
-//             tiles, terminal, film, notes)
+//             tiles, terminal, film, notes, pins)
 //   status    open (has a page), soon, tba
 //   forecast  expected share of attention, 0 to 1. Used for the heat map
 //             until enough real visits have been counted.
@@ -130,6 +130,29 @@ export const FLOORS = [
         ],
         cta: null,
         href: null
+      },
+      {
+        key: 'tiering',
+        code: 'G06',
+        place: 'drop',
+        kind: 'Personal project',
+        tag: 'Playable',
+        format: 'S',
+        hint: 'pins',
+        status: 'open',
+        forecast: 0.7,
+        title: 'Which streets earn a flagship?',
+        zoneMeta: 'Tableau · Python',
+        meta: 'Melbourne street traffic × store economics',
+        body: 'A Tableau dashboard that sorts 78 street locations in central Melbourne into store sizes, by how many people walk past and how they move, then tests each one against store economics you can change.',
+        facts: [
+          { k: '78', v: 'street locations, each given a store size' },
+          { k: '7', v: 'kinds of street, by when people walk past' },
+          { k: '2 yrs', v: 'of hourly counts, cleaned in Python' },
+          { k: '6', v: 'sliders to test the store economics' }
+        ],
+        cta: 'Open the dashboard',
+        href: '/projects/melbourne-site-tiering/'
       },
       {
         key: 'powerbi',

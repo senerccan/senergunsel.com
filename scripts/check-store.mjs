@@ -3,7 +3,7 @@
 import { FLOORS, GEO, packFloor } from '../public/assets/js/store.js';
 import { SIGNS } from '../public/assets/js/signs.js';
 
-const HINTS = ['regions', 'curve', 'sliders', 'dots', 'tiles', 'terminal', 'film', 'notes'];
+const HINTS = ['regions', 'curve', 'sliders', 'dots', 'tiles', 'terminal', 'film', 'notes', 'pins'];
 const STATUS = ['open', 'window', 'soon', 'tba'];
 const problems = [];
 const seenKeys = new Map();

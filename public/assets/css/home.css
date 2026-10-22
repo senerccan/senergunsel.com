@@ -428,6 +428,32 @@
 .hint-notes { display: flex; align-items: flex-end; gap: 6px; }
 .hint-notes span { position: relative; width: 26px; border: 1px solid var(--muted); background: var(--surface); }
 .hint-notes span::after { content: ""; position: absolute; left: 50%; top: -3px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--accent); }
+/* G06: street sites on the city grid, shaded by the store size each earns.
+   One hue, darkest for a flagship in Open, brightest in After hours. */
+.hint-pins {
+  height: 100%; display: flex; align-items: center; gap: 14px;
+  --p1: var(--atext);
+  --p2: var(--accent);
+  --p3: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+:root[data-theme="after"] .hint-pins {
+  --p2: color-mix(in srgb, var(--accent) 62%, transparent);
+  --p3: color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.pins-map { height: 100%; width: auto; aspect-ratio: 6 / 5; flex: none; overflow: visible; }
+.pins-grid { fill: none; stroke: var(--hair); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.pin { transition: opacity 0.3s ease; }
+.pin.p1 { fill: var(--p1); }
+.pin.p2 { fill: var(--p2); }
+.pin.p3 { fill: var(--p3); }
+.pin.pin-a { fill: var(--surface); stroke: var(--p2); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.zone:hover .pin.p2, .zone:hover .pin.p3, .zone:focus-visible .pin.p2, .zone:focus-visible .pin.p3 { opacity: 0.3; }
+.pins-text { display: flex; flex-direction: column; gap: 2px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.pins-text b { font-size: 18px; font-weight: 600; letter-spacing: 0; color: var(--ink); }
+.pins-text .hot { color: var(--atext); }
+.zone.is-narrow .hint-pins { width: 100%; justify-content: center; }
+.zone.is-narrow .pins-map { width: 100%; height: auto; }
+.zone.is-narrow .pins-text { display: none; }
 
 .filler { position: relative; min-width: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 10px; }
 .filler::before { content: ""; position: absolute; inset: 0; border: 1.5px dashed var(--muted); }

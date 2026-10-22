@@ -335,6 +335,15 @@ const CELLS = (() => {
   return out;
 })();
 const STAR = 'M5 .6l1.3 2.9 3.2.3-2.4 2.1.7 3.1L5 7.4 2.2 9l.7-3.1L.5 3.8l3.2-.3z';
+// Melbourne's street sites for the pins preview, projected from the project's
+// sensor data onto a 120 x 100 box, north up: x, y and the store size each one
+// earns (1 flagship, 2 standard, 3 small). "a" marks a site placed by landmark.
+// 61 of the 78 sites fall inside this crop of the city centre. PIN_GRID draws
+// the city grid's main streets, fitted to the sensors on named corners.
+const PIN_GRID = 'M29.7 81L13.3 41.5M40 77.4L23.6 37.9M50.2 73.8L33.9 34.2M60.5 70.2L44.2 30.6M70.8 66.5L54.4 27M81.1 62.9L64.7 23.4M91.4 59.3L75 19.8M101.7 55.7L85.3 16.2M111.9 52.1L95.6 12.6M29.7 81L111.9 52.1M25.6 71.1L107.8 42.2M21.5 61.2L103.7 32.3M17.4 51.3L99.7 22.5M13.3 41.5L95.6 12.6';
+const PINS = '26.3,72,3;34.3,4.1,3;54,58.7,3;100,24.6,3;45.1,16.4,3;96.2,36.9,3;36.2,37.5,3;39,77.2,3;23.6,38.6,3;62.6,74.7,3;42.2,76.6,3;14.2,40.3,3;5,22.2,3;14,40.5,3;72.2,71.9,2;11.8,75.9,2;61.1,77.4,2;103.9,43.5,2;103.2,42.6,2;83.2,33.6,2;81.7,38.6,2;26.2,70.9,2;32.6,97.7,2;83.9,82.5,2a;85.2,76.7,2;76.3,31,2;77.6,59.5,2;59.7,38.1,2;47.2,10.5,2;57.1,37.8,2;55.4,36.9,2;22.4,60.4,2;61.7,15.5,2;61.9,12.5,2;58,24.4,2;77.1,42,2;76,53.8,2a;72.2,60.3,2;72.2,60.5,2;85.2,62.5,2;69.9,66.2,2;35.7,40,2;33.3,34.7,2;94.3,57.4,2;20.8,62.6,2;30.7,85.8,2;48.5,11.1,2;70.5,44.5,1;66.8,29.9,1;74.3,50.1,1;81.7,70.2,1;71.9,37,1;70.1,77.8,1;74.3,46.2,1;71.8,54,1;67.5,27.6,1;72.4,60.5,1;74.6,66,1;17,52.3,1;20.2,60.8,1;71.8,72,1'
+  .split(';').map((p) => p.split(','));
+const PIN_R = { 1: 3.6, 2: 2.6, 3: 1.8 };
 
 const HINTS = {
   regions: () => '<span class="hint-regions"><span class="hint-cells">' +
@@ -365,7 +374,11 @@ const HINTS = {
     const sp = '<span class="sprockets">' + '<span></span>'.repeat(12) + '</span>';
     return '<span class="hint-film">' + sp + '<span class="frames"><span></span><span></span><span class="lit"></span><span></span></span>' + sp + '</span>';
   },
-  notes: () => '<span class="hint-notes"><span style="height:28px;transform:rotate(-7deg)"></span><span style="height:34px;transform:rotate(5deg)"></span><span style="height:26px;transform:rotate(-3deg)"></span></span>'
+  notes: () => '<span class="hint-notes"><span style="height:28px;transform:rotate(-7deg)"></span><span style="height:34px;transform:rotate(5deg)"></span><span style="height:26px;transform:rotate(-3deg)"></span></span>',
+  pins: () => '<span class="hint-pins"><svg class="pins-map" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid meet">' +
+    '<path class="pins-grid" d="' + PIN_GRID + '"></path>' +
+    PINS.map((p) => '<circle class="pin p' + p[2][0] + (p[2][1] ? ' pin-a' : '') + '" cx="' + p[0] + '" cy="' + p[1] + '" r="' + PIN_R[p[2][0]] + '"></circle>').join('') +
+    '</svg><span class="pins-text"><b>78</b><span>street sites</span><span class="hot">3 store sizes</span></span></span>'
 };
 
 const floorState = {
