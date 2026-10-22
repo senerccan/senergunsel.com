@@ -1,9 +1,9 @@
 // G06 · Which streets earn a flagship?
 // The dashboard lives on Tableau Public. Until a visitor asks for it, the page
-// shows a picture of it and nothing talks to Tableau, so the store keeps its
-// no-cookies promise. Wide screens load it in place at its real size (scaled
-// down a touch on smaller laptops). Narrow screens follow the link to Tableau
-// Public in a new tab, where the phone layout takes over.
+// shows a picture of it exactly as it opens, and nothing talks to Tableau, so
+// the store keeps its no-cookies promise. Wide screens load it in place at its
+// real size (scaled down a touch on smaller laptops). Narrow screens follow the
+// link to Tableau Public in a new tab, where the phone layout takes over.
 
 const VIZ_W = 1200;
 const VIZ_H = 827; // the 1200 x 800 dashboard plus Tableau's 27px toolbar
@@ -13,8 +13,9 @@ function initViz() {
   const fig = document.querySelector('[data-viz]');
   if (!fig) return;
   const stage = fig.querySelector('[data-viz-stage]');
-  const link = fig.querySelector('[data-viz-load]');
+  const triggers = Array.from(fig.querySelectorAll('[data-viz-load]'));
   const status = fig.querySelector('[data-viz-status]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   let box = null;
   let slow = null;
 
@@ -38,14 +39,14 @@ function initViz() {
     clearTimeout(slow);
     fig.dataset.state = 'live';
     status.textContent = '';
-    const frame = box.firstElementChild;
-    try { frame.focus({ preventScroll: true }); } catch (e) { /* not focusable yet */ }
+    try { box.firstElementChild.focus({ preventScroll: true }); } catch (e) { /* not focusable yet */ }
   };
 
-  link.addEventListener('click', (e) => {
+  const load = (e) => {
     // Modified clicks, a second click, or a narrow screen: let the link do its job.
     if (box || !wide() || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
+    fit();
     fig.dataset.state = 'loading';
     status.textContent = 'Loading the dashboard from Tableau Public…';
 
@@ -63,11 +64,18 @@ function initViz() {
     stage.appendChild(box);
     fit();
 
+    // Bring the whole dashboard into view if the click came from its header.
+    const r = fig.getBoundingClientRect();
+    if (r.top < 0 || r.top > window.innerHeight * 0.25) {
+      fig.scrollIntoView({ block: 'start', behavior: reduced.matches ? 'auto' : 'smooth' });
+    }
+
     slow = setTimeout(() => {
       status.textContent = 'Tableau Public is taking a while. You can also open it in a new tab with the link below.';
     }, 15000);
-  });
+  };
 
+  triggers.forEach((t) => t.addEventListener('click', load));
   if ('ResizeObserver' in window) new ResizeObserver(fit).observe(stage);
   else window.addEventListener('resize', fit);
   fit();

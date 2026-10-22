@@ -60,23 +60,22 @@
     <div class="page-body">
       <div class="wrap viz-wrap">
         <figure class="viz" id="dashboard" data-viz data-mode="tab" data-viz-src="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:embed=y&amp;:showVizHome=no&amp;:tabs=no&amp;:toolbar=yes&amp;:display_count=no&amp;:device=desktop&amp;:language=en-US">
-          <div class="viz-head sign">
-            <span><span data-sign="drop">New drop</span> · Try it</span>
-            <span class="tag tag-accent">Playable</span>
+          <div class="viz-head">
+            <span class="sign"><span data-sign="drop">New drop</span> · Try it</span>
+            <span class="tag tag-accent viz-tag">Playable</span>
+            <span class="viz-act">
+              <span class="viz-hint" id="viz-hint">Tableau Public loads only when you click, and may set its own cookies.</span>
+              <a class="btn btn-ink viz-load" data-viz-load href="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:language=en-US&amp;:display_count=n&amp;:origin=viz_share_link" target="_blank" rel="noopener" aria-describedby="viz-hint">Load the live dashboard<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+            </span>
           </div>
           <div class="viz-stage" data-viz-stage>
-            <img class="viz-poster" src="/assets/img/melbourne-site-tiering-1200.webp" srcset="/assets/img/melbourne-site-tiering-1200.webp 1200w, /assets/img/melbourne-site-tiering-2160.webp 2160w" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1280px) calc(100vw - 80px), 1200px" width="1200" height="800" alt="The dashboard: a map of 78 street locations in central Melbourne shaded by the store size each earns, a grid of how seven kinds of street fill their day hour by hour, a payback chart where 59 of 78 locations pay back within three years, and the resulting mix of stores worth opening: 24% flagship, 49% standard, 27% small.">
-            <div class="viz-cover">
-              <div class="viz-card">
-                <a class="btn btn-ink btn-lg viz-load" data-viz-load href="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:language=en-US&amp;:display_count=n&amp;:origin=viz_share_link" target="_blank" rel="noopener" aria-describedby="viz-note">
-                  <span class="viz-inline">Load the live dashboard</span>
-                  <span class="viz-tab">Open the dashboard<span class="visually-hidden"> on Tableau Public, in a new tab</span></span>
-                  <svg class="viz-tab" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 11 11 5M6 5h5v5"/></svg>
-                </a>
-                <p class="viz-status" data-viz-status role="status" aria-live="polite"></p>
-                <p class="viz-note" id="viz-note"><span class="viz-inline">It runs on Tableau Public, which may set its own cookies. Nothing loads from Tableau until you click.</span><span class="viz-tab">It opens on Tableau Public, which may set its own cookies. On a phone you get the phone layout.</span></p>
-              </div>
-            </div>
+            <img class="viz-poster" src="/assets/img/melbourne-site-tiering-1200.webp" srcset="/assets/img/melbourne-site-tiering-1200.webp 1200w, /assets/img/melbourne-site-tiering-2400.webp 2400w" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1280px) calc(100vw - 80px), 1200px" width="1200" height="800" alt="The dashboard as it opens: a map of 78 street locations in central Melbourne shaded by the store size each earns, a grid of how seven kinds of street fill their day hour by hour, a payback chart where 59 of 78 locations pay back within three years with Town Hall (West) selected, the mix of stores worth opening (24% flagship, 49% standard, 27% small), and Town Hall's day hour by hour, weekdays against weekends.">
+            <a class="viz-poke" data-viz-load href="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:language=en-US&amp;:display_count=n&amp;:origin=viz_share_link" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><span>Click to load the live dashboard</span></a>
+            <p class="viz-status" data-viz-status role="status" aria-live="polite"></p>
+          </div>
+          <div class="viz-cover">
+            <a class="btn btn-ink btn-lg viz-load" data-viz-load href="https://public.tableau.com/views/MelbourneSiteTiering/SiteTiering?:language=en-US&amp;:display_count=n&amp;:origin=viz_share_link" target="_blank" rel="noopener" aria-describedby="viz-note">Open the dashboard<span class="visually-hidden"> on Tableau Public, in a new tab</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+            <p class="viz-note" id="viz-note">It opens on Tableau Public, which may set its own cookies. On a phone you get the phone layout.</p>
           </div>
           <figcaption class="viz-foot">
             <span>Hourly counts: City of Melbourne Open Data · Store economics: illustrative</span>
