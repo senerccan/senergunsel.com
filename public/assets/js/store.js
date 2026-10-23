@@ -181,23 +181,24 @@ export const FLOORS = [
         code: 'G04',
         place: 'research',
         kind: 'Grad school · NYU Stern × Vans',
-        tag: 'Soon',
+        tag: 'Case study',
         format: 'S',
         hint: 'dots',
-        status: 'soon',
+        status: 'open',
         forecast: 0.45,
         title: 'Elevating Consumer Experience at Vans Stores',
         planTitle: 'Consumer experience at Vans stores',
         zoneMeta: 'Shanghai · 2024',
-        meta: 'NYU Stern × Vans APAC · Shanghai · 2024',
-        body: "A graduate capstone I co-led for Vans: we watched how shoppers moved through three Shanghai stores, surveyed 220 people, and presented a Store, Human and Brand strategy to Vans APAC's VP and General Manager.",
+        meta: 'NYU Stern × Vans APAC · Shanghai · 2024 · survey playable',
+        body: "A graduate capstone I co-led for Vans APAC: we walked three Shanghai stores, surveyed 220 students and presented a Store, Human and Brand strategy to the VP and General Manager. The survey is here to slice, and I re-read its regression two years on.",
         facts: [
-          { k: '220', v: 'people surveyed' },
-          { k: '3', v: 'stores observed: flagship, concept, mid-size' },
-          { k: '6', v: 'people on the team' }
+          { k: '220', v: 'students surveyed, half Chinese nationals' },
+          { k: '3', v: 'stores walked: flagship, concept, mid-size' },
+          { k: '6', v: 'people on the team' },
+          { k: '3', v: 'recommendations: Store, Human, Brand' }
         ],
-        cta: null,
-        href: null
+        cta: 'Read the case study',
+        href: '/projects/vans-capstone/'
       },
       {
         key: 'powerbi',

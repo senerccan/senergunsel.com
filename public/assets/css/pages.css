@@ -637,6 +637,110 @@
   .wc-rules tbody td:last-child::before { content: none; }
 }
 
+/* ---------- G04 · Elevating Consumer Experience at Vans Stores (the research corner) ----------
+   The capstone survey, sliced live: wear status in three greys-to-orange, price on the
+   store-size ramp, who pays in ink and hair, and the regression as dots with ribbons. */
+.lab:not(.is-live) .cap-pick, .lab:not(.is-live) .cap-grid { display: none; }
+.cap-pick { padding: 20px 28px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 28px; }
+.cap-pick .ctl { gap: 8px; }
+.cap-pick .toggle-group > button { padding: 6px 12px; line-height: 1.25; }
+.cap-n { margin: 0 0 4px auto; font-size: 15px; line-height: 1.3; color: var(--ink2); }
+.cap-n b { font-size: 30px; line-height: 1; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); margin-right: 6px; }
+.cap-grid { padding: 24px 28px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.cap-card { min-width: 0; }
+.cap-wide { grid-column: 1 / -1; }
+.cap-chart { min-height: 0; }
+.cap-read { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink2); }
+.cap-read:empty { display: none; }
+.cap .lg-sq::before { width: 10px; height: 10px; }
+.lg-never::before, .cap-chart .sw-never { fill: var(--hair); background: var(--hair); }
+.lg-former::before, .cap-chart .sw-former { fill: var(--muted); background: var(--muted); }
+.lg-now::before, .cap-chart .sw-now { fill: var(--accent); background: var(--accent); }
+.cap-chart .sw-never-t { fill: var(--ink); }
+.cap-chart .sw-former-t, .cap-chart .sw-now-t { fill: #FFFFFF; }
+.cap-chart rect { shape-rendering: crispEdges; }
+.cap-chart text.in { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.cap-chart text.lab { fill: var(--ink); font-family: var(--sans); font-size: 13px; }
+.cap-chart text.lab.is-vans { font-weight: 700; }
+.cap-chart text.val { fill: var(--ink); font-variant-numeric: tabular-nums; }
+.cap-chart .dim { fill: var(--muted); }
+.cap-chart text.col-t { fill: var(--ink); font-family: var(--sans); font-size: 13px; font-weight: 700; }
+.lg-top3::before, .cap-chart .top3 { fill: var(--hair); background: var(--hair); }
+.lg-first::before, .cap-chart .first { fill: var(--ink); background: var(--ink); }
+.cap-chart .first.is-vans { fill: var(--accent); }
+.cap-chart .why-bar { fill: var(--ink); }
+.lg-low::before, .cap-chart .pr-low { fill: var(--t-D); background: var(--t-D); }
+.lg-mid::before, .cap-chart .pr-mid { fill: var(--t-S); background: var(--t-S); }
+.lg-high::before, .cap-chart .pr-high { fill: var(--t-SPLUS); background: var(--t-SPLUS); }
+/* Labels inside the price ramp: the ramp flips between themes, so the text does too. */
+.cap-chart .pr-low-t { fill: #121211; }
+.cap-chart .pr-mid-t, .cap-chart .pr-high-t { fill: #FFFFFF; }
+:root[data-theme="after"] .cap-chart .pr-low-t { fill: #F1F1EE; }
+:root[data-theme="after"] .cap-chart .pr-mid-t, :root[data-theme="after"] .cap-chart .pr-high-t { fill: #121211; }
+:root[data-theme="after"] .cap-chart .sw-former-t { fill: #0E0E0D; }
+.lg-self::before, .cap-chart .py-self { fill: var(--ink); background: var(--ink); }
+.lg-other::before, .cap-chart .py-other { fill: var(--hair); background: var(--hair); }
+.cap-chart .py-self-t { fill: var(--onink); }
+.cap-chart .py-other-t { fill: var(--ink); }
+
+/* The regression */
+.cap-reg { border-bottom: 0; }
+.cap-reg .step-n { font-family: var(--sans); font-weight: 800; }
+.cap-reg-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+.cap-reg-top .ctl-note { flex: 1 1 360px; max-width: 72ch; }
+.cap-chart .line1 { stroke: var(--ink2); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.cap-chart .sep { stroke: var(--hair); stroke-width: 1; }
+.cap-chart .ci { stroke-width: 2; stroke-linecap: round; }
+.cap-chart .ci.sig, .cap-chart .dot.sig { stroke: var(--accent); }
+.cap-chart .dot.sig { fill: var(--accent); }
+.cap-chart .ci.ns { stroke: var(--muted); }
+.cap-chart .dot.ns { fill: var(--muted); stroke: var(--muted); }
+.cap-chart .ci.g-all, .cap-chart .dot.g-all { stroke: var(--ink); }
+.cap-chart .dot.g-all { fill: var(--ink); }
+.cap-chart .ci.g-chi, .cap-chart .dot.g-chi { stroke: var(--t-S); }
+.cap-chart .dot.g-chi { fill: var(--t-S); }
+.cap-chart .ci.g-int, .cap-chart .dot.g-int { stroke: var(--revisit); }
+.cap-chart .dot.g-int { fill: var(--revisit); }
+.cap-chart .dot { stroke-width: 0; }
+.cap-chart .dot-focus { fill: none; stroke: var(--ink); stroke-width: 1.5; pointer-events: none; }
+.cap-chart .hit { fill: transparent; }
+.cap-chart .axis-t { fill: var(--ink2); }
+.lg-sig::before { background: var(--accent); }
+.lg-ns::before { background: var(--muted); }
+.lg-all::before { background: var(--ink); }
+.lg-chi::before { background: var(--t-S); }
+.lg-int::before { background: var(--revisit); }
+
+/* The engagement model, drawn */
+.prose .tri { max-width: 520px; margin: 0 auto; }
+.tri svg { width: 100%; height: auto; display: block; font-family: var(--sans); }
+.tri .tri-line { fill: none; stroke: var(--hair); stroke-width: 2; }
+.tri .tri-spoke { stroke: var(--ink); stroke-width: 2; }
+.tri .tri-core { fill: var(--accent); }
+.tri .tri-core-t { fill: #121211; font-size: 15px; font-weight: 800; }
+.tri .tri-tip { fill: var(--ink); }
+.tri .tri-tip-t { fill: var(--onink); font-size: 15px; font-weight: 800; }
+.tri .tri-note { fill: var(--ink2); font-size: 13px; }
+
+/* Downloads in the write-up */
+.prose .dl-list { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+.prose .dl-list li { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--hair); display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; font-size: 16px; }
+.prose .dl-list a { font-weight: 750; }
+.prose .dl-list span { color: var(--ink2); font-size: 15px; }
+
+@media (max-width: 960px) {
+  .cap-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .cap-pick { padding: 16px 14px; gap: 12px 20px; }
+  .cap-pick .toggle-group { flex-wrap: wrap; }
+  .cap-pick .toggle-group > button { flex: 1 1 auto; padding: 6px 8px; font-size: 11px; }
+  .cap-n { margin-left: 0; }
+  .cap-grid { padding: 18px 14px; gap: 16px; }
+  .cap-chart text.lab { font-size: 12px; }
+  .prose .dl-list li { grid-template-columns: 1fr; gap: 2px; }
+}
+
 /* ---------- 404 ---------- */
 .lost { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding-top: 64px; padding-bottom: 80px; }
 .lost h1 { margin: 0; font-size: clamp(48px, 8vw, 112px); line-height: 0.95; font-weight: 800; letter-spacing: -0.045em; }

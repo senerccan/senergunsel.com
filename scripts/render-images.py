@@ -3,7 +3,7 @@
 Run with the local dev server up (npx wrangler dev --port 8787):
     python3 scripts/render-images.py
 Writes public/assets/img/og-card.png, the project cards (og-melbourne-site-tiering.png,
-og-store-rollout-model.png, og-same-store-two-streets.png, og-web-catcher.png),
+og-store-rollout-model.png, og-same-store-two-streets.png, og-web-catcher.png, og-vans-capstone.png),
 public/favicon-32.png, public/apple-touch-icon.png, public/icon-192.png and public/icon-512.png.
 """
 import asyncio
@@ -31,7 +31,8 @@ async def main():
         for template_name, out_name in [("og-card.html", "og-card.png"), ("og-melbourne-site-tiering.html", "og-melbourne-site-tiering.png"),
                                         ("og-store-rollout-model.html", "og-store-rollout-model.png"),
                                         ("og-same-store-two-streets.html", "og-same-store-two-streets.png"),
-                                        ("og-web-catcher.html", "og-web-catcher.png")]:
+                                        ("og-web-catcher.html", "og-web-catcher.png"),
+                                        ("og-vans-capstone.html", "og-vans-capstone.png")]:
             page = await browser.new_page(viewport={"width": 1200, "height": 630})
             template = (ROOT / "scripts" / template_name).read_text()
             await page.route("**/__og-card", serve(template))

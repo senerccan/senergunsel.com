@@ -7,3 +7,10 @@
 
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
+
+/downloads/*.R
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: attachment; filename="vans-survey-analysis.R"
+
+/downloads/*.csv
+  Content-Disposition: attachment
