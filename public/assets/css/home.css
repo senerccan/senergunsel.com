@@ -240,7 +240,7 @@
 .floor-stage { transition: opacity 0.18s ease, transform 0.3s cubic-bezier(.2,.8,.2,1); }
 .floor-stage.is-moving { opacity: 0; transform: translateY(8px); }
 .plan-scroll { overflow-x: auto; padding: 12px 0 4px 10px; }
-.plan { min-width: 760px; transform-origin: 50% 100%; transition: transform 0.7s cubic-bezier(.2,.8,.2,1); }
+.plan { min-width: 800px; transform-origin: 50% 100%; transition: transform 0.7s cubic-bezier(.2,.8,.2,1); }
 /* Each project is its own room: its own walls, with corridors between rooms,
    inside the store's outer wall. */
 .plan-grid {
@@ -329,6 +329,7 @@
 @keyframes sflripple { 0% { opacity: 0.7; scale: 1; } 100% { opacity: 0; scale: 1.4; } }
 .heat-off .zone-bloom { display: none; }
 .reveal-on .floor-stage:not(.is-shown) .zone,
+.reveal-on .floor-stage:not(.is-shown) .suite,
 .reveal-on .floor-stage:not(.is-shown) .filler,
 .reveal-on .floor-stage:not(.is-shown) .aisle > li,
 .reveal-on .floor-stage:not(.is-shown) .mini-grid > span { opacity: 0; }
@@ -337,6 +338,9 @@
 .floor-stage.zones-enter .aisle > li,
 .floor-stage.zones-enter .mini-grid > span[data-code] { animation: zoneIn 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 110ms); }
 @keyframes zoneIn { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+.floor-stage.zones-enter .suite, .floor-stage.zones-enter .mini-suite { animation: suiteIn 0.6s ease both; animation-delay: calc(var(--i, 0) * 110ms); }
+.floor-stage.zones-enter .mini-suite > span[data-code] { animation: zoneIn 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 110ms); }
+@keyframes suiteIn { from { opacity: 0; } to { opacity: 1; } }
 .zone-hint { position: absolute; left: 16px; right: 16px; display: flex; align-items: center; pointer-events: none; }
 /* A halo in the floor colour keeps small labels readable where the bloom or a ripple passes behind them. */
 .zone-hint, .zone-top { text-shadow: 0 0 1px var(--surface), 0 0 2px var(--surface), 0 0 4px var(--surface); }
@@ -455,6 +459,70 @@
 .zone.is-narrow .pins-map { width: 100%; height: auto; }
 .zone.is-narrow .pins-text { display: none; }
 
+/* G07: lines of the flagship's build on their switches. On hover the premium
+   finishes switch on and the first flagship's cost ticks up. */
+.hint-switches { width: 100%; display: flex; flex-direction: column; gap: 5px; font-family: var(--mono); font-size: 9px; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.hs-row { display: flex; align-items: center; gap: 7px; min-width: 0; white-space: nowrap; }
+.hs-sw { position: relative; width: 20px; height: 11px; flex: none; border: 1.5px solid var(--muted); border-radius: 6px; transition: background-color 0.3s ease, border-color 0.3s ease; }
+.hs-sw::after { content: ""; position: absolute; top: 1.5px; left: 1.5px; width: 5px; height: 5px; border-radius: 50%; background: var(--muted); transition: transform 0.3s cubic-bezier(.2,.8,.2,1), background-color 0.3s ease; }
+.hs-sw.hs-on { background: var(--ink); border-color: var(--ink); }
+.hs-sw.hs-on::after { transform: translateX(9px); background: var(--surface); }
+.zone:hover .hs-flip, .zone:focus-visible .hs-flip { background: var(--accent); border-color: var(--accent); }
+.zone:hover .hs-flip::after, .zone:focus-visible .hs-flip::after { transform: translateX(9px); background: var(--surface); }
+.hs-total { margin-top: 3px; display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.hs-total b { display: inline-grid; font-family: var(--sans); font-size: 13px; font-weight: 750; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.hs-total b > span { grid-area: 1 / 1; transition: opacity 0.3s ease; }
+.hs-b { opacity: 0; color: var(--atext); }
+.zone:hover .hs-a, .zone:focus-visible .hs-a { opacity: 0; }
+.zone:hover .hs-b, .zone:focus-visible .hs-b { opacity: 1; }
+/* G02: the same store on a busy and a quiet street. Knobs mark the share of
+   people walking past who must come in; the band is what that kind of street gives. */
+.hint-streets2 { width: 100%; display: flex; flex-direction: column; justify-content: center; gap: 6px; font-family: var(--mono); font-size: 9px; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.s2-track { position: relative; height: 14px; }
+.s2-base { position: absolute; left: 0; right: 0; top: 6px; height: 2px; background: var(--hair); }
+.s2-can { position: absolute; left: 0; top: 3px; width: 36%; height: 8px; background: color-mix(in srgb, var(--accent) 24%, transparent); transition: background-color 0.3s ease; }
+.zone:hover .s2-can, .zone:focus-visible .s2-can { background: color-mix(in srgb, var(--accent) 40%, transparent); }
+.s2-knob { position: absolute; top: 1px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
+.s2-knob.s2-busy { left: 8.9%; background: var(--ink); }
+.s2-knob.s2-quiet { left: 66.3%; background: var(--surface); border: 2px solid var(--ink); }
+.s2-labels { position: relative; height: 12px; white-space: nowrap; }
+.s2-labels > span { position: absolute; top: 0; }
+.s2-labels .s2-busy { left: 0; }
+.s2-labels .s2-quiet { left: 66.3%; transform: translateX(-50%); }
+.s2-labels b { font-weight: 600; color: var(--ink); }
+
+/* ---------- Suites ----------
+   Projects that work on their own and complete each other. Their rooms share
+   walls inside one outer wall, with a doorway between the two halves, and the
+   room underneath joins them. A room has no walls of its own here, so when it
+   lifts it draws its outline as it goes. */
+.suite { position: relative; min-width: 0; display: grid; border: 3px solid var(--line); background: var(--surface); }
+.suite > .zone { border: 0; }
+.suite-wall { position: relative; z-index: 1; pointer-events: none; background: var(--line); }
+.sw-v { justify-self: start; width: 1.5px; margin-left: -0.75px; }
+.sw-h { align-self: start; height: 1.5px; margin-top: -0.75px; }
+.sw-door { background: linear-gradient(to bottom, var(--line) calc(50% - 15px), transparent calc(50% - 15px), transparent calc(50% + 15px), var(--line) calc(50% + 15px)); }
+.sw-door::before, .sw-door::after { content: ""; position: absolute; left: -3px; width: 7.5px; height: 1.5px; background: var(--line); }
+.sw-door::before { top: calc(50% - 15px); }
+.sw-door::after { top: calc(50% + 13.5px); }
+.plan:not(.model) .suite > .zone:hover { box-shadow: inset 0 0 0 1.5px var(--line), 1px 1px 0 var(--line), 2px 2px 0 var(--line), 3px 3px 0 var(--line), 4px 4px 0 var(--line), 5px 5px 0 var(--line), 6px 6px 0 var(--line), 7px 7px 0 var(--line); }
+.plan:not(.model) .suite > .zone.is-sel { box-shadow: inset 0 0 0 1.5px var(--line), 1px 1px 0 var(--accent), 2px 2px 0 var(--accent), 3px 3px 0 var(--accent), 4px 4px 0 var(--accent); }
+.plan:not(.model) .suite > .zone.is-sel:hover { box-shadow: inset 0 0 0 1.5px var(--line), 1px 1px 0 var(--accent), 2px 2px 0 var(--accent), 3px 3px 0 var(--accent), 4px 4px 0 var(--accent), 5px 5px 0 var(--accent), 6px 6px 0 var(--accent), 7px 7px 0 var(--accent); }
+.plan.model .suite > .zone { box-shadow: inset 0 0 0 1.5px var(--line), 0 var(--h) 0 0 var(--wall); }
+.plan.model .suite > .zone:hover { box-shadow: inset 0 0 0 1.5px var(--line), 0 calc(var(--h) + 12px) 0 0 var(--wall); }
+.plan.model .suite > .zone.is-sel { box-shadow: inset 0 0 0 1.5px var(--line), 0 var(--h) 0 0 var(--accent); }
+.plan.model .suite > .zone.is-sel:hover { box-shadow: inset 0 0 0 1.5px var(--line), 0 calc(var(--h) + 12px) 0 0 var(--accent); }
+/* The two halves are narrower than a standard zone: the sign keeps its room number only. */
+.zone.is-half .zl-place, .zone.is-half .zl-code, .zone.is-half .zl-word { display: none; }
+.zone.is-half .hint-pins { gap: 10px; }
+.zone.is-half .pins-map { height: 82%; }
+.zone.is-half .pins-text { white-space: nowrap; }
+.zone.is-half .pins-text > span { letter-spacing: 0.04em; }
+/* The room that joins them: its name on the left, the preview on the right. */
+.zone.is-join .zone-hint, .zone.is-join .zone-bloom { left: 52%; }
+.zone.is-join .zone-bottom { max-width: 50%; }
+.zone.is-join .zone-title { white-space: pre-line; }
+
 .filler { position: relative; min-width: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 10px; }
 .filler::before { content: ""; position: absolute; inset: 0; border: 1.5px dashed var(--muted); }
 .filler span { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: center; }
@@ -485,6 +553,13 @@
 .aisle-name b { font-size: 20px; line-height: 1.15; font-weight: 750; }
 .aisle-name span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
 .aisle-row .tag { justify-self: start; }
+.aisle > li.in-suite { position: relative; }
+.aisle > li.in-suite::before { content: ""; position: absolute; left: -14px; top: 0; bottom: 0; width: 3px; background: var(--line); }
+.aisle > li.suite-first::before { top: 12px; }
+.aisle > li.suite-last::before { bottom: 12px; }
+.aisle > li.suite-first::after, .aisle > li.suite-last::after { content: ""; position: absolute; left: -14px; width: 9px; height: 3px; background: var(--line); }
+.aisle > li.suite-first::after { top: 12px; }
+.aisle > li.suite-last::after { bottom: 12px; }
 .aisle-detail { padding: 4px 8px 22px; }
 
 .view-note { margin: 0; font-family: var(--mono); font-size: 11px; line-height: 1.6; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
@@ -499,6 +574,17 @@
 .zp-title { margin: 0; font-size: 28px; line-height: 1.08; font-weight: 800; letter-spacing: -0.025em; }
 .zp-meta { margin: 0; font-family: var(--mono); font-size: 11px; line-height: 1.5; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); }
 .zp-body { margin: 0; font-size: 15px; line-height: 1.55; color: var(--ink2); }
+.zp-suite { display: flex; flex-direction: column; gap: 8px; }
+.zp-suite-k { margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.zp-suite-k:not(:first-child) { margin-top: 6px; }
+.zp-pick {
+  width: 100%; min-height: 44px; margin: 0; padding: 8px 12px;
+  border: 1px solid var(--line); background: transparent; color: var(--ink);
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 8px;
+  text-align: left; cursor: pointer; font-size: 14px; font-weight: 650; line-height: 1.3;
+}
+.zp-pick:hover { color: var(--atext); }
+.zp-pick-code { font-family: var(--mono); font-size: 12px; font-weight: 600; }
 .zp-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0; }
 .zp-facts > div { min-width: 0; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
 .zp-facts dd { order: 1; margin: 0; font-size: 26px; line-height: 1; font-weight: 800; letter-spacing: -0.02em; }
@@ -581,8 +667,8 @@
   .zone-ring { display: none; }
   .zone-core, .zone-heat { transition: opacity 0.2s linear !important; }
   .pulse, .breathe, .man *, .tick { animation: none !important; }
-  .plan, .zone, .wc-k, .wc-f, .floor-stage { transition: none !important; }
-  .floor-stage .zone, .floor-stage .filler, .floor-stage .aisle > li, .floor-stage .mini-grid > span { animation: none !important; opacity: 1 !important; }
+  .plan, .zone, .wc-k, .wc-f, .floor-stage, .hs-sw, .hs-sw::after, .hs-total b > span, .s2-can { transition: none !important; }
+  .floor-stage .zone, .floor-stage .suite, .floor-stage .filler, .floor-stage .aisle > li, .floor-stage .mini-grid > span, .floor-stage .mini-suite > span { animation: none !important; opacity: 1 !important; }
 }
 
 /* ---------- Tablet ---------- */
@@ -645,6 +731,10 @@
   .mini-grid > span .zone-hatch { background-image: repeating-linear-gradient(135deg, var(--hair) 0 1px, transparent 1px 6px); }
   .mini-grid > span b { position: relative; font-weight: inherit; }
   .mini-grid > .mini-filler { background: transparent; border: 0; }
+  .mini-grid > .mini-suite { display: grid; gap: 1px; padding: 0; border: 2px solid var(--line); background: var(--line); }
+  .mini-suite > span { position: relative; overflow: hidden; min-width: 0; padding: 3px 5px; background: var(--surface); font-family: var(--mono); font-size: 9px; color: var(--muted); }
+  .mini-suite > span.is-sel { color: var(--atext); font-weight: 600; box-shadow: inset 0 0 0 2px var(--accent); }
+  .aisle > li.in-suite::before, .aisle > li.suite-first::after, .aisle > li.suite-last::after { left: -10px; }
   .mini-grid > .mini-filler::before { content: ""; position: absolute; inset: 0; border: 1px dashed var(--muted); }
   .aisle { border-top-width: 3px; }
   .aisle > li { border-bottom-color: var(--hair); }

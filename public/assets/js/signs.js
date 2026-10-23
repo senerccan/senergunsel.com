@@ -2,10 +2,10 @@
 // Only the signs change language; the content stays in English.
 
 export const SIGNS = {
-  en: { greet: 'Welcome in.', live: 'Live', floor: 'Floor plan', locator: 'Store locator', register: 'Register', express: 'Express lane', window: 'Window', main: 'Main floor', fit: 'Fitting rooms', research: 'Research corner', notes: 'Notice board', back: 'Back of house', popup: 'Pop-up', drop: 'New drop', door: 'Entrance', elevator: 'Elevator', floors: 'Floors' },
-  tr: { greet: 'Hoş geldiniz.', live: 'Canlı', floor: 'Kat planı', locator: 'Mağazalar', register: 'Kasa', express: 'Hızlı kasa', window: 'Vitrin', main: 'Ana kat', fit: 'Deneme kabinleri', research: 'Araştırma köşesi', notes: 'İlan panosu', back: 'Depo', popup: 'Pop-up mağaza', drop: 'Yeni çıkış', door: 'Giriş', elevator: 'Asansör', floors: 'Katlar' },
-  fr: { greet: 'Bienvenue.', live: 'En direct', floor: 'Plan du magasin', locator: 'Nos adresses', register: 'Caisse', express: 'Caisse express', window: 'Vitrine', main: 'Espace principal', fit: "Cabines d'essayage", research: 'Coin recherche', notes: "Panneau d'affichage", back: 'Réserve', popup: 'Boutique éphémère', drop: 'Nouveauté', door: 'Entrée', elevator: 'Ascenseur', floors: 'Étages' },
-  zh: { greet: '欢迎光临。', live: '实时', floor: '楼层平面图', locator: '门店查询', register: '收银台', express: '快速通道', window: '橱窗', main: '主卖场', fit: '试衣间', research: '研究区', notes: '公告栏', back: '仓库', popup: '快闪店', drop: '新品', door: '入口', elevator: '电梯', floors: '楼层' }
+  en: { greet: 'Welcome in.', live: 'Live', floor: 'Floor plan', locator: 'Store locator', register: 'Register', express: 'Express lane', window: 'Window', main: 'Main floor', fit: 'Fitting rooms', research: 'Research corner', notes: 'Notice board', back: 'Back of house', popup: 'Pop-up', drop: 'New drop', workshop: 'Workshop', door: 'Entrance', elevator: 'Elevator', floors: 'Floors' },
+  tr: { greet: 'Hoş geldiniz.', live: 'Canlı', floor: 'Kat planı', locator: 'Mağazalar', register: 'Kasa', express: 'Hızlı kasa', window: 'Vitrin', main: 'Ana kat', fit: 'Deneme kabinleri', research: 'Araştırma köşesi', notes: 'İlan panosu', back: 'Depo', popup: 'Pop-up mağaza', drop: 'Yeni çıkış', workshop: 'Atölye', door: 'Giriş', elevator: 'Asansör', floors: 'Katlar' },
+  fr: { greet: 'Bienvenue.', live: 'En direct', floor: 'Plan du magasin', locator: 'Nos adresses', register: 'Caisse', express: 'Caisse express', window: 'Vitrine', main: 'Espace principal', fit: "Cabines d'essayage", research: 'Coin recherche', notes: "Panneau d'affichage", back: 'Réserve', popup: 'Boutique éphémère', drop: 'Nouveauté', workshop: 'Atelier', door: 'Entrée', elevator: 'Ascenseur', floors: 'Étages' },
+  zh: { greet: '欢迎光临。', live: '实时', floor: '楼层平面图', locator: '门店查询', register: '收银台', express: '快速通道', window: '橱窗', main: '主卖场', fit: '试衣间', research: '研究区', notes: '公告栏', back: '仓库', popup: '快闪店', drop: '新品', workshop: '工坊', door: '入口', elevator: '电梯', floors: '楼层' }
 };
 
 export const FLOOR_NAMES = {

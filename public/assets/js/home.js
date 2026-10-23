@@ -378,7 +378,19 @@ const HINTS = {
   pins: () => '<span class="hint-pins"><svg class="pins-map" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid meet">' +
     '<path class="pins-grid" d="' + PIN_GRID + '"></path>' +
     PINS.map((p) => '<circle class="pin p' + p[2][0] + (p[2][1] ? ' pin-a' : '') + '" cx="' + p[0] + '" cy="' + p[1] + '" r="' + PIN_R[p[2][0]] + '"></circle>').join('') +
-    '</svg><span class="pins-text"><b>78</b><span>street sites</span><span class="hot">3 store sizes</span></span></span>'
+    '</svg><span class="pins-text"><b>78</b><span>street sites</span><span class="hot">3 store sizes</span></span></span>',
+  // G07: a few lines of the flagship's build on their switches. Rest on the zone
+  // and the premium finishes switch on, and the first flagship's cost ticks up.
+  switches: () => '<span class="hint-switches">' +
+    [['LED wall', 'on'], ['Premium finishes', 'flip'], ['Kiosks', 'on']].map((r) => '<span class="hs-row"><span class="hs-sw hs-' + r[1] + '"></span><span>' + r[0] + '</span></span>').join('') +
+    '<span class="hs-total"><span>First flagship</span><b><span class="hs-a">$1,416,330</span><span class="hs-b">$1,486,710</span></b></span></span>',
+  // G02: the same standard store on two Destination Retail streets. The share of
+  // people walking past who must come in for it to repay its build in three years,
+  // on a 0 to 10% scale, against the share that kind of street gives (the band).
+  streets2: () => '<span class="hint-streets2"><span class="s2-k">Must come in</span>' +
+    '<span class="s2-track"><span class="s2-base"></span><span class="s2-can"></span>' +
+    '<span class="s2-knob s2-busy"></span><span class="s2-knob s2-quiet"></span></span>' +
+    '<span class="s2-labels"><span class="s2-busy">Busy <b>0.9%</b></span><span class="s2-quiet">Quiet <b>6.6%</b></span></span></span>'
 };
 
 const floorState = {
@@ -485,12 +497,19 @@ function liveClasses(code) {
   const s = live.active && live.active.code === code ? live.active : null;
   return [s ? 'is-dwelling' : '', s && s.back ? 'is-return' : ''];
 }
+// Where a zone sits: on the floor's grid, or inside its suite's own grid.
+function gridPos(z) {
+  const c = z.suite ? z.scol : z.col;
+  const r = z.suite ? z.srow : z.row;
+  return 'grid-column:' + c + ' / span ' + z.w + ';grid-row:' + r + ' / span ' + z.h;
+}
 function zoneButton(z, selKey, n) {
   const lang = currentLang();
-  const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : '', z.w <= 2 ? 'is-narrow' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
+  const cls = ['zone', z.key === selKey ? 'is-sel' : '', z.hatch ? 'is-hatched' : '', z.w <= 2 ? 'is-narrow' : '',
+    z.suite ? 'in-suite' : '', z.format === 'HALF' ? 'is-half' : '', z.format === 'JOIN' ? 'is-join' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
   return '<button type="button" class="' + cls + '" data-zone="' + esc(z.key) + '" data-code="' + esc(z.code) + '" aria-pressed="' + (z.key === selKey) + '"' +
     ' aria-label="' + esc(z.code + ', ' + z.title + '. ' + statusLine(z)) + '"' +
-    ' style="' + heatVars(z) + '--i:' + n + ';grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    ' style="' + heatVars(z) + '--i:' + n + ';' + gridPos(z) + '">' +
     (z.hatch ? '<span class="zone-hatch" aria-hidden="true"></span>' : '') +
     '<span class="zone-heat breathe" aria-hidden="true"></span>' + bloom('top:' + z.g.top + ';bottom:' + z.g.bottom) +
     '<span class="zone-hint" aria-hidden="true" style="top:' + z.g.top + ';bottom:' + z.g.bottom + '">' + (HINTS[z.hint] ? HINTS[z.hint]() : '') + '</span>' +
@@ -499,6 +518,43 @@ function zoneButton(z, selKey, n) {
     tagHtml(z) + '</span>' +
     '<span class="zone-bottom" aria-hidden="true"><span class="zone-kind ' + kindClass(z) + '">' + esc(z.kind) + '</span><span class="zone-title" style="font-size:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
     '</button>';
+}
+// A suite: rooms that are projects on their own and add up to something more
+// together. They share walls inside one outer wall, with a doorway between the
+// two halves. The row holding the room that joins them gets a little more height.
+function suiteRows(s, rooms) {
+  const rows = [];
+  for (let r = 1; r <= s.h; r++) rows.push(rooms.some((z) => z.format === 'JOIN' && z.srow === r) ? 'minmax(0, 1.25fr)' : 'minmax(0, 1fr)');
+  return rows.join(' ');
+}
+function suiteBlock(s, rooms, selKey, n) {
+  const walls = [];
+  rooms.forEach((z) => {
+    if (z.scol > 1) walls.push('<span class="suite-wall sw-v' + (z.format === 'HALF' ? ' sw-door' : '') + '" aria-hidden="true" style="grid-column:' + z.scol + ';grid-row:' + z.srow + ' / span ' + z.h + '"></span>');
+    if (z.srow > 1) walls.push('<span class="suite-wall sw-h" aria-hidden="true" style="grid-column:' + z.scol + ' / span ' + z.w + ';grid-row:' + z.srow + '"></span>');
+  });
+  return '<div class="suite" role="group" aria-label="' + esc(s.label) + '" style="--i:' + n + ';grid-column:' + s.col + ' / span ' + s.w + ';grid-row:' + s.row + ' / span ' + s.h +
+    ';grid-template-columns:repeat(' + s.w + ', minmax(0, 1fr));grid-template-rows:' + suiteRows(s, rooms) + '">' +
+    rooms.map((z, k) => zoneButton(z, selKey, n + k)).join('') + walls.join('') + '</div>';
+}
+// The floor in order: zones on their own, and each suite as one block where its first room comes up.
+function planItems(placed, suites, one, block) {
+  const out = [];
+  const done = new Set();
+  let n = 0;
+  placed.forEach((z) => {
+    if (!z.suite) {
+      out.push(one(z, n++));
+      return;
+    }
+    if (done.has(z.suite)) return;
+    done.add(z.suite);
+    const s = suites.find((x) => x.key === z.suite);
+    const rooms = placed.filter((x) => x.suite === z.suite);
+    out.push(block(s, rooms, n));
+    n += rooms.length;
+  });
+  return out.join('');
 }
 function fillerCell(f, n) {
   return '<div class="filler" aria-hidden="true" style="--i:' + n + ';grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"><span><b>Next drop</b><span>Room for the next project</span></span></div>';
@@ -516,6 +572,7 @@ function panelInner(z) {
   const facts = z.facts && z.facts.length
     ? '<dl class="zp-facts">' + z.facts.map((f) => '<div><dt>' + esc(f.v) + '</dt><dd>' + esc(f.k) + '</dd></div>').join('') + '</dl>'
     : '';
+  const suite = suiteNote(z);
   let action;
   if (z.href && z.status === 'open') {
     action = '<a class="zp-cta" href="' + esc(z.href) + '">' + esc(z.cta) + ARROW + '</a>';
@@ -526,16 +583,34 @@ function panelInner(z) {
   }
   return '<div class="zp-top"><span>' + esc(z.code) + ' · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span>' + tagHtml(z) + '</div>' +
     '<div class="zp-head"><p class="zp-kind ' + kindClass(z) + '">' + esc(z.kind) + '</p><h3 class="zp-title">' + esc(z.title) + '</h3><p class="zp-meta">' + esc(z.meta) + '</p></div>' +
-    '<p class="zp-body">' + esc(z.body) + '</p>' + facts + dwell +
+    '<p class="zp-body">' + esc(z.body) + '</p>' + suite + facts + dwell +
     '<div class="zp-foot">' + action + '</div>';
 }
-function aisleRow(z, selKey, isCompact, n) {
+// In a suite, each room points to the others: the half it pairs with and the
+// room that puts them together, or (for that room) the two halves it's made of.
+function suiteNote(z) {
+  if (!z.suite) return '';
+  const fl = currentFloor();
+  const mates = fl.zones.filter((x) => x.suite === z.suite && x.key !== z.key);
+  const pick = (m) => '<button type="button" class="zp-pick" data-zone="' + esc(m.key) + '"><span class="zp-pick-code">' + esc(m.code) + '</span><span class="zp-pick-name">' + esc(m.title) + '</span></button>';
+  let rows;
+  if (z.format === 'JOIN') {
+    rows = '<p class="zp-suite-k">Made of two projects that also work alone</p>' + mates.map(pick).join('');
+  } else {
+    const half = mates.filter((m) => m.format !== 'JOIN');
+    const join = mates.filter((m) => m.format === 'JOIN');
+    rows = (half.length ? '<p class="zp-suite-k">Works alone, and pairs with</p>' + half.map(pick).join('') : '') +
+      (join.length ? '<p class="zp-suite-k">Together they make</p>' + join.map(pick).join('') : '');
+  }
+  return '<div class="zp-suite">' + rows + '</div>';
+}
+function aisleRow(z, selKey, isCompact, n, mark) {
   const lang = currentLang();
   const open = isCompact && floorState.expanded === z.key;
   const attrs = isCompact
     ? ' aria-expanded="' + open + '" aria-controls="aisle-' + esc(z.key) + '"'
     : ' aria-current="' + (z.key === selKey) + '"';
-  return '<li style="--i:' + n + '"><button type="button" class="aisle-row" data-zone="' + esc(z.key) + '"' + attrs + '>' +
+  return '<li' + (mark ? ' class="' + mark + '"' : '') + ' style="--i:' + n + '"><button type="button" class="aisle-row" data-zone="' + esc(z.key) + '"' + attrs + '>' +
     '<span class="aisle-code">' + esc(z.code) + '</span>' +
     '<span class="aisle-sign" lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span>' +
     '<span class="aisle-name"><b>' + esc(z.title) + '</b><span>' + esc(isCompact ? z.kind : z.kind + ' · ' + z.zoneMeta) + '</span></span>' +
@@ -544,14 +619,24 @@ function aisleRow(z, selKey, isCompact, n) {
     (isCompact ? '<div class="aisle-detail" id="aisle-' + esc(z.key) + '"' + (open ? '' : ' hidden') + '>' + (open ? panelInner(z) : '') + '</div>' : '') +
     '</li>';
 }
-function miniPlan(placed, fillers, fl, selKey) {
-  const cells = placed.map((z, n) => {
+function miniPlan(placed, fillers, suites, selKey) {
+  const cell = (z, n) => {
     const cls = [z.key === selKey ? 'is-sel' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
-    return '<span class="' + cls + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + '--i:' + n + ';grid-column:' + z.col + ' / span ' + z.w + ';grid-row:' + z.row + ' / span ' + z.h + '">' +
+    return '<span class="' + cls + '" data-code="' + esc(z.code) + '" style="' + heatVars(z) + '--i:' + n + ';' + gridPos(z) + '">' +
       (z.hatch ? '<span class="zone-hatch"></span>' : '') +
       '<span class="zone-heat"></span>' + bloom('') + '<b>' + esc(z.code) + '</b></span>';
-  }).join('') + fillers.map((f) => '<span class="mini-filler" style="grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"></span>').join('');
+  };
+  const block = (s, rooms, n) => '<span class="mini-suite" style="grid-column:' + s.col + ' / span ' + s.w + ';grid-row:' + s.row + ' / span ' + s.h +
+    ';grid-template-columns:repeat(' + s.w + ', minmax(0, 1fr));grid-template-rows:' + suiteRows(s, rooms) + '">' + rooms.map((z, k) => cell(z, n + k)).join('') + '</span>';
+  const cells = planItems(placed, suites, cell, block) +
+    fillers.map((f) => '<span class="mini-filler" style="grid-column:' + f.col + ' / span ' + f.w + ';grid-row:' + f.row + ' / span ' + f.h + '"></span>').join('');
   return '<div class="mini-plan" aria-hidden="true"><div class="mini-grid">' + cells + '</div></div>';
+}
+// In the list, a suite's rooms are bracketed together.
+function suiteMark(placed, z) {
+  if (!z.suite) return '';
+  const rooms = placed.filter((x) => x.suite === z.suite);
+  return 'in-suite' + (rooms[0] === z ? ' suite-first' : '') + (rooms[rooms.length - 1] === z ? ' suite-last' : '');
 }
 
 function renderElevator() {
@@ -573,7 +658,7 @@ function renderElevator() {
 }
 function renderFloor() {
   const fl = currentFloor();
-  const { placed, fillers } = packFloor(fl);
+  const { placed, fillers, suites } = packFloor(fl);
   const selKey = placed.some((z) => z.key === floorState.sel[fl.key]) ? floorState.sel[fl.key] : placed[0].key;
   floorState.sel[fl.key] = selKey;
   const isCompact = compact();
@@ -589,13 +674,14 @@ function renderFloor() {
 
   let html = '';
   if (isCompact) {
-    html = miniPlan(placed, fillers, fl, floorState.expanded) +
-      '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, true, n)).join('') + '</ul>';
+    html = miniPlan(placed, fillers, suites, floorState.expanded) +
+      '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, true, n, suiteMark(placed, z))).join('') + '</ul>';
   } else if (floorState.view === 'aisle') {
-    html = '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, false, n)).join('') + '</ul>';
+    html = '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, false, n, suiteMark(placed, z))).join('') + '</ul>';
   } else {
     html = '<div class="plan-scroll"><div class="plan' + (floorState.view === 'model' ? ' model' : '') + '">' +
-      '<div class="plan-grid">' + placed.map((z, n) => zoneButton(z, selKey, n)).join('') + fillers.map((f, n) => fillerCell(f, placed.length + n)).join('') + '</div>' +
+      '<div class="plan-grid">' + planItems(placed, suites, (z, n) => zoneButton(z, selKey, n), (s, rooms, n) => suiteBlock(s, rooms, selKey, n)) +
+      fillers.map((f, n) => fillerCell(f, placed.length + n)).join('') + '</div>' +
       '</div></div>';
   }
   stageEl.innerHTML = html;
@@ -917,6 +1003,14 @@ function initFloor() {
   }
 
   $('#floor').addEventListener('click', (e) => {
+    const pick = e.target.closest('.zp-pick');
+    if (pick) {
+      const key = pick.dataset.zone;
+      selectZone(key, { forceOpen: true, scroll: true });
+      const target = compact() ? $('.aisle-row[data-zone="' + key + '"]') : $('.zone[data-zone="' + key + '"]');
+      if (target) target.focus({ preventScroll: compact() });
+      return;
+    }
     const zoneBtn = e.target.closest('.zone, .aisle-row');
     if (zoneBtn) {
       selectZone(zoneBtn.dataset.zone);

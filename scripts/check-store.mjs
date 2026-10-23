@@ -1,9 +1,9 @@
 // Checks the store layout in public/assets/js/store.js before you ship a new drop.
 // Run: npm run check
-import { FLOORS, GEO, packFloor } from '../public/assets/js/store.js';
+import { FLOORS, GEO, SUITES, packFloor } from '../public/assets/js/store.js';
 import { SIGNS } from '../public/assets/js/signs.js';
 
-const HINTS = ['regions', 'curve', 'sliders', 'dots', 'tiles', 'terminal', 'film', 'notes', 'pins'];
+const HINTS = ['regions', 'curve', 'sliders', 'dots', 'tiles', 'terminal', 'film', 'notes', 'pins', 'switches', 'streets2'];
 const STATUS = ['open', 'window', 'soon', 'tba'];
 const problems = [];
 const seenKeys = new Map();
@@ -30,10 +30,21 @@ for (const floor of FLOORS) {
     if (!z.title || !z.body) problems.push(`${where}: needs a title and a body.`);
     if (!z.kind) problems.push(`${where}: needs a kind, in plain words (Work · Company, Grad school, Personal project, Writing, Coming later).`);
     if (!z.tag || z.tag.length > 12) problems.push(`${where}: needs a short tag (Case study, Playable, Read, Soon, TBA).`);
+    if (z.suite && !SUITES[z.suite]) problems.push(`${where}: suite "${z.suite}" is not defined in SUITES.`);
+    if (!z.suite && (z.format === 'HALF' || z.format === 'JOIN')) problems.push(`${where}: ${z.format} rooms only go inside a suite.`);
   }
-  const { placed, fillers } = packFloor(floor);
+  const { placed, fillers, suites } = packFloor(floor);
+  for (const s of suites) {
+    const rooms = placed.filter((z) => z.suite === s.key);
+    if (rooms.length < 2) problems.push(`${floor.key}/${s.key}: a suite needs at least two rooms.`);
+    for (const z of rooms) {
+      if (z.scol + z.w - 1 > s.w || z.srow + z.h - 1 > s.h) problems.push(`${floor.key}/${z.code}: doesn't fit inside suite ${s.key} (${s.w}x${s.h}).`);
+    }
+    const used = rooms.reduce((a, z) => a + z.w * z.h, 0);
+    if (used !== s.w * s.h) problems.push(`${floor.key}/${s.key}: its rooms fill ${used} of ${s.w * s.h} cells; a suite should be filled exactly.`);
+  }
   const rows = Math.max(...placed.map((z) => z.row + z.h - 1));
-  console.log(`Floor ${floor.key} (${floor.drawing}): ${placed.length} zones, ${rows} rows, ${fillers.length} "Next drop" spaces`);
+  console.log(`Floor ${floor.key} (${floor.drawing}): ${placed.length} zones${suites.length ? ` (${suites.length} suite)` : ''}, ${rows} rows, ${fillers.length} "Next drop" spaces`);
 }
 
 if (problems.length) {

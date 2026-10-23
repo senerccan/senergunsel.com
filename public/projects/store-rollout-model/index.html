@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en" data-theme="open">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What does the next store cost? · Sener Can Gunsel</title>
+<meta name="description" content="A playable store rollout model by Sener Can Gunsel: price three store sizes line by line, switch any line on or off, open up to 100 stores and see when the rollout pays back. Built in Excel; the full workbook is free to download.">
+<link rel="canonical" href="https://senergunsel.com/projects/store-rollout-model/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What does the next store cost? · a playable rollout model">
+<meta property="og:description" content="Three store sizes priced line by line, 78 real streets, and a rollout that gets cheaper with every store. Play it in the browser or download the Excel workbook.">
+<meta property="og:url" content="https://senergunsel.com/projects/store-rollout-model/">
+<meta property="og:image" content="https://senergunsel.com/assets/img/og-store-rollout-model.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="What does the next store cost? A playable store rollout model by Sener Can Gunsel.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F1F1EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E0E0D" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>try{var t=localStorage.getItem('scg.theme');if(t!=='open'&&t!=='after'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'after':'open'}document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+<script type="module" src="/assets/js/site.js"></script>
+<script type="module" src="/assets/js/playground.js"></script>
+</head>
+<body data-zone="G07">
+<a class="skip-link" href="#lab">Skip to the model</a>
+
+<header class="fascia">
+  <div class="wrap fascia-in">
+    <a class="brand" href="/" aria-label="Sener Can Gunsel, back to the store">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 42 80"><g transform="rotate(24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><g transform="rotate(-22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:var(--accent)"/></g><line x1="21.5" y1="18" x2="19" y2="47" stroke="currentColor" stroke-width="7.5" stroke-linecap="round"/><g transform="rotate(22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:var(--accent)"/></g><g transform="rotate(-24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><circle cx="22" cy="9" r="7.5" fill="currentColor"/><rect x="22" y="6.2" width="10" height="3.4" rx="1.2" style="fill:var(--accent)"/></svg></span>
+      <span class="brand-text">
+        <span class="brand-name">Sener Can Gunsel</span>
+        <span class="brand-sub">G07 · <span data-sign="workshop">Workshop</span></span>
+      </span>
+    </a>
+    <div class="fascia-tools">
+      <button type="button" class="theme-toggle" data-theme-toggle><span class="theme-dot" aria-hidden="true"></span><span data-theme-label>Open</span></button>
+      <a class="btn back-link" href="/#zone-G07"><span class="long">Back to the floor plan</span><span class="short">Store</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <article>
+    <div class="subhead">
+      <div class="wrap">
+        <p class="crumbs"><a href="/">Store</a><a href="/#floor">Ground floor</a><span>G07 · Personal project</span></p>
+        <h1 class="page-title">What does the next store cost?</h1>
+        <p class="lede">Opening one flagship is a project. Opening thirty stores in three sizes takes a model: every store teaches the crews something, bigger orders buy cheaper, and the street outside decides which size can pay its way. This is my store rollout model, rebuilt from scratch with anonymized numbers. Play the short version right here, or download the full workbook.</p>
+        <p class="article-meta"><span>Personal project</span><span>Excel</span><span>Playable here</span><span>Workbook to download</span></p>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="wrap lab-wrap">
+        <section class="lab" id="lab" aria-labelledby="lab-title">
+          <div class="lab-head">
+            <span class="sign"><span data-sign="workshop">Workshop</span> · Try it</span>
+            <span class="lab-head-r">
+              <a class="lab-dl" href="/downloads/Retail-Model-Playground.xlsx" download>Full workbook (.xlsx)<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg></a>
+              <span class="tag tag-accent">Playable</span>
+            </span>
+          </div>
+          <h2 class="visually-hidden" id="lab-title">Play the store rollout model</h2>
+          <noscript><p class="lab-noscript">The playable model needs JavaScript. The <a href="/downloads/Retail-Model-Playground.xlsx" download>full workbook</a> has everything in it.</p></noscript>
+
+          <section class="lab-step" aria-labelledby="st1">
+            <header class="step-head">
+              <span class="step-n" aria-hidden="true">1</span>
+              <div class="step-text">
+                <h3 id="st1">Build each store</h3>
+                <p>Every size comes in three recipes. Lean skips the showpieces, Balanced is the default, and Showcase adds premium finishes and the big screens. Then flip any line on or off.</p>
+              </div>
+            </header>
+            <div class="sizes">
+              <article class="size-card" data-size="SPLUS">
+                <div class="sc-head"><span class="sc-key" aria-hidden="true"></span><h4>Flagship</h4><span class="sc-area">3,400 ft²</span></div>
+                <div class="toggle-group sc-recipe" role="group" aria-label="Flagship recipe">
+                  <button type="button" data-recipe="Lean" aria-pressed="false">Lean</button>
+                  <button type="button" data-recipe="Balanced" aria-pressed="true">Balanced</button>
+                  <button type="button" data-recipe="Showcase" aria-pressed="false">Showcase</button>
+                </div>
+                <p class="sc-cost"><span class="sc-k">First store</span><b data-out="pilot">–</b><span class="sc-delta" data-out="delta"></span></p>
+                <dl class="sc-split" data-out="split"></dl>
+                <p class="sc-scale" data-out="scale"></p>
+                <button type="button" class="sc-edit" data-edit="SPLUS" aria-controls="board" aria-pressed="false">Flip its lines</button>
+              </article>
+              <article class="size-card" data-size="S">
+                <div class="sc-head"><span class="sc-key" aria-hidden="true"></span><h4>Standard</h4><span class="sc-area">1,650 ft²</span></div>
+                <div class="toggle-group sc-recipe" role="group" aria-label="Standard recipe">
+                  <button type="button" data-recipe="Lean" aria-pressed="false">Lean</button>
+                  <button type="button" data-recipe="Balanced" aria-pressed="true">Balanced</button>
+                  <button type="button" data-recipe="Showcase" aria-pressed="false">Showcase</button>
+                </div>
+                <p class="sc-cost"><span class="sc-k">First store</span><b data-out="pilot">–</b><span class="sc-delta" data-out="delta"></span></p>
+                <dl class="sc-split" data-out="split"></dl>
+                <p class="sc-scale" data-out="scale"></p>
+                <button type="button" class="sc-edit" data-edit="S" aria-controls="board" aria-pressed="false">Flip its lines</button>
+              </article>
+              <article class="size-card" data-size="D">
+                <div class="sc-head"><span class="sc-key" aria-hidden="true"></span><h4>Small</h4><span class="sc-area">900 ft²</span></div>
+                <div class="toggle-group sc-recipe" role="group" aria-label="Small recipe">
+                  <button type="button" data-recipe="Lean" aria-pressed="false">Lean</button>
+                  <button type="button" data-recipe="Balanced" aria-pressed="true">Balanced</button>
+                  <button type="button" data-recipe="Showcase" aria-pressed="false">Showcase</button>
+                </div>
+                <p class="sc-cost"><span class="sc-k">First store</span><b data-out="pilot">–</b><span class="sc-delta" data-out="delta"></span></p>
+                <dl class="sc-split" data-out="split"></dl>
+                <p class="sc-scale" data-out="scale"></p>
+                <button type="button" class="sc-edit" data-edit="D" aria-controls="board" aria-pressed="false">Flip its lines</button>
+              </article>
+            </div>
+            <div class="board" id="board" aria-labelledby="board-t">
+              <div class="board-head">
+                <h4 id="board-t">Switchboard</h4>
+                <div class="toggle-group board-size" role="group" aria-label="Whose lines to show">
+                  <button type="button" data-board-size="SPLUS" aria-pressed="true">Flagship</button>
+                  <button type="button" data-board-size="S" aria-pressed="false">Standard</button>
+                  <button type="button" data-board-size="D" aria-pressed="false">Small</button>
+                </div>
+                <button type="button" class="board-reset" data-board-reset hidden>Back to the recipe</button>
+              </div>
+              <p class="board-note" data-out="board-note">The lines the recipes change. A switch you flip beats the recipe.</p>
+              <ul class="board-lines" data-out="board-extras"></ul>
+              <button type="button" class="board-more" data-board-more aria-expanded="false" aria-controls="board-core">Show the other lines</button>
+              <div class="board-core" id="board-core" hidden data-out="board-core"></div>
+            </div>
+          </section>
+
+          <section class="lab-step" aria-labelledby="st2">
+            <header class="step-head">
+              <span class="step-n" aria-hidden="true">2</span>
+              <div class="step-text">
+                <h3 id="st2">Grow the chain</h3>
+                <p>Open stores over five years and watch each one cost less than the last. Labour gets cheaper with practice, and things you buy get cheaper in bulk.</p>
+              </div>
+            </header>
+            <div class="step-cols">
+              <div class="step-controls">
+                <div class="ctl">
+                  <label class="ctl-k" for="n-stores">Stores to open over five years</label>
+                  <div class="ctl-range">
+                    <input type="range" id="n-stores" min="0" max="100" step="5" value="30" aria-describedby="n-plan">
+                    <output for="n-stores" class="ctl-out" data-out="n">30</output>
+                  </div>
+                  <p class="ctl-note" id="n-plan" data-out="plan">2, 4, 6, 8 and 10 a year</p>
+                </div>
+                <div class="ctl">
+                  <p class="ctl-k" id="outlook-k">How fast costs fall</p>
+                  <div class="toggle-group" role="group" aria-labelledby="outlook-k">
+                    <button type="button" data-outlook="Cautious" aria-pressed="false">Cautious</button>
+                    <button type="button" data-outlook="Expected" aria-pressed="true">Expected</button>
+                    <button type="button" data-outlook="Aggressive" aria-pressed="false">Aggressive</button>
+                  </div>
+                  <p class="ctl-note" data-out="outlook"></p>
+                </div>
+                <div class="ctl">
+                  <p class="ctl-k" id="deal-k">Supplier deal</p>
+                  <div class="toggle-group" role="group" aria-labelledby="deal-k">
+                    <button type="button" data-deal="Pay as you grow" aria-pressed="true">Pay as you grow</button>
+                    <button type="button" data-deal="Commit to the full plan" aria-pressed="false">Commit to the plan</button>
+                  </div>
+                  <p class="ctl-note" data-out="deal"></p>
+                </div>
+              </div>
+              <figure class="chart-card" aria-labelledby="ch-builds-t">
+                <figcaption class="chart-head">
+                  <span class="chart-t" id="ch-builds-t">What each store costs to build, in opening order</span>
+                  <span class="chart-legend" aria-hidden="true"><span class="lg lg-SPLUS">Flagship</span><span class="lg lg-S">Standard</span><span class="lg lg-D">Small</span></span>
+                </figcaption>
+                <div class="chart" data-chart="builds"></div>
+                <details class="numbers"><summary>See the numbers</summary><div data-table="builds"></div></details>
+              </figure>
+            </div>
+          </section>
+
+          <section class="lab-step" aria-labelledby="st3">
+            <header class="step-head">
+              <span class="step-n" aria-hidden="true">3</span>
+              <div class="step-text">
+                <h3 id="st3">Send it to the streets</h3>
+                <p>A store needs a street that can pay it back. The 78 Melbourne streets from my Tableau dashboard take the same test here, and the ones that pass decide how many stores of each size you open.</p>
+              </div>
+            </header>
+            <div class="step-cols">
+              <div class="step-controls">
+                <div class="ctl">
+                  <p class="ctl-k" id="mix-k">Who picks the store sizes</p>
+                  <div class="choices" role="group" aria-labelledby="mix-k">
+                    <button type="button" data-mix="dash" aria-pressed="true"><b>The dashboard test</b><span>The same rule as Tableau: build cost against a flat 25% margin</span></button>
+                    <button type="button" data-mix="pnl" aria-pressed="false"><b>A full store P&amp;L</b><span>Rent, staff, energy and screens, street by street</span></button>
+                    <button type="button" data-mix="own" aria-pressed="false"><b>My own 30/50/20 mix</b><span>Skip the streets: 30% flagship, 50% standard, 20% small</span></button>
+                  </div>
+                  <p class="ctl-note" data-out="mix"></p>
+                </div>
+                <div class="handoff">
+                  <p class="ctl-k">Send to Tableau</p>
+                  <p class="handoff-note">Type these into the dashboard's build cost sliders, which move in $50,000 steps:</p>
+                  <dl class="handoff-vals" data-out="handoff"></dl>
+                  <p class="handoff-note" data-out="handoff-result"></p>
+                  <a class="btn handoff-go" href="/projects/melbourne-site-tiering/#dashboard">Open the dashboard<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+                </div>
+              </div>
+              <div class="streets-out">
+                <div class="tests" role="group" aria-labelledby="tests-k">
+                  <p class="ctl-k" id="tests-k">Streets that pay back, out of 78</p>
+                  <div class="tests-grid" data-out="tests"></div>
+                </div>
+                <figure class="chart-card" aria-labelledby="ch-streets-t">
+                  <figcaption class="chart-head">
+                    <span class="chart-t" id="ch-streets-t" data-out="streets-title">The 78 streets, busiest first</span>
+                    <span class="chart-legend" aria-hidden="true"><span class="lg lg-SPLUS lg-bar">Flagship</span><span class="lg lg-S lg-bar">Standard</span><span class="lg lg-D lg-bar">Small</span><span class="lg lg-fail">Outline: doesn't pay back</span></span>
+                  </figcaption>
+                  <div class="chart" data-chart="streets"></div>
+                  <details class="numbers"><summary>See the numbers</summary><div data-table="streets"></div></details>
+                </figure>
+              </div>
+            </div>
+          </section>
+
+          <section class="lab-step" aria-labelledby="st4">
+            <header class="step-head">
+              <span class="step-n" aria-hidden="true">4</span>
+              <div class="step-text">
+                <h3 id="st4">Does it pay?</h3>
+                <p>The whole rollout over ten years: building and stocking the stores and running the program, against what the stores earn.</p>
+              </div>
+            </header>
+            <dl class="kpis" data-out="kpis"></dl>
+            <figure class="chart-card" aria-labelledby="ch-cash-t">
+              <figcaption class="chart-head">
+                <span class="chart-t" id="ch-cash-t">Cash over ten years, all stores and the program</span>
+              </figcaption>
+              <div class="chart" data-chart="cash"></div>
+              <details class="numbers"><summary>See the numbers</summary><div data-table="cash"></div></details>
+            </figure>
+          </section>
+
+          <section class="lab-step lab-goals" aria-labelledby="st5">
+            <header class="step-head">
+              <span class="step-n step-n-goal" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16V2.5M4 3h9l-2 3 2 3H4"/></svg></span>
+              <div class="step-text">
+                <h3 id="st5">Six challenges <span class="goals-count" data-out="goals-count">0 of 6 done</span></h3>
+                <p>The same six as on the workbook's Start sheet. Every one of them can be done with the levers above.</p>
+              </div>
+            </header>
+            <ol class="goals" data-out="goals"></ol>
+          </section>
+
+          <div class="lab-foot">
+            <p>This is the short version: recipes, switches, pace and streets. The full workbook has every lever, from store sizes, rent and staff to margins and a typed amount for any line, plus all four street tests side by side, every store's P&amp;L, a sheet to compare runs, and notes on every assumption.</p>
+            <div class="lab-foot-actions">
+              <a class="btn btn-ink" href="/downloads/Retail-Model-Playground.xlsx" download><span class="long">Download the full workbook (.xlsx, 198 KB)</span><span class="short">Download the workbook</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg></a>
+              <button type="button" class="btn" data-reset>Start over</button>
+            </div>
+          </div>
+          <p class="visually-hidden" aria-live="polite" data-out="live"></p>
+        </section>
+      </div>
+
+      <div class="wrap two-col">
+        <div class="main">
+          <div class="prose">
+            <h2 id="how">What makes the next store cheaper</h2>
+            <p>Every line of a store's build sits in one of three groups, and each group gets cheaper in its own way as the chain grows.</p>
+            <ul>
+              <li><strong>Learning.</strong> Mostly labour: site preparation, walls and joinery, cabling, fitting rooms, systems integration, local design work, hiring and training. Each time the number of stores of a size doubles, these lines cost 10% less, down to 70% of the first store. A crew that fitted out a flagship has learned something for a small store too, so stores of the other sizes count for half.</li>
+              <li><strong>Price breaks.</strong> Things you buy: flooring, lighting, fixtures and the screens. The discounts start at the 3rd, 8th, 15th and 30th store: 3%, 7%, 10% and 14%. Commit to the whole plan up front and every store gets the discount for the full order from day one.</li>
+              <li><strong>No scale effect.</strong> Air conditioning and fire protection, storefronts, permits and launch events cost the same every time.</li>
+            </ul>
+            <p>The Cautious and Aggressive outlooks move those numbers both ways. Running costs scale too: the content platform licence gets cheaper per store as the chain grows, and one field technician looks after eight stores.</p>
+
+            <h2>Where the streets come in</h2>
+            <p>The model and my <a href="/projects/melbourne-site-tiering/">Tableau dashboard</a> use the same 78 streets, the same rule for sizing them and the same store economics. The model hands the dashboard each size's first-store build, rounded to the dashboard's $50,000 steps: $1.4M for a flagship, $800,000 for a standard store and $450,000 for a small one. At those numbers 59 of the 78 streets can repay a store in three years.</p>
+            <p>The dashboard hands back the mix those streets add up to: 24% flagship, 49% standard and 27% small, against the illustrative 30/50/20 I started with. That mix sets the sizes in the rollout: 7 flagships, 15 standard stores and 8 small ones out of 30.</p>
+            <p>Then the loop closes. Once the chain is built, its stores cost 13 to 15% less on average than the first of each size, and at those costs 5 more streets pay back. A full store P&amp;L, with rent that rises with traffic, staff, energy and screens to keep fresh, is stricter: 32 pass. <a href="/projects/same-store-two-streets/">Same store, two streets</a> puts the two halves side by side.</p>
+
+            <h2>What's in the full workbook</h2>
+            <p>Ten sheets and 8,137 live formulas, with no macros. Yellow cells are yours to change, and everything else follows.</p>
+            <ul class="sheet-list">
+              <li><b>Start</b><span>How to play, the six challenges and your results so far.</span></li>
+              <li><b>Control Panel</b><span>Every lever and the headline results.</span></li>
+              <li><b>Switchboard</b><span>All 32 lines of a store's build for each size, with on and off switches and your own amounts.</span></li>
+              <li><b>Scale</b><span>How learning and price breaks cut the cost of each new store.</span></li>
+              <li><b>Store P&amp;L</b><span>What one store earns: sales, margins, running costs and payback.</span></li>
+              <li><b>Melbourne</b><span>The 78 streets, four payback tests, and the values to type into the Tableau dashboard.</span></li>
+              <li><b>Rollout</b><span>Every store in opening order: its size, build, street and profit.</span></li>
+              <li><b>Program</b><span>The whole rollout year by year: investment, profit, cash, payback and value.</span></li>
+              <li><b>Compare</b><span>Recipes and outlooks side by side, and a table to save your runs.</span></li>
+              <li><b>Notes</b><span>How it works, every assumption, and a glossary.</span></li>
+            </ul>
+            <p><a class="btn btn-ink" href="/downloads/Retail-Model-Playground.xlsx" download>Download the workbook (.xlsx, 198 KB)<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg></a></p>
+
+            <h2>Where it comes from</h2>
+            <p>At Under Armour I built a scenario model in Excel to size a chain-wide rollout across store tiers: how cost per store and cost per square foot fall as you open more, against break-even benchmarks. This model is built on that thinking, from scratch, with new line items, new store sizes and new numbers. Every cost in it is illustrative, and none of Under Armour's numbers are here.</p>
+            <p>The version on this page runs the workbook's rules in JavaScript and gives the same numbers, so you can play without downloading anything.</p>
+
+            <h2>What's next</h2>
+            <p>The Python that cleaned the Melbourne counts goes up on GitHub, with every data decision.</p>
+
+            <div class="next-links">
+              <a class="btn btn-ink" href="/projects/same-store-two-streets/">See both halves together<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+              <a class="btn" href="/projects/melbourne-site-tiering/">Open the Tableau dashboard</a>
+              <a class="btn" href="mailto:hello@senergunsel.com?subject=About%20What%20does%20the%20next%20store%20cost%3F">Ask me about it</a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side" aria-label="Project details">
+          <div class="side-card">
+            <h2>At a glance</h2>
+            <dl>
+              <dt>What</dt><dd>A store rollout model you can play</dd>
+              <dt>Type</dt><dd>Personal project</dd>
+              <dt>Built with</dt><dd>Excel, with a JavaScript copy for this page</dd>
+              <dt>Data</dt><dd>Illustrative, anonymized costs; Melbourne pedestrian counts</dd>
+              <dt>Status</dt><dd>Playable here, workbook to download</dd>
+            </dl>
+          </div>
+          <div class="side-card">
+            <h2>The other half</h2>
+            <p>Which streets earn a flagship? sizes the 78 streets in Tableau. This model prices the stores they get.</p>
+            <a class="btn" href="/projects/melbourne-site-tiering/" style="align-self:flex-start">Open the dashboard</a>
+          </div>
+          <div class="side-card">
+            <h2>Together</h2>
+            <p>Same store, two streets puts both halves on one page: the same store on two real streets.</p>
+            <a class="btn" href="/projects/same-store-two-streets/" style="align-self:flex-start">See them together</a>
+          </div>
+          <div class="side-card">
+            <h2>Want the short version?</h2>
+            <p>The Express lane has every project and the resume on one page.</p>
+            <a class="btn" href="/express/" style="align-self:flex-start">Express lane</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span data-year>2026</span> Sener Can Gunsel · Floorset FA26</span>
+    <nav aria-label="Footer">
+      <a href="/">Store</a>
+      <a href="/express/">Express lane</a>
+      <a href="mailto:hello@senergunsel.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<nav class="dock" aria-label="Quick actions">
+  <a class="dock-primary" href="/resume/Sener-Can-Gunsel-Resume.pdf" target="_blank" rel="noopener">Resume (PDF)<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg></a>
+  <a class="dock-secondary" href="mailto:hello@senergunsel.com">Email me</a>
+</nav>
+</body>
+</html>

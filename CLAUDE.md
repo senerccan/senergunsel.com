@@ -39,7 +39,11 @@ keeps creative control: propose, then build what he approves. Address him as Sen
 - Tokens live in `public/assets/css/site.css` (`--ground`, `--surface`, `--ink`, `--accent` #FF4F00, ...).
   Every colour must work in both themes.
 - Type: Archivo (variable, self-hosted) for text, IBM Plex Mono for store signage, codes and labels.
-- Zones are sized by format: SPLUS (6×3), S (4×2), D (2×2), TBA (2×2, hatched).
+- Zones are sized by format: SPLUS (6×3), S (4×2), D (2×2), TBA (2×2, hatched). Projects that work alone and
+  together share a suite (`SUITES` in `store.js`): HALF rooms (3×2) side by side and a JOIN room (6×1) that puts
+  them together, all inside one outer wall. G07 and G06 are the halves, G02 joins them.
+- The G07 model (`model.js`) follows the Excel workbook's rules, and `model-data.js` holds the workbook's inputs.
+  If the workbook changes, regenerate `model-data.js` from it and re-check the numbers rather than editing by hand.
 - Store signage (not content) is translated in `signs.js` into EN, TR, FR and 中文.
 - Live dwell on the floor plan uses two colours only: `--accent` for a first stop and `--revisit`
   (hard-court blue) for a return. The bloom stays inside the zone's preview band so its text stays clear.

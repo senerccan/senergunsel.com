@@ -120,18 +120,19 @@
             <h2>Where the data comes from</h2>
             <p>The City of Melbourne publishes hourly counts from pedestrian sensors across its city centre, which makes it one of the few places where a question like this can be tested on open data. I used two years of it, 23 August 2024 to 22 August 2026: 1.6 million hourly counts from 103 sensors, cleaned in Python.</p>
             <p>When a sensor goes down its hours go missing rather than reading zero, so I measured how complete each sensor was and kept the 78 that reported at least 90% of their hours and were running from the start. Three of them send counts but are missing from the city's location file. I recovered their names from the city's 2009 to 2022 archive and placed them by landmark. They're the hollow dots on the map.</p>
-            <p>Build costs and store economics are illustrative placeholders, not Under Armour's figures, and most of them sit on the sliders so you can put in your own.</p>
+            <p>Build costs and store economics are illustrative, not Under Armour's figures, and most of them sit on the sliders so you can put in your own. My Excel model, <a href="/projects/store-rollout-model/">What does the next store cost?</a>, prices each size line by line and suggests $1.4M, $800,000 and $450,000, which give the same 59 of 78.</p>
 
             <h2>What it changes in the model</h2>
             <p>My store rollout model in Excel assumed an illustrative mix of 30% flagships, 50% standard stores and 20% small ones. The streets disagree. Of the locations that pay back at the default settings, 24% are flagship, 49% standard and 27% small: fewer flagships and more small stores than the model assumed.</p>
             <p>Every flagship location passes the payback test at the defaults. The 19 that fail are all standard or small stores on quieter streets.</p>
-            <p>That mix is the output that matters. It replaces the hard-coded weights in the Excel model, which is what <a href="/projects/same-store-two-streets/">Same store, two streets</a> is built on.</p>
+            <p>That mix is the output that matters. It sets the store sizes in my <a href="/projects/store-rollout-model/">Excel rollout model</a>, and the two halves meet in <a href="/projects/same-store-two-streets/">Same store, two streets</a>.</p>
 
             <h2>What's next</h2>
-            <p>The Excel rollout model itself, anonymized, with these weights plugged in. Then the Python prep goes up on GitHub, with the full rule set and every data decision.</p>
+            <p>The Excel rollout model is open now: <a href="/projects/store-rollout-model/">What does the next store cost?</a> Next, the Python prep goes up on GitHub, with the full rule set and every data decision.</p>
 
             <div class="next-links">
-              <a class="btn btn-ink" href="/projects/same-store-two-streets/">Play Same store, two streets<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+              <a class="btn btn-ink" href="/projects/store-rollout-model/">Play the store model<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+              <a class="btn" href="/projects/same-store-two-streets/">See both halves together</a>
               <a class="btn" href="mailto:hello@senergunsel.com?subject=About%20Which%20streets%20earn%20a%20flagship%3F">Ask me about it</a>
             </div>
           </div>
@@ -150,8 +151,13 @@
           </div>
           <div class="side-card">
             <h2>The other half</h2>
-            <p>Same store, two streets is the store side of this project: what share of the people walking past a store needs to come in for it to break even.</p>
-            <a class="btn" href="/projects/same-store-two-streets/" style="align-self:flex-start">Play the model</a>
+            <p>What does the next store cost? is the store side: my rollout model in Excel, playable in the browser. It prices the stores these streets get.</p>
+            <a class="btn" href="/projects/store-rollout-model/" style="align-self:flex-start">Play the model</a>
+          </div>
+          <div class="side-card">
+            <h2>Together</h2>
+            <p>Same store, two streets puts both halves on one page: the same store on two real streets.</p>
+            <a class="btn" href="/projects/same-store-two-streets/" style="align-self:flex-start">See them together</a>
           </div>
           <div class="side-card">
             <h2>Want the short version?</h2>

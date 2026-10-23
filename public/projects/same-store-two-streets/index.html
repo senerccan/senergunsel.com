@@ -4,13 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Same store, two streets · Sener Can Gunsel</title>
-<meta name="description" content="A playable model by Sener Can Gunsel: the same store on a busy street and a quiet one, and the share of people walking past who must come in for it to break even.">
+<meta name="description" content="Two projects by Sener Can Gunsel that work alone and complete each other: an Excel store rollout model and a Tableau dashboard of 78 Melbourne streets. Put the same store on two real streets and see what changes.">
 <link rel="canonical" href="https://senergunsel.com/projects/same-store-two-streets/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Same store, two streets · a playable model">
-<meta property="og:description" content="One store, two streets. Pick one and see what share of the people walking past must come in for the store to break even.">
+<meta property="og:title" content="Same store, two streets · Excel × Tableau">
+<meta property="og:description" content="One store from my Excel model, two real Melbourne streets from my Tableau dashboard. Pick them and see what share of the people walking past must come in for the store to pay back.">
 <meta property="og:url" content="https://senergunsel.com/projects/same-store-two-streets/">
-<meta property="og:image" content="https://senergunsel.com/assets/img/og-card.png">
+<meta property="og:image" content="https://senergunsel.com/assets/img/og-same-store-two-streets.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Same store, two streets: an Excel model and a Tableau dashboard by Sener Can Gunsel, together.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F1F1EE" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E0E0D" media="(prefers-color-scheme: dark)">
@@ -25,7 +28,7 @@
 <script type="module" src="/assets/js/window.js"></script>
 </head>
 <body data-zone="G02">
-<a class="skip-link" href="#main">Skip to the model</a>
+<a class="skip-link" href="#window">Skip to the model</a>
 
 <header class="fascia">
   <div class="wrap fascia-in">
@@ -49,67 +52,111 @@
       <div class="wrap">
         <p class="crumbs"><a href="/">Store</a><a href="/#floor">Ground floor</a><span>G02 · Personal project</span></p>
         <h1 class="page-title">Same store, two streets</h1>
-        <p class="lede">Picture one store, built and run the same way on two different streets. Shoppers behave the same once they're inside, so the only thing that changes is how many people walk past the door. Pick a street and see what share of them the store has to win over just to break even.</p>
-        <p class="article-meta"><span>Personal project</span><span>Excel · Tableau · Python</span><span>In progress</span></p>
+        <p class="lede">Two of my projects work on their own and complete each other. My <a href="/projects/store-rollout-model/">Excel model</a> prices a store line by line. My <a href="/projects/melbourne-site-tiering/">Tableau dashboard</a> sizes 78 real Melbourne streets. Put the same store on two of those streets and only the street changes. It changes everything.</p>
+        <p class="article-meta"><span>Personal project</span><span>Excel × Tableau · Python</span><span>Playable</span></p>
       </div>
     </div>
 
     <div class="page-body">
       <div class="wrap two-col">
         <div class="main">
-          <div class="window" id="window">
+          <section class="window together" id="window" aria-labelledby="win-t">
             <div class="window-head sign">
               <span><span data-sign="window">Window</span> · Try it</span>
               <span class="tag tag-accent">Playable</span>
             </div>
             <div class="window-body">
               <div class="window-lead">
-                <h2>Pick a street</h2>
-                <p class="window-intro">Same store, same prices, same shoppers inside. Only the street outside changes.</p>
+                <h2 id="win-t">Pick a store, then two streets</h2>
+                <p class="window-intro">Same store, same prices, same shoppers once they're inside. Only the street outside changes, and with it the rent and the people walking past.</p>
               </div>
-              <div class="streets" role="group" aria-label="Choose a street">
-                <button type="button" data-street="busy" aria-pressed="true"><span class="st-name">Busy downtown corner</span><span class="st-traffic">12.8M walk past a year</span></button>
-                <button type="button" data-street="quiet" aria-pressed="false"><span class="st-name">Quiet side street</span><span class="st-traffic">1.1M walk past a year</span></button>
-              </div>
-              <div class="capture-row" aria-live="polite">
-                <div class="capture-main">
-                  <span class="sign" style="color:var(--muted)">Share who must come in to break even</span>
-                  <span class="capture-num" id="capture">0.6%</span>
+              <noscript><p class="window-intro">The model needs JavaScript. The <a href="/projects/store-rollout-model/">store model</a> and the <a href="/projects/melbourne-site-tiering/">street dashboard</a> each have their own page.</p></noscript>
+              <div class="tg-store">
+                <div class="ctl">
+                  <p class="ctl-k" id="size-k">The store <span class="ctl-src">from G07</span></p>
+                  <div class="toggle-group" role="group" aria-labelledby="size-k">
+                    <button type="button" data-size="SPLUS" aria-pressed="false">Flagship</button>
+                    <button type="button" data-size="S" aria-pressed="true">Standard</button>
+                    <button type="button" data-size="D" aria-pressed="false">Small</button>
+                  </div>
                 </div>
-                <p class="capture-note"><strong id="one-in">1 in 171</strong>people walking past has to come in. One in five of them buys.</p>
+                <div class="ctl">
+                  <p class="ctl-k" id="build-k">Its build</p>
+                  <div class="toggle-group" role="group" aria-labelledby="build-k">
+                    <button type="button" data-build="first" aria-pressed="true">First store</button>
+                    <button type="button" data-build="scale" aria-pressed="false">In a 30-store chain</button>
+                  </div>
+                </div>
+                <p class="tg-store-note" data-out="store"></p>
               </div>
-              <div aria-hidden="true">
-                <div class="track"><div class="track-base"></div><div class="track-fill" id="track-fill" style="width:5.9%"></div><div class="track-knob" id="track-knob" style="left:5.9%"></div></div>
-                <div class="track-scale"><span>0%</span><span>2%</span><span>4%</span><span>6%</span><span>8%</span><span>10%</span></div>
+              <div class="st-pair" aria-live="polite">
+                <div class="st-col" data-side="a">
+                  <label class="ctl-k" for="street-a">Street one <span class='ctl-src'>from G06</span></label>
+                  <select id="street-a" class="st-pick" data-pick="a"></select>
+                  <p class="st-what" data-out="what"></p>
+                  <div class="st-need">
+                    <span class="ctl-k">Must come in to repay the build in 3 years</span>
+                    <span class="capture-num" data-out="need">–</span>
+                  </div>
+                  <div aria-hidden="true">
+                    <div class="track"><div class="track-base"></div><div class="track-can" data-out="can"></div><div class="track-knob" data-out="knob"></div></div>
+                    <div class="track-scale"><span>0%</span><span>2%</span><span>4%</span><span>6%</span><span>8%</span><span>10%</span></div>
+                  </div>
+                  <p class="st-verdict" data-out="verdict"></p>
+                  <dl class="specs st-specs" data-out="specs"></dl>
+                </div>
+                <div class="st-col" data-side="b">
+                  <label class="ctl-k" for="street-b">Street two <span class='ctl-src'>from G06</span></label>
+                  <select id="street-b" class="st-pick" data-pick="b"></select>
+                  <p class="st-what" data-out="what"></p>
+                  <div class="st-need">
+                    <span class="ctl-k">Must come in to repay the build in 3 years</span>
+                    <span class="capture-num" data-out="need">–</span>
+                  </div>
+                  <div aria-hidden="true">
+                    <div class="track"><div class="track-base"></div><div class="track-can" data-out="can"></div><div class="track-knob" data-out="knob"></div></div>
+                    <div class="track-scale"><span>0%</span><span>2%</span><span>4%</span><span>6%</span><span>8%</span><span>10%</span></div>
+                  </div>
+                  <p class="st-verdict" data-out="verdict"></p>
+                  <dl class="specs st-specs" data-out="specs"></dl>
+                </div>
               </div>
-              <dl class="specs">
-                <div><dt>Walk past a year</dt><dd id="traffic-val">12.8M</dd></div>
-                <div><dt>Visitors who buy</dt><dd>1 in 5</dd></div>
-                <div><dt>Average spend</dt><dd>$80</dd></div>
-                <div><dt>Sales to break even</dt><dd>$1.2M / yr</dd></div>
-              </dl>
               <div class="window-foot">
-                <span>Illustrative figures · Anonymized model</span>
+                <span>Store numbers from the G07 model · Streets from G06 · Illustrative store economics</span>
                 <a href="#how">How it works</a>
               </div>
             </div>
-          </div>
+          </section>
 
           <div class="prose">
             <h2 id="how">How to read it</h2>
-            <p>The store needs $1.2 million in sales a year to cover its costs. With an $80 average spend and one visitor in five buying, that takes 75,000 visits a year. On a corner where 12.8 million people walk past, 75,000 is 0.6 percent of the crowd. On a quiet side street with 1.1 million, it's 6.8 percent, more than ten times harder for the exact same store.</p>
-            <p>That's why location decisions start with the street, not the store: the traffic outside sets how good everything inside has to be.</p>
+            <p>Each street shows the share of the people walking past who would have to come in for the store to earn back its build in three years. It's a full store P&amp;L: what's left of sales after product costs and sales costs like card fees, minus rent, staff, energy, licences and the screens' upkeep, with the first two years still ramping up.</p>
+            <p>The shaded band is what that kind of street can give. People on a destination shopping street stop more often than commuters on their way to a train, so the band is wider there. On the busiest streets it can also be cut short by the store itself: a store can only serve so many people.</p>
+            <p>Busy streets cost more rent, so the busiest street isn't automatically the best. But traffic grows faster than rent, which is why a small share of a big crowd is usually the easier sale.</p>
+
+            <h2>How the two halves complete each other</h2>
+            <p>Each half works on its own. Together they answer the questions neither can alone: which stores to open, where, and when the chain pays for itself.</p>
+            <figure>
+              <div class="journey loop" data-out="loop" role="img" aria-label="The loop between the two projects: the Excel model prices each store and hands the build costs to the Tableau dashboard; the dashboard tests 78 streets; the streets that pass set the mix of store sizes the model rolls out; at the chain's lower costs, more streets pay back.">
+                <div><span class="j-step">01 · G07 Excel</span><span class="j-title">Price the store</span><ul><li class="j-hot">$1.4M flagship</li><li class="j-hot">$800K standard</li><li class="j-hot">$450K small</li></ul></div>
+                <div><span class="j-step">02 · G06 Tableau</span><span class="j-title">Test the streets</span><ul><li class="j-hot">59 of 78 pay back</li><li>in three years</li></ul></div>
+                <div><span class="j-step">03 · Back to G07</span><span class="j-title">Set the mix</span><ul><li class="j-hot">24% · 49% · 27%</li><li>7, 15 and 8 of 30 stores</li></ul></div>
+                <div><span class="j-step">04 · Back to G06</span><span class="j-title">Build the chain</span><ul><li class="j-hot">13 to 15% cheaper</li><li>64 of 78 pay back</li></ul></div>
+              </div>
+              <figcaption>The loop at the model's defaults. Change the model and the numbers move together.</figcaption>
+            </figure>
+            <p>The mix is the first thing the streets correct. I had started the model with an illustrative 30% flagships, 50% standard stores and 20% small ones. The streets that pay back say 24, 49 and 27: fewer flagships, more small stores. Then the chain itself changes the map: once its stores cost less, five more streets can pay one back.</p>
 
             <h2>Where it comes from</h2>
-            <p>At Under Armour I built a scenario model in Excel to size a chain-wide rollout across store tiers: how cost per store and cost per square foot fall as you open more, against break-even benchmarks. This model is an anonymized cousin of that thinking, with illustrative figures. None of Under Armour's numbers are here.</p>
-            <p>The street side uses public data: two years of hourly counts from Melbourne's open pedestrian sensors, 1.6 million rows cleaned in Python. The 78 most complete sensors are sorted by traffic quality in a <a href="/projects/melbourne-site-tiering/">Tableau dashboard</a>, so each kind of street feeds the model as a store size instead of a guess.</p>
+            <p>At Under Armour I built a scenario model in Excel to size a chain-wide rollout across store tiers: how cost per store and cost per square foot fall as you open more, against break-even benchmarks. The G07 model is built on that thinking, from scratch, with illustrative numbers. None of Under Armour's numbers are here.</p>
+            <p>The streets come from public data: two years of hourly counts from the City of Melbourne's pedestrian sensors, 1.6 million rows cleaned in Python, and the 78 most complete sensors sorted by how people move past them.</p>
 
             <h2>What's next</h2>
-            <p>The Tableau view of the 78 streets is open now. The full Excel rollout model, with every store size, opens in a later release.</p>
+            <p>The Python prep goes up on GitHub, with the full rule set and every data decision.</p>
 
             <div class="next-links">
-              <a class="btn btn-ink" href="/projects/melbourne-site-tiering/">See the 78 streets in Tableau<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-              <a class="btn" href="/projects/under-armour-flagship/">Read the Under Armour case study</a>
+              <a class="btn btn-ink" href="/projects/store-rollout-model/">Play the store model<svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+              <a class="btn" href="/projects/melbourne-site-tiering/">Open the street dashboard</a>
               <a class="btn" href="mailto:hello@senergunsel.com?subject=About%20Same%20store%2C%20two%20streets">Ask me about it</a>
             </div>
           </div>
@@ -119,12 +166,19 @@
           <div class="side-card">
             <h2>At a glance</h2>
             <dl>
-              <dt>What</dt><dd>A playable break-even model</dd>
+              <dt>What</dt><dd>Two projects that work alone and together</dd>
               <dt>Type</dt><dd>Personal project</dd>
               <dt>Built with</dt><dd>Excel, Tableau, Python</dd>
-              <dt>Data</dt><dd>Anonymized model, public pedestrian counts</dd>
-              <dt>Status</dt><dd>In progress</dd>
+              <dt>Data</dt><dd>Anonymized store model, public pedestrian counts</dd>
+              <dt>Status</dt><dd>Playable</dd>
             </dl>
+          </div>
+          <div class="side-card">
+            <h2>The two halves</h2>
+            <p>G07 · What does the next store cost? My rollout model in Excel, playable in the browser.</p>
+            <a class="btn" href="/projects/store-rollout-model/" style="align-self:flex-start">Play the model</a>
+            <p>G06 · Which streets earn a flagship? The 78 streets, sized in Tableau.</p>
+            <a class="btn" href="/projects/melbourne-site-tiering/" style="align-self:flex-start">Open the dashboard</a>
           </div>
           <div class="side-card">
             <h2>Want the short version?</h2>

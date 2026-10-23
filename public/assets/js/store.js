@@ -6,6 +6,9 @@
 // to move by hand.
 // To add a floor: add an entry to `floors` with a new key and label. The
 // elevator gets a new button automatically.
+// To pair projects that work alone and complete each other: give them the same
+// `suite`. A suite packs as one block (the footprint of its format in SUITES),
+// its rooms are packed inside it in the order listed, and they share walls.
 //
 // Write every label so a recruiter who has never worked in retail gets it on
 // the first read: plain words first, store words second.
@@ -18,9 +21,11 @@
 //             "Work · Under Armour", "Grad school · NYU Stern × Vans",
 //             "Personal project", "Writing", "Coming later"
 //   tag       its status in a word or two: Case study, Playable, Read, Soon, TBA
-//   format    footprint: SPLUS (6x3), S (4x2), D (2x2), TBA (2x2, hatched)
+//   format    footprint: SPLUS (6x3), S (4x2), D (2x2), TBA (2x2, hatched),
+//             and inside a suite HALF (3x2) or JOIN (6x1, the room that joins them)
+//   suite     optional: the suite (in SUITES) this room belongs to
 //   hint      the preview drawn inside the zone (regions, curve, sliders, dots,
-//             tiles, terminal, film, notes, pins)
+//             tiles, terminal, film, notes, pins, switches, streets2)
 //   status    open (has a page), soon, tba
 //   forecast  expected share of attention, 0 to 1. Used for the heat map
 //             until enough real visits have been counted.
@@ -31,7 +36,19 @@ export const GEO = {
   SPLUS: { w: 6, h: 3, top: '48px', bottom: '124px', title: '27px' },
   S: { w: 4, h: 2, top: '46px', bottom: '112px', title: '20px' },
   D: { w: 2, h: 2, top: '58px', bottom: '84px', title: '16px' },
-  TBA: { w: 2, h: 2, top: '58px', bottom: '84px', title: '16px' }
+  TBA: { w: 2, h: 2, top: '58px', bottom: '84px', title: '16px' },
+  HALF: { w: 3, h: 2, top: '42px', bottom: '102px', title: '17px' },
+  JOIN: { w: 6, h: 1, top: '40px', bottom: '16px', title: '19px' }
+};
+
+// Suites: rooms that are projects on their own and add up to something more
+// together. `format` is the suite's footprint on the floor; `label` names the
+// pair for screen readers.
+export const SUITES = {
+  pair: {
+    format: 'SPLUS',
+    label: 'Same store, two streets: G07 and G06 work on their own, and G02 puts them together'
+  }
 };
 
 export const FLOORS = [
@@ -65,26 +82,75 @@ export const FLOORS = [
         href: '/projects/under-armour-flagship/'
       },
       {
+        key: 'model',
+        code: 'G07',
+        suite: 'pair',
+        place: 'workshop',
+        kind: 'Personal project',
+        tag: 'Playable',
+        format: 'HALF',
+        hint: 'switches',
+        status: 'open',
+        forecast: 0.75,
+        title: 'What does the next store cost?',
+        zoneMeta: 'Excel',
+        meta: 'Store rollout model · Excel, playable here',
+        body: 'My store rollout model, rebuilt with anonymized numbers. Price three store sizes line by line, switch any line on or off, then open thirty stores and watch each one cost less than the last. Play it right here, or download the full workbook.',
+        facts: [
+          { k: '32', v: 'cost lines per store, each with an on and off switch' },
+          { k: '3', v: 'store sizes, each with three recipes' },
+          { k: '8,137', v: 'live formulas in the workbook, no macros' },
+          { k: '6', v: 'challenges to beat' }
+        ],
+        cta: 'Play the model',
+        href: '/projects/store-rollout-model/'
+      },
+      {
+        key: 'tiering',
+        code: 'G06',
+        suite: 'pair',
+        place: 'drop',
+        kind: 'Personal project',
+        tag: 'Playable',
+        format: 'HALF',
+        hint: 'pins',
+        status: 'open',
+        forecast: 0.7,
+        title: 'Which streets earn a flagship?',
+        zoneMeta: 'Tableau · Python',
+        meta: 'Melbourne street traffic × store economics',
+        body: 'A Tableau dashboard that sorts 78 street locations in central Melbourne into store sizes, by how many people walk past and how they move, then tests each one against store economics you can change.',
+        facts: [
+          { k: '78', v: 'street locations, each given a store size' },
+          { k: '7', v: 'kinds of street, by when people walk past' },
+          { k: '2 yrs', v: 'of hourly counts, cleaned in Python' },
+          { k: '6', v: 'sliders to test the store economics' }
+        ],
+        cta: 'Open the dashboard',
+        href: '/projects/melbourne-site-tiering/'
+      },
+      {
         key: 'scale',
         code: 'G02',
+        suite: 'pair',
         place: 'window',
         kind: 'Personal project',
         tag: 'Playable',
-        format: 'SPLUS',
-        hint: 'curve',
+        format: 'JOIN',
+        hint: 'streets2',
         status: 'open',
-        featured: true,
-        forecast: 0.85,
+        forecast: 0.8,
         title: 'Same store, two streets',
-        zoneMeta: 'Excel · Tableau · Python',
-        meta: 'Store rollout model × Melbourne street traffic',
-        body: 'My store rollout model, anonymized and paired with real street traffic from public pedestrian counters. Pick a street and see what share of the people walking past a store needs to come in for it to break even.',
+        planTitle: 'Same store,\ntwo streets',
+        zoneMeta: 'Excel × Tableau',
+        meta: 'G07 store model × G06 street dashboard',
+        body: 'G07 and G06 work on their own and complete each other. The Excel model prices the store, the Tableau dashboard finds the streets that can pay it back, and those streets set the mix of sizes the model rolls out. Put one store on two real streets and see what changes.',
         facts: [
-          { k: '78', v: 'street sensors sorted by traffic quality' },
-          { k: '1.6M', v: 'hourly counts cleaned in Python' },
-          { k: '3', v: 'store sizes priced in Excel' }
+          { k: '78', v: 'real streets to put the same store on' },
+          { k: '+5', v: 'streets pay back once the chain is built' },
+          { k: 'Year 6', v: 'when a 30-store rollout pays for itself' }
         ],
-        cta: 'Play the model',
+        cta: 'See them together',
         href: '/projects/same-store-two-streets/'
       },
       {
@@ -130,29 +196,6 @@ export const FLOORS = [
         ],
         cta: null,
         href: null
-      },
-      {
-        key: 'tiering',
-        code: 'G06',
-        place: 'drop',
-        kind: 'Personal project',
-        tag: 'Playable',
-        format: 'S',
-        hint: 'pins',
-        status: 'open',
-        forecast: 0.7,
-        title: 'Which streets earn a flagship?',
-        zoneMeta: 'Tableau · Python',
-        meta: 'Melbourne street traffic × store economics',
-        body: 'A Tableau dashboard that sorts 78 street locations in central Melbourne into store sizes, by how many people walk past and how they move, then tests each one against store economics you can change.',
-        facts: [
-          { k: '78', v: 'street locations, each given a store size' },
-          { k: '7', v: 'kinds of street, by when people walk past' },
-          { k: '2 yrs', v: 'of hourly counts, cleaned in Python' },
-          { k: '6', v: 'sliders to test the store economics' }
-        ],
-        cta: 'Open the dashboard',
-        href: '/projects/melbourne-site-tiering/'
       },
       {
         key: 'powerbi',
@@ -291,9 +334,8 @@ export const FLOORS = [
   }
 ];
 
-// Pack a floor's zones onto the 12-column grid. Zones keep their listed order;
-// each takes the first free spot that fits. Empty cells become hoarding.
-export function packFloor(floor, cols = 12) {
+// A first-fit grid: each block takes the first free spot, row by row, that fits.
+function grid(cols) {
   const occ = [];
   const free = (r, c, w, h) => {
     if (c + w > cols) return false;
@@ -304,24 +346,52 @@ export function packFloor(floor, cols = 12) {
     }
     return true;
   };
-  const mark = (r, c, w, h) => {
-    for (let y = r; y < r + h; y++) {
-      if (!occ[y]) occ[y] = [];
-      for (let x = c; x < c + w; x++) occ[y][x] = true;
-    }
-  };
-  const placed = floor.zones.map((z) => {
-    const g = GEO[z.format] || GEO.S;
+  const take = (w, h) => {
     for (let r = 0; r < 60; r++) {
-      for (let c = 0; c <= cols - g.w; c++) {
-        if (free(r, c, g.w, g.h)) {
-          mark(r, c, g.w, g.h);
-          return { ...z, col: c + 1, row: r + 1, w: g.w, h: g.h, g };
+      for (let c = 0; c <= cols - w; c++) {
+        if (free(r, c, w, h)) {
+          for (let y = r; y < r + h; y++) {
+            if (!occ[y]) occ[y] = [];
+            for (let x = c; x < c + w; x++) occ[y][x] = true;
+          }
+          return { col: c + 1, row: r + 1 };
         }
       }
     }
-    return { ...z, col: 1, row: 1, w: g.w, h: g.h, g };
+    return { col: 1, row: 1 };
+  };
+  return { occ, take };
+}
+
+// Pack a floor's zones onto the 12-column grid. Zones keep their listed order;
+// each takes the first free spot that fits. A suite takes its spot when its
+// first room comes up, and its rooms are packed inside it the same way.
+// Empty cells become hoarding.
+export function packFloor(floor, cols = 12) {
+  const floorGrid = grid(cols);
+  const placed = [];
+  const suites = [];
+  floor.zones.forEach((z) => {
+    if (z.suite) {
+      if (suites.some((s) => s.key === z.suite)) return;
+      const def = SUITES[z.suite] || {};
+      const sg = GEO[def.format] || GEO.SPLUS;
+      const at = floorGrid.take(sg.w, sg.h);
+      const rooms = floor.zones.filter((x) => x.suite === z.suite);
+      const inner = grid(sg.w);
+      suites.push({ key: z.suite, label: def.label || '', col: at.col, row: at.row, w: sg.w, h: sg.h, rooms: rooms.map((x) => x.key) });
+      rooms.forEach((rz) => {
+        const g = GEO[rz.format] || GEO.HALF;
+        const pos = inner.take(g.w, g.h);
+        placed.push({ ...rz, col: at.col + pos.col - 1, row: at.row + pos.row - 1, w: g.w, h: g.h, g, scol: pos.col, srow: pos.row });
+      });
+      return;
+    }
+    const g = GEO[z.format] || GEO.S;
+    const pos = floorGrid.take(g.w, g.h);
+    placed.push({ ...z, col: pos.col, row: pos.row, w: g.w, h: g.h, g });
   });
+  const occ = floorGrid.occ;
   const runs = [];
   for (let r = 0; r < occ.length; r++) {
     let c = 0;
@@ -338,7 +408,7 @@ export function packFloor(floor, cols = 12) {
     if (prev) prev.h += 1;
     else fillers.push({ ...f });
   });
-  return { placed, fillers };
+  return { placed, fillers, suites };
 }
 
 export function allZones() {

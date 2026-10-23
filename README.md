@@ -15,12 +15,16 @@ The [Director's Cut](https://senergunsel.com/notes/directors-cut/) explains how 
 |---|---|
 | `public/index.html` | The homepage: door band, walk-in headline, floor plan, store locator, register |
 | `public/express/` | The Express lane: everything a recruiter needs in 30 seconds |
-| `public/projects/` | One folder per project: the Under Armour case study, the playable store model, the Melbourne Tableau dashboard |
+| `public/projects/` | One folder per project: the Under Armour case study, the store rollout model (G07), the Melbourne Tableau dashboard (G06), and Same store, two streets (G02), where those two meet |
+| `public/downloads/` | Files to take away: the full Excel workbook behind G07 |
 | `public/notes/` | Field notes, starting with the Director's Cut |
 | `public/assets/js/store.js` | **The floor plan.** Every zone and floor is defined here and nowhere else |
 | `public/assets/js/signs.js` | Store signage in English, Turkish, French and Chinese |
 | `public/assets/js/home.js` | Homepage behaviour: headline, floor plan, dwell tracking |
-| `public/assets/js/window.js` | The playable model on `/projects/same-store-two-streets/` |
+| `public/assets/js/model.js` | The store rollout model in JavaScript: the Excel workbook's rules, checked against its results |
+| `public/assets/js/model-data.js` | The model's inputs, generated from the workbook (every cost illustrative) and the 78 Melbourne streets |
+| `public/assets/js/playground.js` | The playable model on `/projects/store-rollout-model/`: levers, charts and challenges |
+| `public/assets/js/window.js` | One store on two real streets, on `/projects/same-store-two-streets/` |
 | `public/assets/js/viz.js` | The click-to-load Tableau dashboard on `/projects/melbourne-site-tiering/` |
 | `public/assets/js/door.js` | The browser side of the door sensor |
 | `src/worker.js` | The door sensor: a Cloudflare Worker and a Durable Object that count visits |
@@ -43,6 +47,12 @@ without upkeep.
 
 To open a new floor, add an entry to `FLOORS` with a new `key` and `label`. The elevator gets a button
 automatically.
+
+Projects that work on their own and complete each other can share a suite. Give their zones the same
+`suite` (a key in `SUITES`): the suite packs onto the floor as one block in its format's footprint, and its
+rooms are packed inside it in the order listed, sharing walls. The ground floor's pair is G07 (the Excel
+model) and G06 (the Tableau dashboard) as `HALF` rooms (3×2) side by side, with G02 as the `JOIN` room
+(6×1) underneath that puts them together. `npm run check` makes sure a suite's rooms fill it exactly.
 
 ## Run it locally
 
