@@ -80,6 +80,8 @@ static pages straight from `public/` and only runs code for `/api/door/*`.
 - Each stop gets its own clock from zero while a bloom pulses and grows: orange on a first stop, blue on a
   return. Stepping off leaves a little warmth on the zone, and the details panel keeps the running total.
   Your stops and total per zone stay in `sessionStorage` (`scg.dwell`) for that tab only.
+- Web Catcher (G03) keeps the trends you set up in `sessionStorage` (`scg.wc`) for that tab only, so they
+  survive a look around the store. Start over clears it.
 - The store-wide heat shows a forecast until 50 visits are counted in the last 30 days, then real dwell.
 - Sessions are deleted after two days; daily totals are kept.
 

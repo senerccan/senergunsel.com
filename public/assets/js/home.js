@@ -369,7 +369,7 @@ const HINTS = {
   tiles: () => '<span class="hint-tiles"><span class="tiles-row"><span></span><span></span></span><span class="tiles-bars">' +
     [38, 70, 52, 88, 64].map((h) => '<span style="height:' + h + '%"></span>').join('') + '</span></span>',
   terminal: () => '<span class="hint-terminal"><span class="term-bar"><span></span><span></span><span></span></span><span class="term-lines">' +
-    '<span>› brief: a store, not a resume</span><span>› build: floor plan, walk-in, register</span><span>› ship floorset ' + FLOORSET + '<span class="caret pulse"></span></span></span></span>',
+    '<span>› brief: a store, not a resume</span><span>› build: plan, walk-in, register</span><span>› ship floorset ' + FLOORSET + '<span class="caret pulse"></span></span></span></span>',
   film: () => {
     const sp = '<span class="sprockets">' + '<span></span>'.repeat(12) + '</span>';
     return '<span class="hint-film">' + sp + '<span class="frames"><span></span><span></span><span class="lit"></span><span></span></span>' + sp + '</span>';
@@ -516,7 +516,7 @@ function zoneButton(z, selKey, n) {
     '<span class="zone-top" aria-hidden="true"><span class="zone-label"><span class="zl-sign">' + esc(z.code) + '<span class="zl-place"> · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span></span>' +
     '<span class="zl-dwell"><span class="zl-code">' + esc(z.code) + ' · </span><i></i><span class="zl-word"><span class="zl-first">Dwell </span><span class="zl-back">Back </span></span><b class="dwell-time">' + fmtDwell(live.stopMs(z.code) / 1000, true) + '</b></span></span>' +
     tagHtml(z) + '</span>' +
-    '<span class="zone-bottom" aria-hidden="true"><span class="zone-kind ' + kindClass(z) + '">' + esc(z.kind) + '</span><span class="zone-title" style="font-size:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
+    '<span class="zone-bottom" aria-hidden="true"><span class="zone-kind ' + kindClass(z) + '">' + esc(z.kind) + '</span><span class="zone-title" style="--title:' + z.g.title + '">' + esc(z.planTitle || z.title) + '</span><span class="zone-meta">' + esc(z.zoneMeta) + '</span></span>' +
     '</button>';
 }
 // A suite: rooms that are projects on their own and add up to something more

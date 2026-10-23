@@ -233,7 +233,8 @@
   transition: box-shadow 0.25s ease, background-color 0.25s ease;
 }
 .floor-btn[aria-pressed="true"] { background: var(--ink); color: var(--onink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent); }
-.floor-main { flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+/* The plan needs 800px to read; when the details panel can't fit beside that, it drops below the plan. */
+.floor-main { flex: 999 1 810px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .floor-label { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
 .floor-label .fl-name { font-weight: 600; }
 .floor-label .fl-purpose { color: var(--muted); }
@@ -258,6 +259,7 @@
   position: relative;
   overflow: hidden;
   min-width: 0;
+  container: zone / inline-size;
   margin: 0;
   border: 1.5px solid var(--line);
   padding: 14px 16px;
@@ -379,7 +381,15 @@
 .k-later { border-style: dashed; border-color: var(--muted); color: var(--ink2); }
 .zone.is-narrow .zone-meta, .zone.is-narrow .zl-place { display: none; }
 .zone.is-narrow .zone-kind { font-size: 9.5px; letter-spacing: 0.04em; }
-.zone-title { align-self: flex-start; padding: 0 2px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; color: var(--ink); }
+.zone-title { align-self: flex-start; padding: 0 2px; font-size: var(--title, 18px); line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; color: var(--ink); }
+/* A narrow room (a square at laptop width): the kind chip stays on one line and the title steps down a size,
+   so the text block stays inside the room its preview leaves it. */
+@container zone (max-width: 262px) {
+  .zone-kind { font-size: 9.5px; letter-spacing: 0.05em; }
+  .zone-title { font-size: min(var(--title, 18px), 18px); }
+  .hint-terminal .term-lines { font-size: 9.5px; }
+  .zl-code { display: none; } /* the stop's clock drops the room number so it clears the tag */
+}
 .zone-meta { align-self: flex-start; padding: 0 2px; font-family: var(--mono); font-size: 10.5px; line-height: 1.45; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); }
 .zone.is-hatched .zone-title, .zone.is-hatched .zone-meta, .zone.is-hatched .zone-label > span { background: var(--surface); }
 

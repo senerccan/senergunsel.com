@@ -425,10 +425,17 @@ button { font: inherit; color: inherit; }
   .brand { gap: 10px; min-width: 0; }
   .brand-mark { width: 36px; height: 36px; }
   .brand-mark svg { width: 16px; height: 30px; }
-  .brand-name { font-size: 13px; letter-spacing: 0.05em; }
+  .brand-name { font-size: 12px; letter-spacing: 0.04em; white-space: nowrap; }
+  .brand-text { min-width: 0; }
+  .back-link { padding: 0 12px; }
   .brand-sub { font-size: 10px; }
-  .directory, .fascia-tools .langs, .fascia-tools .theme-toggle, .fascia-tools .express-link { display: none; }
+  .directory, .fascia-tools .langs, .fascia-tools .express-link { display: none; }
   .fascia-tools { gap: 4px; flex-wrap: nowrap; }
+  /* The theme switch stays on phones as a dot (the homepage keeps its own in the menu). */
+  .fascia-tools .theme-toggle { position: relative; width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .fascia-tools .theme-toggle [data-theme-label] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .fascia-tools .theme-toggle .theme-dot { width: 14px; height: 14px; }
+  .fascia-tools:has(.menu-btn) .theme-toggle { display: none; }
   .lang-cycle {
     display: flex; align-items: center; justify-content: center;
     width: 44px; height: 44px; margin: 0; padding: 0;
@@ -473,6 +480,11 @@ button { font: inherit; color: inherit; }
 @media print {
   .fascia-tools, .dock, .band, .skip-link { display: none !important; }
   body { padding-bottom: 0; }
+}
+
+@media (max-width: 374px) {
+  .brand-name { font-size: 11px; letter-spacing: 0.03em; white-space: normal; }
+  .brand { gap: 8px; }
 }
 
 /* Long and short versions of the same label. */

@@ -77,7 +77,7 @@ export function defaults() {
 
 export function newTrend(n) {
   const mid = () => ratings(3, 3, 3, 3, 3, 3);
-  return { key: 'own' + n, name: n === 1 ? 'Your trend' : 'Your trend ' + n, look: "A trend you've spotted",
+  return { key: 'own' + n, name: n === 1 ? 'Your trend' : 'Your trend ' + n, look: '',
     custom: true, growth: 0, buzz: 3, size: 2, window: 'medium',
     ratings: { oldskool: mid(), authentic: mid(), slipon: mid() }, levers: usual() };
 }
@@ -175,4 +175,52 @@ export function lineNote(v) {
   if (v === LINE) return 'right on the line';
   const n = Math.abs(v - LINE);
   return n + ' point' + (n !== 1 ? 's' : '') + ' ' + (v > LINE ? 'above' : 'below') + ' the line';
+}
+
+// The smallest lever move from where the levers are now that turns the call into Back it:
+// { levers, steps, shoe, fit } or null. Only moves up count (pulling a lever back never helps
+// the fit), and no lever moves momentum, so a trend that isn't hot has no answer. Ties go to
+// fewer steps, then fewer levers touched, then the move that leans least on product (the
+// slowest lever), then marketing, then money.
+export function cheapestBacking(t) {
+  const [mom] = momentum(t);
+  if (mom < LINE) return null;
+  const base = t.levers;
+  let best = null;
+  const less = (a, b) => { for (let i = 0; i < a.length; i++) { if (a[i] !== b[i]) return a[i] < b[i]; } return false; };
+  for (let p = base.product; p <= 5; p++) {
+    for (let mk = base.marketing; mk <= 5; mk++) {
+      for (let mo = base.money; mo <= 5; mo++) {
+        const lv = { product: p, marketing: mk, money: mo };
+        const [shoe, fit] = bestShoe({ ...t, levers: lv }, true);
+        if (callFor(mom, fit) !== 'back') continue;
+        const steps = (p - base.product) + (mk - base.marketing) + (mo - base.money);
+        const touched = (p > base.product ? 1 : 0) + (mk > base.marketing ? 1 : 0) + (mo > base.money ? 1 : 0);
+        const rank = [steps, touched, p, mk, mo];
+        if (best === null || less(rank, best[0])) best = [rank, { levers: lv, steps, shoe, fit }];
+      }
+    }
+  }
+  return best ? best[1] : null;
+}
+
+// One line on what would change the call, for the call card.
+export function coach(t) {
+  const e = evaluate(t);
+  if (e.call === 'back') return 'Both scores clear the line.';
+  if (e.call === 'test') {
+    const move = cheapestBacking(t);
+    if (move === null) {
+      const [, top] = bestShoe({ ...t, levers: { product: 5, marketing: 5, money: 5 } }, true);
+      return 'Even with every lever all in, the best shoe only reaches fit ' + top + '.';
+    }
+    const parts = LEVERS.filter((lv) => move.levers[lv.key] > t.levers[lv.key])
+      .map((lv) => lv.name.toLowerCase() + ' to ' + LEVEL_WORDS[move.levers[lv.key] - 1]);
+    return 'Cheapest way to Back it from here: ' + parts.join(' and ') + '. That takes the ' + shoeName(move.shoe) + ' to fit ' + move.fit + '.';
+  }
+  if (e.call === 'hold') {
+    const n = LINE - e.momentum;
+    return 'Momentum is ' + n + ' point' + (n !== 1 ? 's' : '') + " short of hot, and the levers don't change that: growth, buzz and size do.";
+  }
+  return 'Neither score is near enough. The levers move the fit, not the heat.';
 }

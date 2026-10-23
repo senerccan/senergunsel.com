@@ -2,7 +2,7 @@
 // Python version); this file wires the controls and draws the wall.
 import {
   LINE, SHOES, TRAITS, WINDOWS, LEVERS, LEVEL_WORDS, BUZZ_WORDS, SIZE_WORDS, CALLS, MAX_TRENDS,
-  defaults, newTrend, momentum, evaluate, leverShift, lineNote, shoeName, clamp
+  defaults, newTrend, momentum, evaluate, leverShift, lineNote, shoeName, clamp, coach
 } from './webcatcher-model.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -19,6 +19,57 @@ const STAR = 'M12 2.4l2.9 6.1 6.7.8-4.9 4.6 1.3 6.6L12 17.2l-5.9 3.3 1.3-6.6-4.9
 const lab = $('#lab');
 const state = { trends: defaults(), sel: 'samba', made: 0, shoe: 'oldskool' };
 let gridFor = null;
+
+/* ---------------------------------------------------------------- Keeping your setup
+   Your trends stay in this tab while you look around the store (sessionStorage, like the
+   door sensor's visit id: nothing leaves the browser, and closing the tab clears it). */
+const STORE = 'scg.wc';
+const isInt = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+function validTrend(t) {
+  if (!t || typeof t !== 'object' || typeof t.key !== 'string' || !/^[a-z0-9]{1,12}$/.test(t.key)) return false;
+  if (typeof t.name !== 'string' || !t.name.trim() || t.name.length > 28 || typeof t.look !== 'string' || t.look.length > 60) return false;
+  if (!isInt(t.growth, -50, 50) || t.growth % 5 || !isInt(t.buzz, 1, 5) || !isInt(t.size, 1, 5) || !WINDOWS[t.window]) return false;
+  if (typeof t.custom !== 'boolean' || !t.ratings || !t.levers) return false;
+  for (const s of SHOES) {
+    const r = t.ratings[s.key];
+    if (!r || !TRAITS.every((tr) => isInt(r[tr.key], 1, 5))) return false;
+  }
+  return LEVERS.every((lv) => isInt(t.levers[lv.key], 1, 5));
+}
+function restore() {
+  try {
+    const raw = sessionStorage.getItem(STORE);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (!d || !Array.isArray(d.trends) || d.trends.length < 1 || d.trends.length > MAX_TRENDS || !d.trends.every(validTrend)) return;
+    const keys = new Set(d.trends.map((t) => t.key));
+    if (keys.size !== d.trends.length || !keys.has(d.sel) || !isInt(d.made, 0, 999) || !SHOES.some((s) => s.key === d.shoe)) return;
+    // only the five examples and trends of your own, each in the right shape
+    const ex = new Map(defaults().map((t) => [t.key, t]));
+    state.trends = d.trends.map((t) => {
+      const base = ex.get(t.key);
+      if (base) return { ...base, growth: t.growth, buzz: t.buzz, size: t.size, window: t.window, ratings: t.ratings, levers: t.levers };
+      return t.custom && t.key.startsWith('own') ? { ...t, name: t.name.trim() } : null;
+    });
+    if (state.trends.some((t) => !t)) { state.trends = defaults(); return; }
+    state.sel = d.sel;
+    state.made = d.made;
+    state.shoe = d.shoe;
+  } catch (e) { /* nothing kept */ }
+}
+let saveTimer = null;
+const FRESH = JSON.stringify({ trends: defaults(), sel: 'samba', made: 0, shoe: 'oldskool' });
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const now = JSON.stringify({ trends: state.trends, sel: state.sel, made: state.made, shoe: state.shoe });
+    try { if (now === FRESH) sessionStorage.removeItem(STORE); else sessionStorage.setItem(STORE, now); } catch (e) { /* fine */ }
+  }, 150);
+}
+function forget() {
+  clearTimeout(saveTimer);
+  try { sessionStorage.removeItem(STORE); } catch (e) { /* fine */ }
+}
 
 const cur = () => state.trends.find((t) => t.key === state.sel);
 const all = () => state.trends.map((t) => ({ t, e: evaluate(t) }));
@@ -40,16 +91,21 @@ function renderCard() {
   const t = cur();
   const [mom, parts] = momentum(t);
   const nameBox = $('[data-out="name"]', lab);
+  const lookBox = $('[data-out="look"]', lab);
   if (t.custom) {
     if (!$('input', nameBox) || nameBox.dataset.for !== t.key) {
-      nameBox.innerHTML = '<label class="ctl-k" for="wc-name">Name your trend</label><input id="wc-name" class="wc-name-in" type="text" maxlength="28" autocomplete="off" value="' + esc(t.name) + '">';
+      nameBox.innerHTML = '<label class="ctl-k" for="wc-name">Name your trend</label><input id="wc-name" class="wc-name-in" type="text" maxlength="28" autocomplete="off" value="' + esc(t.name) + '">' +
+        '<label class="ctl-k" for="wc-look">What it looks like</label><input id="wc-look" class="wc-look-in" type="text" maxlength="60" autocomplete="off" placeholder="One line, optional" value="' + esc(t.look) + '">';
       nameBox.dataset.for = t.key;
     }
+    lookBox.textContent = '';
+    lookBox.hidden = true;
   } else {
     nameBox.innerHTML = '<h4>' + esc(t.name) + '</h4>';
     nameBox.dataset.for = t.key;
+    lookBox.textContent = t.look;
+    lookBox.hidden = false;
   }
-  $('[data-out="look"]', lab).textContent = t.look;
   $('[data-out="mom"]', lab).textContent = String(mom);
   $('[data-out="mom"]', lab).classList.toggle('is-hot', mom >= LINE);
   const seg = (k) => (parts[k] > 0 ? '<span class="mb-' + k + '" style="width:' + parts[k] + '%"></span>' : '');
@@ -149,14 +205,6 @@ function renderLevers() {
     el.closest('.ctl').classList.toggle('is-dead', dead);
   });
 }
-// What would flip the call, in a line.
-function nudge(t, e) {
-  if (e.call === 'back') return 'Both scores clear the line.';
-  if (e.call === 'test') return 'The ' + shoeName(e.shoe) + ' is ' + (LINE - e.fit) + (LINE - e.fit === 1 ? ' point' : ' points') + ' short of a fit. ' +
-    (t.window === 'short' ? 'Marketing and money can still move it; product can’t land in time.' : 'More product, marketing or money closes the gap.');
-  if (e.call === 'hold') return 'Momentum is ' + (LINE - e.momentum) + (LINE - e.momentum === 1 ? ' point' : ' points') + ' short of hot, and the levers don’t change that: growth, buzz and size do.';
-  return 'Neither score is near enough. Raising the levers moves the fit, not the heat.';
-}
 function renderCall() {
   const t = cur();
   const e = evaluate(t);
@@ -170,7 +218,7 @@ function renderCall() {
     '<div><dt>Best fit</dt><dd>' + e.fit + (dFit ? '<small class="' + (dFit > 0 ? 'up' : 'down') + '">' + signed(dFit) + '</small>' : '') + '</dd><dd class="wc-sub">' + esc(shoeName(e.shoe)) + ', ' + lineNote(e.fit) + '</dd></div></dl>' +
     '<p class="wc-meta">Lasts ' + WINDOWS[t.window].name.toLowerCase() + ' · Bet: ' + e.bet.toLowerCase() +
     (e.base_call !== e.call ? ' · Before the levers: ' + CALLS[e.base_call] : '') + '</p>' +
-    '<p class="wc-nudge">' + esc(nudge(t, e)) + '</p>';
+    '<p class="wc-nudge">' + esc(coach(t)) + '</p>';
   $('[data-out="fits"]', lab).innerHTML = SHOES.map((s) => {
     const f = e.fits[s.key];
     const d = f.now - f.base;
@@ -400,6 +448,7 @@ function update(opts = {}) {
   renderCall();
   drawWall();
   announce();
+  save();
 }
 function pick(key) {
   if (!state.trends.some((t) => t.key === key)) return;
@@ -454,6 +503,7 @@ function init() {
       state.shoe = 'oldskool';
       gridFor = null;
       update();
+      forget();
     }
   });
   lab.addEventListener('keydown', (e) => {
@@ -482,18 +532,25 @@ function init() {
     } else if (el.id === 'wc-name') {
       t.name = el.value.trim() || 'Your trend';
       update({ typing: true });
+    } else if (el.id === 'wc-look') {
+      t.look = el.value.trim();
+      save();
     }
   });
   lab.addEventListener('change', (e) => {
+    const t = cur();
     if (e.target.id === 'wc-name') {
-      const t = cur();
       t.name = e.target.value.trim() || 'Your trend';
       e.target.value = t.name;
+    } else if (e.target.id === 'wc-look') {
+      t.look = e.target.value.trim();
+      e.target.value = t.look;
     }
   });
   $$('details.numbers', lab).forEach((d) => d.addEventListener('toggle', fillTable));
   wireWall();
   document.addEventListener('scg:theme', drawWall);
+  restore();
   update();
 }
 
