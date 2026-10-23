@@ -158,21 +158,23 @@ export const FLOORS = [
         code: 'G03',
         place: 'fit',
         kind: 'Work · Vans',
-        tag: 'Soon',
+        tag: 'Playable',
         format: 'S',
         hint: 'sliders',
-        status: 'soon',
+        status: 'open',
         forecast: 0.6,
-        title: 'Web Catcher',
-        zoneMeta: 'Shanghai · 2024',
-        meta: 'Vans · Shanghai · 2024',
-        body: "A tool I built at Vans that scores how closely core products follow new footwear trends, with sliders to test launch scenarios. I'm rebuilding it to run right here in your browser.",
+        title: 'Which trends should Vans chase?',
+        zoneMeta: 'Web Catcher · Shanghai · 2024',
+        meta: 'Web Catcher · Vans, Shanghai, 2024 · rebuilt 2026',
+        body: "A tool I built at Vans to decide which footwear trends are worth chasing. Read how hot a trend is, rate how close Vans' three core shoes come to it, then pull the launch levers and see the call: back it, test small, hold or pass. I rebuilt it in 2026 to play right here.",
         facts: [
-          { k: '3', v: 'scenario sliders: product, marketing, money' },
-          { k: 'Python', v: 'with Streamlit, Plotly and pandas' }
+          { k: '5', v: 'trends from 2024 to try on, plus your own' },
+          { k: '3', v: 'core shoes, rated on six traits' },
+          { k: '3', v: 'launch levers: product, marketing, money' },
+          { k: '4', v: 'calls: back it, test small, hold or pass' }
         ],
-        cta: null,
-        href: null
+        cta: 'Try it on',
+        href: '/projects/web-catcher/'
       },
       {
         key: 'capstone',
