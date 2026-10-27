@@ -30,6 +30,8 @@ The [Director's Cut](https://senergunsel.com/notes/directors-cut/) explains how 
 | `public/assets/js/webcatcher.js` | Web Catcher, playable on `/projects/web-catcher/`: the trends, the star ratings, the levers and the wall |
 | `public/assets/js/backhouse-data.js` | G01's back of house: counts and dates from the project's Notion hub, generated from its database exports (process facts only, no names, no store data) |
 | `public/assets/js/backhouse.js` | Draws G01's back of house: the hub as a plan of rooms, the launch plan as a strip, the systems as bars |
+| `public/assets/js/ua.js` | G01's two playable figures (a visit as the store sees it; the floor mapped and re-mapped) and the click-to-play clips |
+| `public/assets/video/` | Short muted clips from Sener's own phone videos of the store, with poster frames |
 | `public/assets/js/capstone-data.js` | The Vans capstone survey, anonymized (220 responses), and its regression results, generated from the files in `downloads/` |
 | `public/assets/js/capstone.js` | The survey sliced live on `/projects/vans-capstone/`, and the regression chart |
 | `public/assets/js/door.js` | The browser side of the door sensor |
