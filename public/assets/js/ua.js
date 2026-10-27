@@ -136,7 +136,7 @@ function visit() {
     { name: 'Enter.', text: 'The dot crosses the gate: one more visitor in the zone. The store counts a person, never a face.', hold: 2200 },
     { name: 'Browse.', text: 'Moving through the zone: the camera tracks where the dot goes and how fast, nothing about who it is.', hold: 2400 },
     { name: 'Dwell.', text: 'The dot stops next to fixture 12 and a clock starts. Past the threshold, this counts as dwelling at product B.', hold: 4200 },
-    { name: 'Engage.', text: 'A reach for product B: its RFID tag moves and the camera sees the hand. That trigger sends product B to the LED wall beside the fixture.', hold: 3600 },
+    { name: 'Engage.', text: 'A reach for product B: its RFID tag moves and the camera sees the hand. That trigger puts product B on the LED wall beside the fixture, at the height of the hand that picked it up, and it fades once the shoe is back.', hold: 3600 },
     { name: 'Leave.', text: 'The dot walks out, the wall returns to its ambient content after a cooldown, and the visit is a row of states and seconds.', hold: 2600 },
   ];
   player(root, steps, draw);
