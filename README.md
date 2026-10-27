@@ -16,7 +16,7 @@ The [Director's Cut](https://senergunsel.com/notes/directors-cut/) explains how 
 | `public/index.html` | The homepage: door band, walk-in headline, floor plan, store locator, register |
 | `public/express/` | The Express lane: everything a recruiter needs in 30 seconds |
 | `public/projects/` | One folder per project: the Under Armour case study, the store rollout model (G07), the Melbourne Tableau dashboard (G06), Same store, two streets (G02), where those two meet, Web Catcher (G03) and the Vans capstone (G04) |
-| `public/downloads/` | Files to take away: the full Excel workbook behind G07; the Vans capstone's report, presentation, R script and anonymized survey data (G04); the 2024 framework deck Web Catcher grew from (G03) |
+| `public/downloads/` | Files to take away: the full Excel workbook behind G07; the Vans capstone's report, presentation, R script and anonymized survey data (G04); the 2024 framework deck Web Catcher grew from (G03); the handover guide for the Under Armour project's Notion hub (G01) |
 | `public/notes/` | Field notes, starting with the Director's Cut |
 | `public/assets/js/store.js` | **The floor plan.** Every zone and floor is defined here and nowhere else |
 | `public/assets/js/signs.js` | Store signage in English, Turkish, French and Chinese |
@@ -28,11 +28,14 @@ The [Director's Cut](https://senergunsel.com/notes/directors-cut/) explains how 
 | `public/assets/js/viz.js` | The click-to-load Tableau dashboard on `/projects/melbourne-site-tiering/` |
 | `public/assets/js/webcatcher-model.js` | Web Catcher's rules in JavaScript, step for step the same as `webcatcher_model.py` in [project_webcatcher](https://github.com/senerccan/project_webcatcher) |
 | `public/assets/js/webcatcher.js` | Web Catcher, playable on `/projects/web-catcher/`: the trends, the star ratings, the levers and the wall |
+| `public/assets/js/backhouse-data.js` | G01's back of house: counts and dates from the project's Notion hub, generated from its database exports (process facts only, no names, no store data) |
+| `public/assets/js/backhouse.js` | Draws G01's back of house: the hub as a plan of rooms, the launch plan as a strip, the systems as bars |
 | `public/assets/js/capstone-data.js` | The Vans capstone survey, anonymized (220 responses), and its regression results, generated from the files in `downloads/` |
 | `public/assets/js/capstone.js` | The survey sliced live on `/projects/vans-capstone/`, and the regression chart |
 | `public/assets/js/door.js` | The browser side of the door sensor |
 | `src/worker.js` | The door sensor: a Cloudflare Worker and a Durable Object that count visits |
 | `wrangler.jsonc` | Cloudflare configuration |
+| `scripts/` | Build helpers, run by hand: the social cards (`render-images.py`), the store check, G01's back-of-house data from the Notion exports (`backhouse-data.py`) and the public copy of its handover guide (`handover-guide-pdf.py`) |
 
 Plain HTML, CSS and JavaScript. No framework and no build step, so the store keeps working for years
 without upkeep.

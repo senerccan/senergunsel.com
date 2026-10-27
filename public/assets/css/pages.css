@@ -741,6 +741,90 @@
   .prose .dl-list li { grid-template-columns: 1fr; gap: 2px; }
 }
 
+/* ---------- G01 · Back of house (the project's Notion hub, drawn) ----------
+   Three steps in a lab: the hub as a floor plan of rooms (buttons on a grid, the
+   walls are borders), the launch plan as a strip by team, and the systems as bars.
+   Then two static figures in the prose: the weekly rhythm and the handover scan. */
+.page-body .bh-intro { padding-bottom: 16px; }
+.lab:not(.is-live) .bh-cols, .lab:not(.is-live) .bh-legend { display: none; }
+.bh-cols { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); gap: 24px; align-items: start; }
+.bh-plan { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(64px, auto)) minmax(64px, auto); gap: 0; border: 3px solid var(--line); background: var(--line); }
+.bh-room { position: relative; min-width: 0; margin: 0; padding: 10px 10px 9px; border: 0; outline-offset: -3px; background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 2px; box-shadow: inset 0 0 0 1px var(--line); }
+.bh-room:hover { background: color-mix(in srgb, var(--ink) 5%, var(--surface)); }
+.bh-room[aria-pressed="true"] { background: var(--ink); color: var(--onink); z-index: 1; box-shadow: inset 0 0 0 1px var(--ink); }
+.bh-room:focus-visible { outline: 2px solid var(--accent); z-index: 2; }
+.bh-code { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; color: var(--muted); }
+.bh-room[aria-pressed="true"] .bh-code, .bh-room[aria-pressed="true"] .bh-count, .bh-room[aria-pressed="true"] .bh-q { color: color-mix(in srgb, var(--onink) 72%, transparent); }
+.bh-name { font-size: 15px; line-height: 1.15; font-weight: 800; letter-spacing: -0.01em; }
+.bh-count { font-family: var(--mono); font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--ink2); }
+.bh-q { position: absolute; right: 8px; top: 8px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 5px; border: 1px solid currentColor; }
+.bh-room.q-why .bh-q { color: var(--atext); }
+.bh-room.q-status .bh-q { color: var(--revisit, #2A5BD7); }
+.bh-room.q-next .bh-q { color: var(--ink2); }
+.bh-room[aria-pressed="true"] .bh-q { color: var(--onink); border-color: color-mix(in srgb, var(--onink) 55%, transparent); }
+.bh-panel { min-width: 0; padding: 18px 20px 20px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.bh-panel p { margin: 0; }
+.bh-panel-k { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+.bh-panel-k .bh-code { font-size: 11px; padding: 2px 6px; border: 1px solid var(--line); }
+.bh-panel-q { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--atext); }
+.bh-panel-held { font-size: 15px; line-height: 1.55; color: var(--ink2); }
+.bh-panel-f { padding-top: 10px; border-top: 1px solid var(--hair); display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--mono); font-size: 11px; }
+.bh-panel-f > span:first-child { width: 100%; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.bh-field { padding: 2px 7px; border: 1px solid var(--hair); color: var(--ink2); }
+.bh-legend { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--ink2); }
+.bh-legend span { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 5px; border: 1px solid currentColor; }
+.bh-legend .q-why { color: var(--atext); }
+.bh-legend .q-status { color: var(--revisit, #2A5BD7); }
+.bh-legend .q-next { color: var(--ink2); }
+/* the launch strip */
+.bh-planchart { min-height: 0; }
+.bh-scroll { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+.bh-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.bh-scroll > div { width: 100%; }
+.bh-scroll-hint { display: none; margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.bh .chart .sep { stroke: var(--hair); stroke-width: 1; }
+.bh .chart .lane { fill: var(--ink); font-weight: 600; font-size: 11.5px; }
+.bh .chart .lab { fill: var(--ink); font-size: 12px; }
+.bh .chart .pl-bar { fill: var(--ink2); }
+.bh .chart .pl-in { fill: var(--onink); font-size: 10.5px; }
+:root[data-theme="after"] .bh .chart .pl-in { fill: var(--ground); }
+.bh .chart .pl-t { fill: var(--ink2); font-size: 10.5px; }
+.bh .chart .pl-mark { fill: var(--ink); }
+.bh .chart .pl-ghost { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 2 2; }
+.bh .chart .pl-t-ghost { fill: var(--muted); }
+.bh .chart .pl-open { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.bh .chart .pl-t-open { fill: var(--atext); font-weight: 700; }
+.bh .chart .pl-focus, .bh .chart .sy-focus { fill: color-mix(in srgb, var(--accent) 12%, transparent); stroke: var(--accent); stroke-width: 1; pointer-events: none; }
+.bh .chart .hit { fill: transparent; cursor: crosshair; }
+.chart-legend .lg-plbar::before { width: 14px; height: 8px; background: var(--ink2); }
+.chart-legend .lg-plmark::before { width: 8px; height: 8px; background: var(--ink); transform: rotate(45deg); }
+.chart-legend .lg-plghost::before { width: 8px; height: 8px; background: transparent; box-shadow: inset 0 0 0 1.2px var(--muted); transform: rotate(45deg); }
+.chart-legend .lg-plopen::before { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+/* the systems */
+.bh .chart .sy-rest { fill: var(--hair); }
+.bh .chart .sy-done { fill: var(--ink); }
+.bh .chart .sy-n { fill: var(--ink2); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chart-legend .lg-sydone::before { width: 10px; height: 10px; background: var(--ink); }
+.chart-legend .lg-syrest::before { width: 10px; height: 10px; background: var(--hair); }
+.bh-guard { margin: 0; padding: 16px 20px; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+.bh-guard p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--ink); }
+/* in the write-up */
+.prose .bh-scan { padding-left: 24px; }
+.prose .bh-scan li { margin-bottom: 6px; }
+.prose .bh-scan b { font-weight: 750; }
+@media (max-width: 960px) {
+  .bh-cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .bh-plan { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: minmax(64px, auto); }
+  .bh-plan .bh-room { grid-row: auto !important; grid-column: span 3 !important; }
+  .bh-plan .bh-room[data-room="hub"] { grid-column: span 6 !important; }
+  .bh-room { padding: 9px 8px 8px; }
+  .bh-name { font-size: 14px; }
+  .bh-q, .bh-legend { display: none; }
+  .bh-scroll-hint { display: block; }
+}
+
 /* ---------- 404 ---------- */
 .lost { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding-top: 64px; padding-bottom: 80px; }
 .lost h1 { margin: 0; font-size: clamp(48px, 8vw, 112px); line-height: 0.95; font-weight: 800; letter-spacing: -0.045em; }
