@@ -187,7 +187,7 @@ function floor() {
   }).join('');
   stage.innerHTML = `
 <svg viewBox="0 0 640 420" role="img" aria-labelledby="floor-svg-t" class="pf-svg">
-  <title id="floor-svg-t">The store floor as a map: LED panels along the top wall, a stage with the rug on the left, six fixtures with their product boxes, four cameras in the corners, four zones and a gate at the entrance. When merchandising moves the fixtures, the boxes are redrawn, each fixture is pointed at the camera that sees it best, the zones and gates are reset, the triggers re-pointed, and the dashboard checked live.</title>
+  <title id="floor-svg-t">The store floor as a map: LED panels along the top wall, a stage on the left, the rug at the entrance, six fixtures with their product boxes, four cameras in the corners, four zones and a gate at the entrance. When merchandising moves the fixtures, the boxes are redrawn, each fixture is pointed at the camera that sees it best, the zones and gates are reset, the triggers re-pointed, and the dashboard checked live.</title>
   <defs>
     <pattern id="f-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" class="v-grid"/></pattern>
     <pattern id="f-rug" width="60" height="60" patternUnits="userSpaceOnUse"><image href="/assets/img/ua-rug-tile.webp" width="60" height="60" preserveAspectRatio="xMidYMid slice"/></pattern>
@@ -196,8 +196,10 @@ function floor() {
   <rect x="0" y="0" width="640" height="420" fill="url(#f-grid)"/>
   <g class="f-leds">${[70, 230, 390].map((x) => '<rect x="' + x + '" y="14" width="110" height="14" class="f-led"/><text x="' + (x + 55) + '" y="40" class="v-mono v-dim" text-anchor="middle">LED</text>').join('')}</g>
   <g class="f-zones"></g>
-  <rect x="110" y="240" width="90" height="110" class="f-stage" fill="url(#f-rug)"/>
+  <rect x="110" y="240" width="90" height="110" class="f-stage"/>
   <text x="155" y="300" class="v-mono f-stage-t" text-anchor="middle">STAGE</text>
+  <rect x="286" y="364" width="128" height="32" class="f-rug" fill="url(#f-rug)"/>
+  <text x="350" y="384" class="v-mono f-stage-t" text-anchor="middle">RUG</text>
   <g class="f-cams">${CAMS.map(([id, x, y]) => '<g class="f-cam" data-cam="' + id + '" transform="translate(' + x + ' ' + y + ')"><circle r="9"/><text y="4" text-anchor="middle" class="v-mono f-cam-t">' + id.slice(1) + '</text></g>').join('')}</g>
   <g class="f-links"></g>
   <g class="f-fixtures">${Object.entries(FIX).map(([id, f]) => '<g class="f-fix" data-fix="' + id + '" style="transform:translate(' + f.x + 'px,' + f.y + 'px)"><rect width="' + f.w + '" height="' + f.h + '" class="f-fix-r"/>' + boxes(f) + '<text class="v-mono f-fix-t" x="' + (f.w / 2) + '" y="' + (f.h + 14) + '" text-anchor="middle">' + id.toUpperCase() + ' · ' + f.cam + '</text></g>').join('')}</g>

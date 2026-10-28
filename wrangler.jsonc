@@ -1,6 +1,7 @@
 {
   // Flagship · Store 001 — Cloudflare Workers config.
-  // Static pages live in ./public. Only /api/* (the door sensor) runs the Worker.
+  // Static pages live in ./public. Only /api/* (the door sensor) and /assets/video/*
+  // (the clips, served in byte ranges so Safari can play them) run the Worker.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "senergunsel",
   "main": "src/worker.js",
@@ -10,7 +11,7 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/assets/video/*"]
   },
   "durable_objects": {
     "bindings": [{ "name": "DOOR", "class_name": "DoorCounter" }]

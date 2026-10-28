@@ -894,7 +894,8 @@
 .pf-svg .f-zone.is-hot rect { fill: color-mix(in srgb, var(--accent) 12%, transparent); stroke: var(--accent); }
 .pf-svg .f-zone-t { fill: var(--ink2); font-size: 9.5px; }
 .pf-svg .f-zone.is-hot .f-zone-t { fill: var(--atext); }
-.pf-svg .f-stage { stroke: var(--ink); stroke-width: 1.5; }
+.pf-svg .f-stage { fill: color-mix(in srgb, #2B7A4B 22%, var(--surface)); stroke: var(--ink); stroke-width: 1.5; }
+.pf-svg .f-rug { stroke: var(--ink); stroke-width: 1; }
 .pf-svg .f-stage-t { fill: #fff; font-size: 10px; paint-order: stroke; stroke: rgba(0,0,0,0.6); stroke-width: 3px; }
 .pf-svg .f-cam circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; transition: fill 0.3s ease; }
 .pf-svg .f-cam.is-hot circle { fill: var(--accent); stroke: var(--accent); }

@@ -1,5 +1,6 @@
 // Flagship · Store 001
-// Static pages are served straight from /public. Only /api/* runs this Worker.
+// Static pages are served straight from /public. Only /api/* and /assets/video/* run this Worker:
+// the clips need byte-range answers (206) or Safari refuses to play them.
 // Door sensor 01 counts visits anonymously: a random per-tab visit id, no
 // cookies, no IP addresses stored, nothing that identifies a person.
 import { DurableObject } from 'cloudflare:workers';
@@ -189,9 +190,37 @@ async function door(request, env, url) {
   return json(isBot ? { ok: true } : await stub.leave(sid, body.zones));
 }
 
+// The clips are small (a few MB), so a range request is answered from the whole file.
+async function video(request, env) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Use GET.', { status: 405, headers: { allow: 'GET, HEAD' } });
+  const full = await env.ASSETS.fetch(new Request(request.url, { method: 'GET' }));
+  if (!full.ok) return full;
+  const buf = await full.arrayBuffer();
+  const total = buf.byteLength;
+  const headers = new Headers(full.headers);
+  headers.set('accept-ranges', 'bytes');
+  headers.set('cache-control', 'public, max-age=86400');
+  const range = request.headers.get('range');
+  const m = range && /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  if (!m || (m[1] === '' && m[2] === '')) {
+    headers.set('content-length', String(total));
+    return new Response(request.method === 'HEAD' ? null : buf, { status: 200, headers });
+  }
+  let start = m[1] === '' ? Math.max(0, total - Number(m[2])) : Number(m[1]);
+  let end = m[1] !== '' && m[2] !== '' ? Math.min(Number(m[2]), total - 1) : total - 1;
+  if (start > end || start >= total) {
+    headers.set('content-range', 'bytes */' + total);
+    return new Response(null, { status: 416, headers });
+  }
+  headers.set('content-range', 'bytes ' + start + '-' + end + '/' + total);
+  headers.set('content-length', String(end - start + 1));
+  return new Response(request.method === 'HEAD' ? null : buf.slice(start, end + 1), { status: 206, headers });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith('/assets/video/')) return video(request, env);
     if (url.pathname.startsWith('/api/door')) {
       try {
         return await door(request, env, url);
