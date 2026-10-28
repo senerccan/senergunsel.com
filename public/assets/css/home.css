@@ -262,9 +262,11 @@
 .plan-door { position: absolute; left: 50%; bottom: -3px; width: 72px; height: 3px; transform: translateX(-50%); background: var(--ground); pointer-events: none; }
 .plan-door i { position: absolute; left: -3px; right: -3px; bottom: -4px; height: 10px; border-left: 3px solid var(--line); border-right: 3px solid var(--line); }
 .plan-door b { position: absolute; left: 50%; top: 9px; transform: translateX(-50%); font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.plan-lift { position: absolute; right: 12px; bottom: 4px; pointer-events: none; display: flex; align-items: center; gap: 6px; }
-.plan-lift::before { content: ""; width: 10px; height: 14px; border: 1px solid var(--muted); border-radius: 1px; background: linear-gradient(90deg, transparent 49%, var(--muted) 49% 51%, transparent 51%); opacity: 0.8; }
-.plan-lift b { font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+/* the lift sits in the outer wall at the bottom right, like the entrance does on the ground floor:
+   a car straddling the wall, its sign below the wall */
+.plan-lift { position: absolute; right: 30px; bottom: -3px; width: 30px; height: 3px; background: var(--ground); pointer-events: none; z-index: 2; }
+.plan-lift::before { content: ""; position: absolute; left: 50%; bottom: -7px; width: 16px; height: 17px; transform: translateX(-50%); border: 1.5px solid var(--line); background-color: var(--ground); background-image: linear-gradient(90deg, transparent calc(50% - 0.75px), var(--line) calc(50% - 0.75px) calc(50% + 0.75px), transparent calc(50% + 0.75px)); }
+.plan-lift b { position: absolute; left: 50%; top: 13px; transform: translateX(-50%); font-family: var(--mono); font-size: 9px; line-height: 1; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .zone-door { position: absolute; left: 50%; bottom: 0; height: 3px; width: calc(16px + var(--prio, 0) * 48px); transform: translateX(-50%); background: var(--accent); opacity: 0.85; pointer-events: none; transition: width 0.3s ease, opacity 0.3s ease; }
 .zone:hover .zone-door, .zone.is-sel .zone-door { opacity: 1; width: calc(28px + var(--prio, 0) * 56px); }
 @media (prefers-reduced-motion: reduce) { .lift-cab { transition: none; } .lift-cab.is-moving svg { animation: none; } .zone-door { transition: none; } }
