@@ -96,7 +96,7 @@
           </div>
 
           <h2 id="drawn">The store, drawn</h2>
-          <p>The concept plan, redrawn so the page can show what the store does. Roughly to scale: the entrance and its gate line at the front, the green carpet with the rug just inside it, the court painted on the floor, the core (the stage) at the centre under the chrome hand, the giant ball at the front left, the LED strips high on the walls, the fixtures by zone, the IT room and the storage annex at the back, and the hardware in the ceiling. Press a trigger and a visitor walks in; the store answers. Switch to the plan to see it the way the concept deck drew it, and turn the hardware layers off to see the building alone. Where the cameras, antennas and speakers sit here is illustrative, not the store's plan.</p>
+          <p>The concept plan, redrawn so the page can show what the store does. Roughly to scale: the entrance and its gate line at the front, the green carpet with the rug just inside it, the court painted on the floor, the core (the stage) at the centre under the chrome hand, the giant ball at the front left, the LED strips high on the walls, the fixtures by zone, the IT room and the storage annex at the back, and the hardware in the ceiling. Press a trigger and a visitor walks in; the store answers. Two of the triggers are engagements (a puck shaken in a backpack, a reach read by the camera) and overlay a product's details on the content already playing; the third is a zone entry, which wakes up that zone's own content. Switch to the plan to see it the way the concept deck drew it, and turn the hardware layers off to see the building alone. Where the cameras, antennas and speakers sit here is illustrative, not the store's plan.</p>
           <figure class="pf pf-wide" id="store3d" aria-labelledby="store3d-t">
             <figcaption class="pf-head"><span class="pf-t" id="store3d-t">The store, in three dimensions</span><span class="pf-views" role="group" aria-label="View"><button type="button" data-view="iso" aria-pressed="true">Isometric</button><button type="button" data-view="plan" aria-pressed="false">Plan</button></span><span class="tag tag-accent">Playable</span></figcaption>
             <div class="pf-body">
@@ -109,9 +109,9 @@
               </div>
             </div>
             <div class="pf-controls" role="group" aria-label="Triggers">
-              <button type="button" data-trigger="pack" aria-pressed="false">Pull the backpack</button>
+              <button type="button" data-trigger="pack" aria-pressed="false">Shake the backpack</button>
+              <button type="button" data-trigger="shirt" aria-pressed="false">Reach for the shirt</button>
               <button type="button" data-trigger="zone" aria-pressed="false">Walk into running</button>
-              <button type="button" data-trigger="shirt" aria-pressed="false">Grab the shirt</button>
               <button type="button" data-trigger="check" aria-pressed="false">Systems check</button>
             </div>
             <div class="pf-layers" role="group" aria-label="Layers">
@@ -128,7 +128,7 @@
           <p>I started as the sole operator of the store's proprietary intelligent-store platform, handling the software and running the analytics. By the end of the project, Under Armour's retail, creative, marketing and operations teams were running it themselves, because I trained them and wrote the handover documentation.</p>
 
           <h2>How the store sees a visit</h2>
-          <p>The store watches itself the way a good floor manager does, minus the memory for faces. Cameras count people across gate lines and follow them as dots between zones; a dot that stops near a fixture is dwelling; a reach for a product moves its RFID tag and the camera sees the hand, and that is an engagement, which can call the product up on the LED wall beside it. Step through one visit; the real thing is in the clips underneath.</p>
+          <p>The store watches itself the way a good floor manager does, minus the memory for faces. Cameras count people across gate lines and follow them as dots between zones; a dot that stops near a fixture is dwelling. A reach for a product is an engagement, and the store reads it two ways: a backpack or a shoe carries an RFID puck, so a light shake of it is the trigger; a shirt or a bra hanging on a rail carries no puck, so the camera reads the dwell and then the reach. Either way the product's details and stock overlay the content already playing on the LED wall beside it. Zones can trigger on entry too, which is a world of its own: walk into one and content exclusive to that trigger wakes up on its wall, replacing the mood content or layering over it. Step through one visit; the real thing is in the clips underneath.</p>
           <figure class="pf" id="visit" aria-labelledby="visit-t">
             <figcaption class="pf-head"><span class="pf-t" id="visit-t">A visit, as the store sees it</span><span class="tag tag-accent">Playable</span></figcaption>
             <div class="pf-body">
@@ -163,7 +163,7 @@
                 <video playsinline muted loop preload="metadata" poster="/assets/video/ua-wall-answers-poster.webp" width="480" height="848" aria-label="Phone video: a hand reaches towards shoes on a shelf and the LED wall switches between shoes on red and blue backgrounds"><source src="/assets/video/ua-wall-answers.mp4" type="video/mp4"></video>
                 <button type="button" class="clip-play" data-clip-play aria-pressed="false"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14"><path d="M3 2l9 5-9 5z" fill="currentColor"/></svg><span>Play</span></button>
               </div>
-              <figcaption>The wall answers: reach for a shoe and the pop-up switches to the shoe in hand. 13 seconds, no sound.</figcaption>
+              <figcaption>The wall answers: reach for a shoe and the overlay switches to the shoe in hand. 13 seconds, no sound.</figcaption>
             </figure>
             <figure class="clip">
               <div class="clip-frame">
@@ -223,7 +223,7 @@
             <li><b>The boxes.</b> Redraw the product boxes fixture by fixture: one box per product group where colour variants sit together, smaller boxes where shoes stand apart, three to a section as the rule of thumb.</li>
             <li><b>The cameras.</b> Point each fixture at the one camera that sees it best, so a product in two views is never counted twice.</li>
             <li><b>Gates and zones.</b> Where people enter, where each zone starts and ends.</li>
-            <li><b>The triggers.</b> The pop-up each product calls, on which screen; tested by hand, one by one.</li>
+            <li><b>The triggers.</b> The overlay each product calls (its details and stock), on which screen, and which zones trigger on entry; tested by hand, one by one.</li>
             <li><b>Live.</b> The dashboard open on the floor: counts flowing, heat on the right fixtures, the new map holding.</li>
           </ol>
           <div class="gal gal-two" role="list">

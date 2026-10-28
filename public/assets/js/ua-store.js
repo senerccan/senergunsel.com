@@ -80,7 +80,9 @@ function ledPanel(P, L) {
   const bands = [0, 1, 2].map((i) => '<rect class="led-band" x="' + fmt(L.a - w / 3 + (i * w) / 3) + '" y="' + L.z0 + '" width="' + fmt(w / 3) + '" height="' + h + '">' +
     (reduced() ? '' : '<animate attributeName="x" values="' + fmt(L.a - w / 3) + ';' + fmt(L.b) + '" dur="' + (26 + i * 4) + 's" begin="' + (-i * 9) + 's" repeatCount="indefinite"/>') + '</rect>').join('');
   const s = h * 0.42, cx = L.a + w / 2, cy = L.z0 + h * 0.5;
-  return '<g class="led led-' + L.wall + '" data-led="' + id + '" transform="' + wallMatrix(P, L.wall) + '">' +
+  // an entry trigger replaces what the screen plays (the whole panel); an engagement overlays a card on it
+  const cw = Math.min(w * 0.36, h * 3.2), ca = L.a + w - cw - h * 0.12, cy2 = L.z0 + h * 0.5, so = h * 0.3;
+  return '<g class="led led-' + L.wall + '" data-led="' + id + '" data-a="' + L.a + '" data-b="' + L.b + '" data-cw="' + fmt(cw) + '" data-ca="' + fmt(ca) + '" transform="' + wallMatrix(P, L.wall) + '">' +
     '<clipPath id="' + id + '-clip"><rect x="' + L.a + '" y="' + L.z0 + '" width="' + w + '" height="' + h + '"/></clipPath>' +
     '<rect class="led-screen" x="' + L.a + '" y="' + L.z0 + '" width="' + w + '" height="' + h + '"/>' +
     '<g clip-path="url(#' + id + '-clip)">' + bands + '</g>' +
@@ -88,6 +90,11 @@ function ledPanel(P, L) {
     '<g class="led-pop-art" transform="translate(' + fmt(cx - w * 0.12) + ' ' + fmt(cy) + ') scale(' + fmt(s) + ')"></g>' +
     '<rect class="led-callout" x="' + fmt(cx + w * 0.02) + '" y="' + fmt(cy + h * 0.08) + '" width="' + fmt(w * 0.16) + '" height="' + fmt(h * 0.07) + '"/>' +
     '<rect class="led-callout" x="' + fmt(cx + w * 0.02) + '" y="' + fmt(cy - h * 0.08) + '" width="' + fmt(w * 0.11) + '" height="' + fmt(h * 0.07) + '"/></g>' +
+    '<g class="led-overlay" clip-path="url(#' + id + '-clip)"><rect class="led-card" x="' + fmt(ca) + '" y="' + fmt(L.z0 + h * 0.1) + '" width="' + fmt(cw) + '" height="' + fmt(h * 0.8) + '"/>' +
+    '<g class="led-over-art" transform="translate(' + fmt(ca + cw * 0.28) + ' ' + fmt(cy2) + ') scale(' + fmt(so) + ')"></g>' +
+    '<rect class="led-callout" x="' + fmt(ca + cw * 0.52) + '" y="' + fmt(cy2 + h * 0.17) + '" width="' + fmt(cw * 0.4) + '" height="' + fmt(h * 0.07) + '"/>' +
+    '<rect class="led-callout" x="' + fmt(ca + cw * 0.52) + '" y="' + fmt(cy2 + h * 0.03) + '" width="' + fmt(cw * 0.3) + '" height="' + fmt(h * 0.07) + '"/>' +
+    '<rect class="led-callout" x="' + fmt(ca + cw * 0.52) + '" y="' + fmt(cy2 - h * 0.11) + '" width="' + fmt(cw * 0.22) + '" height="' + fmt(h * 0.07) + '"/></g>' +
     '<rect class="led-frame" x="' + L.a + '" y="' + L.z0 + '" width="' + w + '" height="' + h + '"' + NS + '/></g>';
 }
 
@@ -138,7 +145,7 @@ export function build(P, opts = {}) {
   CABINETS.forEach((c) => add(c.u + c.v, box(P, c.u, c.v, c.du, c.dv, c.h, 'cabinet')));
   add(CORE.u + CORE.v, box(P, CORE.u, CORE.v, CORE.du, CORE.dv, CORE.h, 'core') + label(P, CORE.u + CORE.du / 2, CORE.v + CORE.dv / 2, CORE.h, 'THE CORE', 'core-t', 3));
   if (!base) Object.entries(FIXTURES).forEach(([id, f]) => {
-    if (f.name) late.push(isIso ? (f.v < STORE.W / 2 ? label(P, f.u + f.du / 2, 0, STORE.H - 0.1, f.name, 'fix-t', 2) : label(P, f.u + f.du, f.v, 0, f.name, 'fix-t', 10, 'start', 4)) : label(P, f.u + f.du / 2, f.v + f.dv / 2, f.h, f.name, 'fix-t', 3));
+    if (f.name) late.push(isIso ? (f.v < STORE.W / 2 ? label(P, f.u + f.du * 0.8, 0, STORE.H - 0.1, f.name, 'fix-t', 2) : label(P, f.u + f.du, f.v, 0, f.name, 'fix-t', 10, 'start', 4)) : label(P, f.u + f.du / 2, f.v + f.dv / 2, f.h, f.name, 'fix-t', 3));
     add(f.u + f.v, '<g class="fixture" data-fix="' + id + '">' + box(P, f.u, f.v, f.du, f.dv, f.h, 'fix ' + f.kind) + dress(P, f) + '</g>');
   });
   // the products the triggers use: the backpack on the accessories table, the shirt region on the men's rail
@@ -209,50 +216,63 @@ function store() {
     if (next) g.parentNode.insertBefore(g, next); else g.parentNode.appendChild(g);
   }
   const hot = (sel, on = true) => $$(sel, stage).forEach((e) => e.classList.toggle('is-hot', on));
-  const popup = (id, art) => { const g = $('[data-led="' + id + '"]', stage); if (!g) return; const a = $('.led-pop-art', g); if (a) a.innerHTML = ART[art] || ''; g.classList.add('is-lit'); };
-  const clear = () => { $$('.is-hot, .is-lit, .is-lifted', stage).forEach((e) => e.classList.remove('is-hot', 'is-lit', 'is-lifted')); stage.classList.remove('is-check'); };
+  // overlay: a product's details and stock on top of what the screen plays; replace: the zone's own content takes the screen
+  // `at` slides the overlay card along the wall to sit above the product that called it (metres along the wall)
+  const popup = (id, art, mode = 'overlay', at) => {
+    const g = $('[data-led="' + id + '"]', stage); if (!g) return;
+    const a = $(mode === 'overlay' ? '.led-over-art' : '.led-pop-art', g); if (a) a.innerHTML = ART[art] || '';
+    const over = $('.led-overlay', g);
+    if (over && g.dataset.cw) {
+      const cw = Number(g.dataset.cw), lo = Number(g.dataset.a), hi = Number(g.dataset.b) - cw, ca = Number(g.dataset.ca);
+      const x = at == null ? ca : Math.max(lo, Math.min(hi, at - cw / 2));
+      over.setAttribute('transform', 'translate(' + fmt(x - ca) + ' 0)');
+    }
+    g.classList.add('is-lit', mode === 'overlay' ? 'is-overlay' : 'is-replace');
+  };
+  const clear = () => { $$('.is-hot, .is-lit, .is-lifted', stage).forEach((e) => e.classList.remove('is-hot', 'is-lit', 'is-lifted', 'is-overlay', 'is-replace')); stage.classList.remove('is-check'); };
   let current = null;
   const say = (lines) => { log.innerHTML = lines.map((l) => '<li>' + esc(l) + '</li>').join(''); live.textContent = (current ? current.name + ' ' : '') + lines.join('. ') + '.'; };
   const HOME = [STORE.D + 1.3, 7.5];
   // each trigger: a name, a note, and steps [ms to wait after, fn]; 'peak' marks the state held under reduced motion
   const TRIGGERS = {
     pack: {
-      name: 'Pull the backpack.',
-      text: 'The No Weigh backpack on the accessories table by the entrance carries an RFID puck. Lift it and the antenna above the table loses the tag from its field: that is the trigger. The screen on the right wall shows the pack and its callouts, and the nearest speaker answers.',
+      name: 'Shake the backpack.',
+      text: 'An engagement, read by RFID. The No Weigh backpack on the accessories table carries a puck; a light shake of it is the trigger, read by the antenna above. The pack’s details and stock overlay the content already playing on the right wall, and the nearest speaker answers. A shoe on the footwear wall works the same way.',
       steps: [
         [900, () => { say(['Walking in: accessories, right of the entrance']); moveTo(13.9, 9.3); }],
         [900, () => moveTo(14.6, 11.2)],
-        [400, () => { $('[data-product="pack"]', stage).classList.add('is-lifted'); hot('[data-ant="A1"]'); say(['RFID: the puck left the antenna’s field', 'Trigger: right wall, No Weigh backpack', 'Speaker by the entrance: the product line’s sound']); }],
-        [4200, () => { popup('led-r', 'pack'); hot('[data-spk="S5"]'); hot('[data-cam="C7"]'); }, 'peak'],
-        [900, () => { $('[data-product="pack"]', stage).classList.remove('is-lifted'); say(['Backpack back on the table: tag in the field again', 'Pop-up fades, wall back to ambient']); }],
-        [0, clear],
-      ],
-    },
-    zone: {
-      name: 'Walk into running.',
-      text: 'Some zones trigger on entry. Cross into running and the camera above it counts one more person in the zone: the right wall switches to the running story and the zone’s speakers shift with it. Nobody touched anything.',
-      steps: [
-        [900, () => { say(['Walking in, turning right']); moveTo(13.6, 9.3); }],
-        [900, () => moveTo(12.3, 10.9)],
-        [700, () => moveTo(10.2, 10.9)],
-        [400, () => { hot('[data-zone="run"]'); hot('[data-cam="C6"]'); say(['Zone entry: running +1 (a dot, not a face)', 'Trigger: right wall, the running story', 'Two speakers: the zone’s soundscape']); }],
-        [4200, () => { popup('led-r', 'run'); hot('[data-spk="S5"]'); hot('[data-spk="S6"]'); }, 'peak'],
-        [900, () => { say(['Leaving the zone: running −1', 'Wall back to ambient after the cooldown']); moveTo(12.3, 9.6); }],
+        [400, () => { $('[data-product="pack"]', stage).classList.add('is-lifted'); hot('[data-ant="A1"]'); say(['RFID: the puck moved in the antenna’s field', 'Engagement: the pack’s details and stock overlay the right wall', 'Speaker by the entrance answers']); }],
+        [4200, () => { popup('led-r', 'pack', 'overlay', 13.4); hot('[data-spk="S5"]'); hot('[data-cam="C7"]'); }, 'peak'],
+        [900, () => { $('[data-product="pack"]', stage).classList.remove('is-lifted'); say(['Pack back on the table', 'Overlay fades; the mood content never stopped']); }],
         [0, clear],
       ],
     },
     shirt: {
-      name: 'Grab the shirt.',
-      text: 'Not every piece carries a tag. On the men’s rail the AI camera above knows which region of the fixture each product hangs in (region mapped, so SKU mapped). A hand reaching into that region is the trigger. The left wall shows the shirt.',
+      name: 'Reach for the shirt.',
+      text: 'An engagement, read by the camera. A shirt or a bra hanging on a rail carries no puck, so the AI camera above does the work: it knows which region of the rail each product hangs in (region mapped, so SKU mapped), reads the dwell, then the reach. The shirt’s details and stock overlay the content already playing on the left wall.',
       steps: [
         [900, () => { say(['Walking the runway, round the core, to the men’s rail']); moveTo(13.2, 7.5); }],
         [900, () => moveTo(12.2, 4.7)],
         [1000, () => moveTo(8.2, 4.7)],
         [900, () => moveTo(5.4, 4.8)],
         [700, () => moveTo(3.9, 4.9)],
-        [400, () => { hot('[data-region="men"]'); hot('[data-cam="C1"]'); say(['AI camera: a reach into region 3 of the men’s rail', 'Region 3 is mapped to one SKU: the trigger', 'Left wall: the shirt and its callouts']); }],
-        [4200, () => { $('[data-product="shirt"]', stage).classList.add('is-lifted'); popup('led-l', 'shirt'); hot('[data-spk="S1"]'); }, 'peak'],
-        [900, () => { $('[data-product="shirt"]', stage).classList.remove('is-lifted'); say(['Shirt back on the rail', 'Pop-up fades']); }],
+        [900, () => { hot('[data-cam="C1"]'); say(['Camera: dwelling at region 3 of the men’s rail', 'Region 3 is mapped to one SKU']); }],
+        [400, () => { hot('[data-region="men"]'); say(['Camera: dwell, then a reach into region 3', 'Engagement: the shirt’s details and stock overlay the left wall']); }],
+        [4200, () => { $('[data-product="shirt"]', stage).classList.add('is-lifted'); popup('led-l', 'shirt', 'overlay', 3.9); hot('[data-spk="S1"]'); }, 'peak'],
+        [900, () => { $('[data-product="shirt"]', stage).classList.remove('is-lifted'); say(['Shirt back on the rail', 'Overlay fades; the mood content never stopped']); }],
+        [0, clear],
+      ],
+    },
+    zone: {
+      name: 'Walk into running.',
+      text: 'An entry trigger, a world of its own: the cameras see a person cross into the zone, nothing touched. Content exclusive to that trigger wakes up on the right wall, replacing the mood content playing there (a running-shoe playlist, say) or layering over it, and the zone’s speakers shift with it.',
+      steps: [
+        [900, () => { say(['Walking in, turning right']); moveTo(13.6, 9.3); }],
+        [900, () => moveTo(12.3, 10.9)],
+        [700, () => moveTo(10.2, 10.9)],
+        [400, () => { hot('[data-zone="run"]'); hot('[data-cam="C6"]'); say(['Zone entry: running +1 (a dot, not a face)', 'Entry trigger: the zone’s own content replaces the mood content on the right wall', 'Two speakers: the zone’s soundscape']); }],
+        [4200, () => { popup('led-r', 'run', 'replace'); hot('[data-spk="S5"]'); hot('[data-spk="S6"]'); }, 'peak'],
+        [900, () => { say(['Leaving the zone: running −1', 'After the cooldown the mood content is back']); moveTo(12.3, 9.6); }],
         [0, clear],
       ],
     },
@@ -267,7 +287,7 @@ function store() {
         [250, () => { hot('.ant', false); say(['Cameras OK', 'Antennas OK', 'Speakers round the ring']); }],
         ...SPKS.map((s, i) => [200, () => $$('.spk', stage).forEach((e, k) => e.classList.toggle('is-hot', k === i || k === i - 1))]),
         [300, () => { hot('.spk', false); say(['Cameras OK', 'Antennas OK', 'Speakers OK', 'Screens: check pattern, then the mesh']); }],
-        [3200, () => { ['led-l', 'led-b', 'led-r'].forEach((id) => popup(id, 'check')); stage.classList.add('is-check'); hot('.cam'); hot('.ant'); hot('.spk'); }, 'peak'],
+        [3200, () => { ['led-l', 'led-b', 'led-r'].forEach((id) => popup(id, 'check', 'replace')); stage.classList.add('is-check'); hot('.cam'); hot('.ant'); hot('.spk'); }, 'peak'],
         [0, () => { clear(); say(['All systems answered. Doors open.']); }],
       ],
     },
@@ -295,7 +315,7 @@ function store() {
   }
   function idle() {
     current = null;
-    note.innerHTML = '<b>The store, drawn.</b> The entrance and the rug at the front, the court on the floor, the core under the chrome hand, the giant ball, the screens high on the walls, the fixtures by zone, and the hardware in the ceiling. Pick a trigger to see what the store does when someone pulls a backpack, walks into a zone or reaches for a shirt.';
+    note.innerHTML = '<b>The store, drawn.</b> The entrance and the rug at the front, the court on the floor, the core under the chrome hand, the giant ball, the screens high on the walls, the fixtures by zone, and the hardware in the ceiling. Pick a trigger: two engagements (a puck shaken in a backpack, a reach read by the camera) that overlay a product on the content playing, and a zone entry that wakes up the zone’s own content.';
     say(['Nothing running. The screens play their ambient content.']);
   }
   function applyLayers() { $$('[data-layer]', root).forEach((c) => stage.classList.toggle('hide-' + c.dataset.layer, !c.checked)); }

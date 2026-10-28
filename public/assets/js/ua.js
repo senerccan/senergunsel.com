@@ -64,7 +64,7 @@ function visit() {
   // the LED wall beyond it. The visitor is a dot; the store never sees a face.
   stage.innerHTML = `
 <svg viewBox="0 0 640 400" role="img" aria-labelledby="visit-svg-t" class="pf-svg">
-  <title id="visit-svg-t">One zone of the store as its camera sees it: a gate line on the left, a fixture with three products on the right and the LED wall beside it. A visitor dot crosses the gate, browses, stops at the fixture, reaches for a product, and the wall shows that product.</title>
+  <title id="visit-svg-t">One zone of the store as its camera sees it: a gate line on the left, a fixture with three products on the right and the LED wall beside it. A visitor dot crosses the gate, browses, stops at the fixture, reaches for a product, and the wall overlays that product's details on the content it is playing.</title>
   <defs><pattern id="v-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" class="v-grid"/></pattern></defs>
   <rect x="0" y="0" width="640" height="400" class="v-floor"/>
   <rect x="0" y="0" width="640" height="400" fill="url(#v-grid)"/>
@@ -84,7 +84,7 @@ function visit() {
   <g class="v-led" transform="translate(556 70)">
     <rect x="0" y="0" width="70" height="270" class="v-led-frame"/>
     <g class="v-led-ambient"><rect x="6" y="6" width="58" height="258" class="v-led-screen"/><path d="M6 60 Q35 40 64 60 M6 110 Q35 90 64 110 M6 160 Q35 140 64 160 M6 210 Q35 190 64 210" class="v-led-wave"/></g>
-    <g class="v-led-popup" opacity="0"><rect x="6" y="6" width="58" height="258" class="v-led-screen v-led-on"/><path d="M14 150 c6 -18 18 -22 30 -16 c8 4 10 10 10 14 c-2 4 -12 4 -40 2z" class="v-shoe"/><rect x="14" y="176" width="42" height="4" class="v-callout"/><rect x="14" y="186" width="30" height="4" class="v-callout"/><text x="35" y="60" text-anchor="middle" class="v-mono v-led-t">PRODUCT B</text></g>
+    <g class="v-led-popup" opacity="0"><rect x="7" y="112" width="56" height="106" rx="1" class="v-led-card"/><text x="35" y="126" text-anchor="middle" class="v-mono v-led-t">PRODUCT B</text><path d="M14 162 c6 -18 18 -22 30 -16 c8 4 10 10 10 14 c-2 4 -12 4 -40 2z" class="v-shoe"/><rect x="14" y="184" width="42" height="4" class="v-callout"/><rect x="14" y="194" width="30" height="4" class="v-callout"/><rect x="14" y="204" width="20" height="4" class="v-callout"/></g>
     <text x="35" y="288" class="v-mono v-dim" text-anchor="middle">LED WALL</text>
   </g>
   <line class="v-link" x1="0" y1="0" x2="0" y2="0" opacity="0"/>
@@ -108,8 +108,8 @@ function visit() {
     ['Gate crossed → visitors +1', 'No face stored, no identity: a person, counted'],
     ['Zone 3 occupancy: 1', 'Moving: speed and direction, not who'],
     ['Stationary near fixture 12', 'Dwell clock running past the threshold'],
-    ['Product B: tag disturbed, reach seen', 'Trigger → LED wall shows product B'],
-    ['Visit record: entered, browsed 8 s, dwelled 12 s, engaged B', 'Pop-up shown once, then back to ambient'],
+    ['Product B: puck moved, or dwell then reach on camera', 'Engagement → the wall overlays B’s details and stock on its content'],
+    ['Visit record: entered, browsed 8 s, dwelled 12 s, engaged B', 'Overlay shown once, the mood content never stopped'],
   ];
   function stopClock() { clearInterval(clockTimer); clockTimer = null; }
   function draw(i) {
@@ -131,7 +131,7 @@ function visit() {
     link.setAttribute('opacity', engaged ? '1' : '0');
     boxB.classList.toggle('is-hot', engaged);
     popup.setAttribute('opacity', engaged ? '1' : '0');
-    ambient.setAttribute('opacity', engaged ? '0.25' : '1');
+    ambient.setAttribute('opacity', engaged ? '0.7' : '1');
     log.innerHTML = LOG[i].length ? LOG[i].map((l) => '<li>' + esc(l) + '</li>').join('') : '<li class="pf-log-empty">Nothing logged yet.</li>';
   }
   const steps = [
@@ -139,8 +139,8 @@ function visit() {
     { name: 'Enter.', text: 'The dot crosses the gate: one more visitor in the zone. The store counts a person, never a face.', hold: 2200 },
     { name: 'Browse.', text: 'Moving through the zone: the camera tracks where the dot goes and how fast, nothing about who it is.', hold: 2400 },
     { name: 'Dwell.', text: 'The dot stops next to fixture 12 and a clock starts. Past the threshold, this counts as dwelling at product B.', hold: 4200 },
-    { name: 'Engage.', text: 'A reach for product B: its RFID tag moves and the camera sees the hand. That trigger puts product B on the LED wall beside the fixture, at the height of the hand that picked it up, and it fades once the shoe is back.', hold: 3600 },
-    { name: 'Leave.', text: 'The dot walks out, the wall returns to its ambient content after a cooldown, and the visit is a row of states and seconds.', hold: 2600 },
+    { name: 'Engage.', text: 'A reach for product B. The store reads it two ways: a shoe or a backpack carries an RFID puck, so a light shake of it is the trigger; a shirt or a bra on a rail has no puck, so the camera reads the dwell and then the reach. Either way B’s details and stock overlay the content already playing on the wall, at the height of the hand, and fade once the product is back.', hold: 4200 },
+    { name: 'Leave.', text: 'The dot walks out, the overlay is gone after a cooldown with the mood content still playing underneath, and the visit is a row of states and seconds.', hold: 2600 },
   ];
   player(root, steps, draw);
 }
@@ -221,7 +221,7 @@ function floor() {
       ['Boxes redrawn fixture by fixture', 'Colour variants share one box; shoes get smaller boxes'],
       ['Each fixture pointed at the camera that sees it best', 'No product counted twice'],
       ['Zones and gates reset around the new layout', 'Running shrinks; a new zone opens in the front-right corner'],
-      ['Each box re-pointed to its pop-up on the nearest screen', 'Triggers tested one by one'],
+      ['Each box re-pointed to its overlay on the nearest screen; entry triggers per zone', 'Tested one by one'],
       ['Dashboard live, counts flowing on the new map', 'Done inside the day, the store trading throughout'],
     ];
     log.innerHTML = LOG[i].map((l) => '<li>' + esc(l) + '</li>').join('');
@@ -232,7 +232,7 @@ function floor() {
     { name: 'Redraw the boxes.', text: 'Fixture by fixture, draw the product boxes again: one box per product group where colours sit together, smaller boxes where shoes stand apart.', hold: 2600 },
     { name: 'Re-point the cameras.', text: 'Assign each fixture to the one camera that sees it best, so a product seen by two cameras is never counted twice.', hold: 2600 },
     { name: 'Reset zones and gates.', text: 'Draw the zones around the new layout, including a new one where the corner opened, and put the gate lines back where people actually enter.', hold: 2600 },
-    { name: 'Re-point the triggers.', text: 'Each product box calls a pop-up on the nearest screen. Re-point every trigger, then test them one by one with a hand.', hold: 2600 },
+    { name: 'Re-point the triggers.', text: 'Each product box calls its overlay (details and stock) on the nearest screen, and some zones trigger on entry. Re-point every trigger, then test them one by one with a hand.', hold: 2600 },
     { name: 'Check it live.', text: 'Walk the floor with the dashboard open: the counts flow onto the new map. The whole re-map fits inside a day, with the store trading throughout.', hold: 4000 },
   ];
   player(root, steps, draw);

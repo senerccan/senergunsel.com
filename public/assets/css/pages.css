@@ -883,10 +883,12 @@
 .pf-svg .v-led-frame { fill: var(--ink); }
 .pf-svg .v-led-screen { fill: var(--ground); }
 .pf-svg .v-led-on { fill: var(--ink2); }
+.pf-svg .v-led-card { fill: var(--accent); stroke: var(--surface); stroke-width: 1; }
+.pf-svg .v-led-popup .v-shoe, .pf-svg .v-led-popup .v-callout, .pf-svg .v-led-popup .v-led-t { fill: #fff; }
 .pf-svg .v-led-wave { fill: none; stroke: var(--muted); stroke-width: 1.5; }
 .pf-svg .v-shoe { fill: var(--accent); }
 .pf-svg .v-callout { fill: var(--surface); }
-.pf-svg .v-led-t { fill: var(--surface); font-size: 8.5px; }
+.pf-svg .v-led-t { fill: var(--surface); font-size: 7.5px; }
 .pf-svg .v-led-ambient, .pf-svg .v-led-popup { transition: opacity 0.5s ease; }
 .pf-svg .v-link { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; transition: opacity 0.3s ease; }
 .pf-svg .v-visitor { transition: transform 1.1s cubic-bezier(.3,.7,.3,1); }
@@ -997,10 +999,12 @@
 .iso-svg .hand-plan path { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .iso-svg .led-screen { fill: color-mix(in srgb, var(--ink) 86%, var(--surface)); }
 .iso-svg .led-band { fill: color-mix(in srgb, var(--accent) 38%, transparent); }
-.iso-svg .led-popup { opacity: 0; transition: opacity 0.5s ease; }
-.iso-svg .led.is-lit .led-popup { opacity: 1; }
+.iso-svg .led-popup, .iso-svg .led-overlay { opacity: 0; transition: opacity 0.5s ease; }
+.iso-svg .led.is-replace .led-popup { opacity: 1; }
+.iso-svg .led.is-overlay .led-overlay { opacity: 1; }
 .iso-svg .led-pop-bg { fill: var(--accent); }
-.iso-svg .led-pop-art path { fill: #fff; stroke: #fff; }
+.iso-svg .led-card { fill: var(--accent); stroke: #fff; stroke-width: 0.04; }
+.iso-svg .led-pop-art path, .iso-svg .led-over-art path { fill: #fff; stroke: #fff; }
 .iso-svg .led-callout { fill: #fff; opacity: 0.9; }
 .iso-svg .led-frame { fill: none; stroke: var(--ink); stroke-width: 1; }
 .iso-svg .led-right { opacity: 0.45; transition: opacity 0.4s ease; }
@@ -1009,8 +1013,10 @@
 .iso-svg .led.is-lit .led-line { stroke: var(--accent); }
 .iso-svg .region { fill: color-mix(in srgb, var(--accent) 10%, transparent); stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 2; opacity: 0.6; transition: opacity 0.3s ease, fill 0.3s ease; }
 .iso-svg .region.is-hot { opacity: 1; fill: color-mix(in srgb, var(--accent) 32%, transparent); }
-.iso-svg .lift { transition: transform 0.5s ease; }
+.iso-svg .lift { transition: transform 0.5s ease; transform-box: fill-box; transform-origin: 50% 20%; }
 .iso-svg .product.is-lifted .lift { transform: translateY(-13px); }
+.iso-svg .pack.is-lifted .lift { animation: isoshake 0.7s ease-in-out 0.45s 3; }
+@keyframes isoshake { 0%, 100% { transform: translateY(-13px) rotate(0); } 25% { transform: translateY(-13px) rotate(-7deg); } 75% { transform: translateY(-13px) rotate(7deg); } }
 .iso-svg .pack-body { fill: var(--ink); }
 .iso-svg .puck { fill: var(--revisit); }
 .iso-svg .strap { stroke: var(--ink); stroke-width: 1.5; }
@@ -1058,7 +1064,8 @@
 .prose .lessons b { font-weight: 750; }
 @media (prefers-reduced-motion: reduce) {
   .pf-svg .v-visitor, .pf-svg .f-fix, .pf-svg .f-visitor, .pf-svg .v-led-ambient, .pf-svg .v-led-popup, .pf-svg .v-link, .pf-svg .v-box rect, .pf-svg .f-zone rect, .pf-svg .f-cam circle { transition: none !important; }
-  .iso-svg .visitor, .iso-svg .lift, .iso-svg .led-popup, .iso-svg .zone-r, .iso-svg .region, .iso-svg .led-right, .iso-svg .led-line { transition: none !important; }
+  .iso-svg .visitor, .iso-svg .lift, .iso-svg .led-popup, .iso-svg .led-overlay, .iso-svg .zone-r, .iso-svg .region, .iso-svg .led-right, .iso-svg .led-line { transition: none !important; }
+  .iso-svg .pack.is-lifted .lift { animation: none !important; }
   .iso-svg .mesh circle { animation: none !important; opacity: 0.18; }
   .iso-svg .ring { animation: none !important; }
   .iso-svg .ant.is-hot .ring, .iso-svg .spk.is-hot .ring { opacity: 0.6; transform: scale(0.7); }
@@ -1101,7 +1108,7 @@
   .prose .gal { gap: 10px; }
   .pf-svg .v-mono { font-size: 15px; }
   .pf-svg .f-zone-t, .pf-svg .f-fix-t, .pf-svg .f-cam-t, .pf-svg .f-clock-t, .pf-svg .f-stage-t { font-size: 13px; }
-  .pf-svg .v-led-t { font-size: 11px; }
+  .pf-svg .v-led-t { font-size: 10px; }
   .pf-svg .v-clock-t { font-size: 14px; }
 }
 
