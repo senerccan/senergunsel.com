@@ -805,6 +805,9 @@
 .rc-phases b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .bh .chart .rc-pearl.is-won .rc-pearl-ring { animation: none; opacity: 0.6; } }
 /* the systems */
+.bh .chart .lab { fill: var(--ink); font-size: 12px; }
+.bh .chart .sy-focus { fill: color-mix(in srgb, var(--accent) 12%, transparent); stroke: var(--accent); stroke-width: 1; pointer-events: none; }
+.bh .chart .hit { fill: transparent; cursor: crosshair; }
 .bh .chart .sy-rest { fill: var(--hair); }
 .bh .chart .sy-done { fill: var(--ink); }
 .bh .chart .sy-n { fill: var(--ink2); font-size: 11px; font-variant-numeric: tabular-nums; }
