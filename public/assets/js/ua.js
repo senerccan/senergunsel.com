@@ -1,7 +1,10 @@
 // G01 · two playable figures on the Under Armour case study, drawn with illustrative
 // shapes only: "A visit, as the store sees it" (gate, zone, dwell, engage, the wall answers)
-// and "The floor, mapped and re-mapped" (what a floorset change means for the digital map).
-// Nothing here is store data.
+// and "The floor, mapped and re-mapped" (what a floorset change means for the digital map), the
+// latter drawn on the real plan shared with ua-store.js. Nothing here is store data.
+
+import { STORE, DOORS, ZONES, ZONES_MOVED, FIXTURES, MOVED, CAMS as CAMS_ALL, plan, fmt } from './ua-layout.js';
+import { build } from './ua-store.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -142,95 +145,56 @@ function visit() {
   player(root, steps, draw);
 }
 
-/* ---------------------------------------------------------------- B: the floor, mapped and re-mapped */
+/* ---------------------------------------------------------------- B: the floor, mapped and re-mapped (on the real plan) */
 function floor() {
   const root = $('#floor');
   if (!root) return;
   const stage = $('[data-stage]', root);
-  // six fixtures, four cameras, four zones, three LED panels, the stage with the rug, one gate
-  const FIX = {
-    f1: { x: 70, y: 98, w: 110, h: 40, cam: 'C1', g: ['g1', 'g1', 'g2'] },
-    f2: { x: 230, y: 98, w: 110, h: 40, cam: 'C2', g: ['g2', 'g2', 'g2'] },
-    f3: { x: 400, y: 98, w: 110, h: 40, cam: 'C2', g: ['g3', 'g3', 'g1'] },
-    f4: { x: 60, y: 240, w: 40, h: 110, cam: 'C3', g: ['g4', 'g4', 'g4'] },
-    f5: { x: 300, y: 230, w: 110, h: 40, cam: 'C4', g: ['g1', 'g3', 'g3'] },
-    f6: { x: 470, y: 240, w: 40, h: 110, cam: 'C4', g: ['g2', 'g4', 'g4'] },
-  };
-  // after merchandising moves the floor: f2 and f5 swap, f3 turns, f6 moves, and the groups change
-  const MOVED = {
-    f1: { x: 70, y: 98, w: 110, h: 40, cam: 'C1', g: ['g1', 'g1', 'g1'] },
-    f2: { x: 300, y: 230, w: 110, h: 40, cam: 'C4', g: ['g2', 'g3', 'g3'] },
-    f3: { x: 470, y: 96, w: 40, h: 110, cam: 'C2', g: ['g3', 'g1', 'g1'] },
-    f4: { x: 60, y: 240, w: 40, h: 110, cam: 'C3', g: ['g4', 'g2', 'g2'] },
-    f5: { x: 230, y: 98, w: 110, h: 40, cam: 'C2', g: ['g1', 'g1', 'g3'] },
-    f6: { x: 520, y: 220, w: 40, h: 110, cam: 'C4', g: ['g4', 'g4', 'g2'] },
-  };
-  const ZONES = [
-    { id: 'z1', x: 50, y: 70, w: 480, h: 80, name: 'Z1 · WALL' },
-    { id: 'z2', x: 50, y: 210, w: 160, h: 150, name: 'Z2 · STAGE' },
-    { id: 'z3', x: 230, y: 210, w: 300, h: 90, name: 'Z3 · CENTRE' },
-    { id: 'z4', x: 230, y: 320, w: 300, h: 40, name: 'Z4 · ENTRY' },
-  ];
-  const ZONES_MOVED = [
-    { id: 'z1', x: 50, y: 70, w: 370, h: 80, name: 'Z1 · WALL' },
-    { id: 'z2', x: 50, y: 210, w: 160, h: 150, name: 'Z2 · STAGE' },
-    { id: 'z3', x: 230, y: 210, w: 200, h: 90, name: 'Z3 · CENTRE' },
-    { id: 'z4', x: 230, y: 320, w: 350, h: 40, name: 'Z4 · ENTRY' },
-    { id: 'z5', x: 440, y: 70, w: 140, h: 130, name: 'Z5 · CORNER' },
-  ];
-  const CAMS = [['C1', 40, 60], ['C2', 320, 50], ['C3', 40, 370], ['C4', 590, 370]];
+  const P = plan(22, 65, 90);
+  const S = P.S;
+  const CAMS = CAMS_ALL.map((c) => ({ ...c, p: P(c.u, c.v) }));
   const boxes = (f) => f.g.map((g, k) => {
-    const horiz = f.w > f.h;
-    const bx = horiz ? 6 + k * ((f.w - 12) / 3) : 6, by = horiz ? 6 : 6 + k * ((f.h - 12) / 3);
-    const bw = horiz ? (f.w - 12) / 3 - 4 : f.w - 12, bh = horiz ? f.h - 12 : (f.h - 12) / 3 - 4;
-    return '<g class="f-box ' + g + '" transform="translate(' + bx.toFixed(1) + ' ' + by.toFixed(1) + ')"><rect width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '"/><circle class="f-tag" cx="' + (bw - 5).toFixed(1) + '" cy="5" r="3"/></g>';
+    const w = f.dv * S, h = f.du * S, horiz = w > h;
+    const bx = horiz ? 4 + k * ((w - 8) / 3) : 4, by = horiz ? 4 : 4 + k * ((h - 8) / 3);
+    const bw = horiz ? (w - 8) / 3 - 3 : w - 8, bh = horiz ? h - 8 : (h - 8) / 3 - 3;
+    return '<g class="f-box ' + g + '" transform="translate(' + bx.toFixed(1) + ' ' + by.toFixed(1) + ')"><rect width="' + Math.max(2, bw).toFixed(1) + '" height="' + Math.max(2, bh).toFixed(1) + '"/><circle class="f-tag" cx="' + Math.max(3, bw - 4).toFixed(1) + '" cy="4" r="2.4"/></g>';
   }).join('');
-  stage.innerHTML = `
-<svg viewBox="0 0 640 420" role="img" aria-labelledby="floor-svg-t" class="pf-svg">
-  <title id="floor-svg-t">The store floor as a map: LED panels along the top wall, a stage on the left, the rug at the entrance, six fixtures with their product boxes, four cameras in the corners, four zones and a gate at the entrance. When merchandising moves the fixtures, the boxes are redrawn, each fixture is pointed at the camera that sees it best, the zones and gates are reset, the triggers re-pointed, and the dashboard checked live.</title>
-  <defs>
-    <pattern id="f-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" class="v-grid"/></pattern>
-    <pattern id="f-rug" width="60" height="60" patternUnits="userSpaceOnUse"><image href="/assets/img/ua-rug-tile.webp" width="60" height="60" preserveAspectRatio="xMidYMid slice"/></pattern>
-  </defs>
-  <rect x="0" y="0" width="640" height="420" class="v-floor"/>
-  <rect x="0" y="0" width="640" height="420" fill="url(#f-grid)"/>
-  <g class="f-leds">${[70, 230, 390].map((x) => '<rect x="' + x + '" y="14" width="110" height="14" class="f-led"/><text x="' + (x + 55) + '" y="40" class="v-mono v-dim" text-anchor="middle">LED</text>').join('')}</g>
-  <g class="f-zones"></g>
-  <rect x="110" y="240" width="90" height="110" class="f-stage"/>
-  <text x="155" y="300" class="v-mono f-stage-t" text-anchor="middle">STAGE</text>
-  <rect x="286" y="364" width="128" height="32" class="f-rug" fill="url(#f-rug)"/>
-  <text x="350" y="384" class="v-mono f-stage-t" text-anchor="middle">RUG</text>
-  <g class="f-cams">${CAMS.map(([id, x, y]) => '<g class="f-cam" data-cam="' + id + '" transform="translate(' + x + ' ' + y + ')"><circle r="9"/><text y="4" text-anchor="middle" class="v-mono f-cam-t">' + id.slice(1) + '</text></g>').join('')}</g>
-  <g class="f-links"></g>
-  <g class="f-fixtures">${Object.entries(FIX).map(([id, f]) => '<g class="f-fix" data-fix="' + id + '" style="transform:translate(' + f.x + 'px,' + f.y + 'px)"><rect width="' + f.w + '" height="' + f.h + '" class="f-fix-r"/>' + boxes(f) + '<text class="v-mono f-fix-t" x="' + (f.w / 2) + '" y="' + (f.h + 14) + '" text-anchor="middle">' + id.toUpperCase() + ' · ' + f.cam + '</text></g>').join('')}</g>
-  <g class="f-gate"><line x1="280" y1="400" x2="420" y2="400" class="v-gate"/><text x="350" y="416" class="v-mono v-dim" text-anchor="middle">GATE · ENTRANCE</text></g>
-  <g class="v-visitor f-visitor" opacity="0" style="transform:translate(350px,395px)"><circle class="v-halo" r="18"/><circle class="v-dot" r="9"/></g>
-  <g class="f-clock" transform="translate(620 60)"><text text-anchor="end" class="v-mono f-clock-t" data-clock>DAY 0</text></g>
-</svg>`;
+  const fixture = (id, f) => { const p = P(f.u, f.v); return '<g class="f-fix" data-fix="' + id + '" style="transform:translate(' + fmt(p[0]) + 'px,' + fmt(p[1]) + 'px)"><rect width="' + fmt(f.dv * S) + '" height="' + fmt(f.du * S) + '" class="f-fix-r"/>' + boxes(f) + '<text class="v-mono f-fix-t" x="' + fmt((f.dv * S) / 2) + '" y="' + fmt(f.du * S + 11) + '" text-anchor="middle">' + f.cam + '</text></g>'; };
+  const gate = [P(STORE.D - 0.4, DOORS.entrance.v0), P(STORE.D - 0.4, DOORS.entrance.v1)];
+  stage.innerHTML = '<svg viewBox="0 0 460 452" role="img" aria-labelledby="floor-svg-t" class="pf-svg iso-svg is-plan f-svg"><title id="floor-svg-t">The store floor as the platform maps it, on the real plan: the entrance gate at the bottom, the core at the centre, the carpet and the rug, the ball at the front left, LED strips along the left, back and right walls, sixteen fixtures with their product boxes, seven cameras, eight zones. When merchandising moves the fixtures, the boxes are redrawn, each fixture is pointed at the camera that sees it best, the zones and gates are reset, the triggers re-pointed, and the dashboard checked live.</title>' +
+    build(P, { base: true }) +
+    '<g class="f-zones"></g><g class="f-links"></g>' +
+    '<g class="f-cams">' + CAMS.map((c) => '<g class="f-cam" data-cam="' + c.id + '" transform="translate(' + fmt(c.p[0]) + ' ' + fmt(c.p[1]) + ')"><circle r="8"/><text y="3.5" text-anchor="middle" class="v-mono f-cam-t">' + c.id.slice(1) + '</text></g>').join('') + '</g>' +
+    '<g class="f-fixtures">' + Object.entries(FIXTURES).map(([id, f]) => fixture(id, f)).join('') + '</g>' +
+    '<g class="f-gate"><line x1="' + fmt(gate[0][0]) + '" y1="' + fmt(gate[0][1]) + '" x2="' + fmt(gate[1][0]) + '" y2="' + fmt(gate[1][1]) + '" class="v-gate"/><text x="' + fmt((gate[0][0] + gate[1][0]) / 2) + '" y="' + fmt(gate[0][1] - 6) + '" class="v-mono v-dim f-gate-t" text-anchor="middle">GATE</text></g>' +
+    '<g class="v-visitor f-visitor" opacity="0" style="transform:translate(' + fmt(P(16, 7.5)[0]) + 'px,' + fmt(P(16, 7.5)[1]) + 'px)"><circle class="v-halo" r="14"/><circle class="v-dot" r="7"/></g>' +
+    '<g class="f-clock" transform="translate(452 22)"><text text-anchor="end" class="v-mono f-clock-t" data-clock>DAY 0</text></g></svg>';
   const zonesG = $('.f-zones', stage), linksG = $('.f-links', stage), fixG = $('.f-fixtures', stage), visitorG = $('.f-visitor', stage), clockT = $('[data-clock]', stage);
   const log = $('[data-log]', root);
   function drawZones(list, hot) {
-    zonesG.innerHTML = list.map((z) => '<g class="f-zone' + (hot ? ' is-hot' : '') + '"><rect x="' + z.x + '" y="' + z.y + '" width="' + z.w + '" height="' + z.h + '" rx="2"/><text x="' + (z.x + 8) + '" y="' + (z.y + 16) + '" class="v-mono f-zone-t">' + z.name + '</text></g>').join('');
+    zonesG.innerHTML = list.map((z) => { const p = P(z.u, z.v); return '<g class="f-zone' + (hot ? ' is-hot' : '') + '"><rect x="' + fmt(p[0]) + '" y="' + fmt(p[1]) + '" width="' + fmt(z.dv * S) + '" height="' + fmt(z.du * S) + '" rx="2"/>' + (z.id === 'core' ? '' : '<text x="' + fmt(p[0] + 5) + '" y="' + fmt(p[1] + 12) + '" class="v-mono f-zone-t">' + esc(z.name) + '</text>') + '</g>'; }).join('');
   }
   function placeFixtures(set, opts = {}) {
     Object.entries(set).forEach(([id, f]) => {
-      const g = $('[data-fix="' + id + '"]', fixG);
-      g.style.transform = 'translate(' + f.x + 'px,' + f.y + 'px)';
-      const r = $('.f-fix-r', g); r.setAttribute('width', f.w); r.setAttribute('height', f.h);
-      const t = $('.f-fix-t', g); t.setAttribute('x', f.w / 2); t.setAttribute('y', f.h + 14);
-      t.textContent = id.toUpperCase() + ' · ' + (opts.hideCam ? '?' : f.cam);
+      const g = $('[data-fix="' + id + '"]', fixG), p = P(f.u, f.v);
+      g.style.transform = 'translate(' + fmt(p[0]) + 'px,' + fmt(p[1]) + 'px)';
+      const r = $('.f-fix-r', g); r.setAttribute('width', fmt(f.dv * S)); r.setAttribute('height', fmt(f.du * S));
+      const t = $('.f-fix-t', g); t.setAttribute('x', fmt((f.dv * S) / 2)); t.setAttribute('y', fmt(f.du * S + 11));
+      t.textContent = opts.hideCam ? '?' : f.cam;
       $$('.f-box', g).forEach((b) => b.remove());
       if (!opts.hideBoxes) r.insertAdjacentHTML('afterend', boxes(f));
       $$('.f-box', g).forEach((b) => b.classList.toggle('is-hot', !!opts.hotBoxes));
       t.classList.toggle('is-hot', !!opts.hotCam);
     });
   }
+  // each product box calls a pop-up on the nearest screen: left wall, right wall or the back
+  const SCREEN = { left: P(7.4, 0.3), right: P(10.4, 14.7), back: P(0.3, 7.5) };
   function drawLinks(set, on) {
     if (!on) { linksG.innerHTML = ''; return; }
-    const leds = [125, 285, 445];
-    linksG.innerHTML = Object.values(set).map((f, k) => {
-      const cx = f.x + f.w / 2, cy = f.y, lx = leds[k % 3];
-      return '<path class="f-link is-hot" d="M' + cx + ' ' + cy + ' C ' + cx + ' 40, ' + lx + ' 60, ' + lx + ' 28"/>';
+    linksG.innerHTML = Object.values(set).map((f) => {
+      const c = P(f.u + f.du / 2, f.v + f.dv / 2), to = f.v + f.dv / 2 < 5 ? SCREEN.left : f.v + f.dv / 2 > 10 ? SCREEN.right : SCREEN.back;
+      const mx = (c[0] + to[0]) / 2, my = (c[1] + to[1]) / 2;
+      return '<path class="f-link is-hot" d="M' + fmt(c[0]) + ' ' + fmt(c[1]) + ' Q ' + fmt(mx) + ' ' + fmt(my - 14) + ', ' + fmt(to[0]) + ' ' + fmt(to[1]) + '"/>';
     }).join('');
   }
   let walk = null;
@@ -238,7 +202,7 @@ function floor() {
   function draw(i) {
     stopWalk();
     const moved = i >= 1;
-    const set = moved ? MOVED : FIX;
+    const set = moved ? MOVED : FIXTURES;
     drawZones(moved && i >= 4 ? ZONES_MOVED : ZONES, i === 4);
     placeFixtures(set, { hideBoxes: i === 1, hotBoxes: i === 2, hideCam: i === 1 || i === 2, hotCam: i === 3 });
     $$('.f-cam', stage).forEach((c) => c.classList.toggle('is-hot', i === 3));
@@ -246,29 +210,29 @@ function floor() {
     clockT.textContent = ['DAY 0 · MAPPED', 'DAY 1 · 00:00', 'DAY 1 · 02:00', 'DAY 1 · 06:00', 'DAY 1 · 10:00', 'DAY 1 · 16:00', 'DAY 1 · 22:00 · LIVE'][i];
     if (i === 6) {
       visitorG.setAttribute('opacity', '1');
-      const path = [[350, 395], [350, 340], [330, 280], [250, 250], [150, 200], [120, 140], [250, 140], [420, 150], [540, 180], [540, 300], [400, 350], [350, 395]];
+      const path = [[16, 7.5], [13.5, 7.5], [12.2, 4.7], [9, 4.6], [6, 4.5], [3.8, 4.8], [3.8, 7.5], [3.8, 10.4], [6, 10.4], [9.2, 10.5], [12.3, 10.9], [13.6, 9.3], [16, 7.5]].map(([u, v]) => P(u, v));
       let k = 0;
-      const stepWalk = () => { k = (k + 1) % path.length; visitorG.style.transform = 'translate(' + path[k][0] + 'px,' + path[k][1] + 'px)'; };
-      if (reduced()) visitorG.style.transform = 'translate(250px,250px)'; else walk = setInterval(stepWalk, 900);
+      const stepWalk = () => { k = (k + 1) % path.length; visitorG.style.transform = 'translate(' + fmt(path[k][0]) + 'px,' + fmt(path[k][1]) + 'px)'; };
+      if (reduced()) { const m = path[4]; visitorG.style.transform = 'translate(' + fmt(m[0]) + 'px,' + fmt(m[1]) + 'px)'; } else walk = setInterval(stepWalk, 900);
     }
     const LOG = [
-      ['6 fixtures, 18 product boxes, 4 cameras, 4 zones, 1 gate', 'Every product in exactly one camera'],
-      ['Fixtures moved and turned, new SKUs on the floor', 'The digital map no longer matches the store'],
+      ['16 fixtures, 48 product boxes, 7 cameras, 8 zones, 1 gate', 'Every product in exactly one camera'],
+      ['Two tables swap zones, one turns, the accessories table crosses the entrance, new SKUs on the floor', 'The digital map no longer matches the store'],
       ['Boxes redrawn fixture by fixture', 'Colour variants share one box; shoes get smaller boxes'],
       ['Each fixture pointed at the camera that sees it best', 'No product counted twice'],
-      ['Zones and gates reset around the new layout', 'A new zone where the corner opened up'],
-      ['Each box re-pointed to its pop-up on the wall', 'Triggers tested one by one'],
+      ['Zones and gates reset around the new layout', 'Running shrinks; a new zone opens in the front-right corner'],
+      ['Each box re-pointed to its pop-up on the nearest screen', 'Triggers tested one by one'],
       ['Dashboard live, counts flowing on the new map', 'Done inside the day, the store trading throughout'],
     ];
     log.innerHTML = LOG[i].map((l) => '<li>' + esc(l) + '</li>').join('');
   }
   const steps = [
-    { name: 'Mapped.', text: 'The floor as the platform knows it: fixtures with their product boxes, the camera that watches each one, the zones, the gate. The map is what every count depends on.' },
-    { name: 'The floor moves.', text: 'Merchandising resets the floorset: fixtures swap places, one turns, a corner opens, new products arrive. Overnight the map is wrong everywhere.', hold: 2600 },
+    { name: 'Mapped.', text: 'The floor as the platform knows it, on the real plan: fixtures with their product boxes, the camera that counts each one, the zones, the gate at the entrance. The map is what every count depends on.' },
+    { name: 'The floor moves.', text: 'Merchandising resets the floorset: two tables swap zones, one turns, the accessories table crosses the entrance, new products arrive. Overnight the map is wrong everywhere.', hold: 2600 },
     { name: 'Redraw the boxes.', text: 'Fixture by fixture, draw the product boxes again: one box per product group where colours sit together, smaller boxes where shoes stand apart.', hold: 2600 },
     { name: 'Re-point the cameras.', text: 'Assign each fixture to the one camera that sees it best, so a product seen by two cameras is never counted twice.', hold: 2600 },
     { name: 'Reset zones and gates.', text: 'Draw the zones around the new layout, including a new one where the corner opened, and put the gate lines back where people actually enter.', hold: 2600 },
-    { name: 'Re-point the triggers.', text: 'Each product box calls a pop-up on a screen. Re-point every trigger, then test them one by one with a hand.', hold: 2600 },
+    { name: 'Re-point the triggers.', text: 'Each product box calls a pop-up on the nearest screen. Re-point every trigger, then test them one by one with a hand.', hold: 2600 },
     { name: 'Check it live.', text: 'Walk the floor with the dashboard open: the counts flow onto the new map. The whole re-map fits inside a day, with the store trading throughout.', hold: 4000 },
   ];
   player(root, steps, draw);

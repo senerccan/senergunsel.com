@@ -918,6 +918,128 @@
 .pf-svg .f-link { fill: none; stroke: var(--accent); stroke-width: 1.2; stroke-dasharray: 3 3; }
 .pf-svg .f-clock-t { font-size: 10px; fill: var(--atext); font-variant-numeric: tabular-nums; }
 .pf-svg .f-visitor { transition: transform 0.9s linear; }
+/* the store, drawn: a wide figure (stage on top, note and log below), views, layers */
+.pf-wide .pf-body { grid-template-columns: 1fr; }
+.pf-wide .pf-stage { border-right: 0; border-bottom: 1px solid var(--line); padding: 10px 8px 6px; }
+.pf-wide .pf-side { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 24px; row-gap: 6px; align-items: start; }
+.pf-wide .pf-note { grid-column: 1; grid-row: 1 / span 2; }
+.pf-wide .pf-k { grid-column: 2; grid-row: 1; margin: 0; padding-top: 0; border-top: 0; }
+.pf-wide .pf-log { grid-column: 2; grid-row: 2; }
+.pf-views { display: inline-flex; gap: 0; margin-left: auto; border: 1px solid var(--line); }
+.pf-views button { min-height: 28px; margin: 0; padding: 0 10px; border: 0; background: transparent; color: var(--ink); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.pf-views button + button { border-left: 1px solid var(--line); }
+.pf-views button[aria-pressed="true"] { background: var(--ink); color: var(--onink); }
+.pf-layers { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 8px 16px 12px; border-top: 1px solid var(--hair); font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
+.pf-layers label { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; cursor: pointer; }
+.pf-layers input { width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
+.pf-stage:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.pf-hint { display: none; margin: 0; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.pf-wide .pf-hint { grid-column: 1 / -1; }
+.iso-svg { display: block; width: 100%; height: auto; }
+.pf-wide .f-svg { max-width: 560px; margin: 0 auto; }
+.iso-svg .iso-t { font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; fill: var(--ink2); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.iso-svg .zone-t { fill: var(--ink2); font-size: 12px; }
+.iso-svg .zone.is-hot .zone-t { fill: var(--atext); }
+.iso-svg .wall-t { fill: var(--ink); font-size: 12px; font-weight: 600; }
+.iso-svg .fix-t, .iso-svg .room-t { font-size: 10.5px; fill: var(--ink2); }
+.iso-svg .core-t { font-size: 13px; font-weight: 600; fill: var(--atext); }
+.iso-svg .prod-t { font-size: 10.5px; fill: var(--atext); }
+.iso-svg .led-t { font-size: 10.5px; fill: var(--ink2); }
+.iso-svg .hw-t { font-size: 9.5px; font-weight: 600; fill: var(--ink); stroke: none; }
+.iso-svg .floor { fill: color-mix(in srgb, var(--ink) 6%, var(--surface)); stroke: var(--line); stroke-width: 1; }
+.iso-svg .runway { fill: color-mix(in srgb, var(--ink) 2%, var(--surface)); }
+.iso-svg .court circle, .iso-svg .court rect, .iso-svg .court path, .iso-svg .court line { stroke: color-mix(in srgb, var(--ink) 42%, transparent); stroke-width: 1; }
+.iso-svg .carpet { fill: color-mix(in srgb, #2B7A4B 58%, var(--surface)); }
+.iso-svg .rug-edge { stroke: var(--ink); stroke-width: 1; opacity: 0.5; }
+.iso-svg .rocks { fill: color-mix(in srgb, var(--ink) 72%, var(--surface)); opacity: 0.4; }
+.iso-svg .zone-r { fill: color-mix(in srgb, var(--revisit) 6%, transparent); stroke: color-mix(in srgb, var(--ink) 25%, transparent); stroke-width: 0.8; stroke-dasharray: 4 3; transition: fill 0.3s ease; }
+.iso-svg .zone.is-hot .zone-r { fill: color-mix(in srgb, var(--accent) 20%, transparent); stroke: var(--accent); }
+.iso-svg .wall { fill: color-mix(in srgb, var(--ink) 10%, var(--surface)); stroke: var(--line); stroke-width: 1; }
+.iso-svg .wall-left { fill: color-mix(in srgb, var(--ink) 14%, var(--surface)); }
+.iso-svg .wall-side { fill: color-mix(in srgb, var(--ink) 7%, var(--surface)); }
+.iso-svg .wall-line { fill: none; stroke: var(--ink); stroke-width: 3; }
+.iso-svg .door { fill: var(--surface); stroke: var(--ink); stroke-width: 1; }
+.iso-svg .glass { fill: none; stroke: color-mix(in srgb, var(--ink) 50%, transparent); stroke-width: 1.2; }
+.iso-svg .glass-up { stroke-dasharray: 3 3; opacity: 0.6; }
+.iso-svg .gate { stroke: var(--revisit); stroke-width: 2; stroke-dasharray: 5 3; }
+.iso-svg .f-top { fill: var(--surface); stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.iso-svg .f-front { fill: color-mix(in srgb, var(--ink) 14%, var(--surface)); stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.iso-svg .f-right { fill: color-mix(in srgb, var(--ink) 26%, var(--surface)); stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.iso-svg .room .f-top { fill: color-mix(in srgb, var(--ink) 5%, var(--surface)); }
+.iso-svg .cabinet .f-top { fill: color-mix(in srgb, var(--ink) 9%, var(--surface)); }
+.iso-svg .core .f-top { fill: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.iso-svg .core .f-front, .iso-svg .core .f-right { fill: color-mix(in srgb, var(--accent) 42%, var(--surface)); }
+.iso-svg .prod .f-top { stroke-width: 0.6; }
+.iso-svg .prod .f-front, .iso-svg .prod .f-right { stroke-width: 0.6; }
+.iso-svg .prod.g1 .f-top { fill: color-mix(in srgb, var(--ink) 16%, var(--surface)); }
+.iso-svg .prod.g2 .f-top { fill: color-mix(in srgb, var(--revisit) 32%, var(--surface)); }
+.iso-svg .prod.g3 .f-top { fill: color-mix(in srgb, var(--accent) 34%, var(--surface)); }
+.iso-svg .prod.g4 .f-top { fill: color-mix(in srgb, #2B7A4B 34%, var(--surface)); }
+.iso-svg .prod.g1 .f-front, .iso-svg .prod.g1 .f-right { fill: color-mix(in srgb, var(--ink) 30%, var(--surface)); }
+.iso-svg .prod.g2 .f-front, .iso-svg .prod.g2 .f-right { fill: color-mix(in srgb, var(--revisit) 50%, var(--surface)); }
+.iso-svg .prod.g3 .f-front, .iso-svg .prod.g3 .f-right { fill: color-mix(in srgb, var(--accent) 52%, var(--surface)); }
+.iso-svg .prod.g4 .f-front, .iso-svg .prod.g4 .f-right { fill: color-mix(in srgb, #2B7A4B 52%, var(--surface)); }
+.iso-svg .shoe { fill: var(--accent); opacity: 0.85; }
+.iso-svg .shirt-h { fill: color-mix(in srgb, var(--revisit) 40%, var(--surface)); stroke: var(--ink); stroke-width: 0.6; }
+.iso-svg .ball circle { fill: color-mix(in srgb, var(--accent) 62%, var(--surface)); stroke: var(--ink); stroke-width: 1; }
+.iso-svg .ball path { stroke: var(--ink); stroke-width: 1; opacity: 0.7; }
+.iso-svg .hand-palm { fill: url(#chrome); stroke: color-mix(in srgb, var(--ink) 55%, transparent); stroke-width: 1; }
+.iso-svg .hand-out { fill: none; stroke: color-mix(in srgb, var(--ink) 55%, transparent); stroke-width: 8; stroke-linecap: round; }
+.iso-svg .hand-in { fill: none; stroke: url(#chrome); stroke-width: 6; stroke-linecap: round; }
+.iso-svg .hand { filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35)); }
+.iso-svg .drop { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.28; }
+.iso-svg .is-hot .drop { opacity: 0.9; stroke: var(--accent); }
+.iso-svg .ant.is-hot .drop { stroke: var(--revisit); }
+.iso-svg .hand-plan circle { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.iso-svg .hand-plan path { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.iso-svg .led-screen { fill: color-mix(in srgb, var(--ink) 86%, var(--surface)); }
+.iso-svg .led-band { fill: color-mix(in srgb, var(--accent) 38%, transparent); }
+.iso-svg .led-popup { opacity: 0; transition: opacity 0.5s ease; }
+.iso-svg .led.is-lit .led-popup { opacity: 1; }
+.iso-svg .led-pop-bg { fill: var(--accent); }
+.iso-svg .led-pop-art path { fill: #fff; stroke: #fff; }
+.iso-svg .led-callout { fill: #fff; opacity: 0.9; }
+.iso-svg .led-frame { fill: none; stroke: var(--ink); stroke-width: 1; }
+.iso-svg .led-right { opacity: 0.45; transition: opacity 0.4s ease; }
+.iso-svg .led-right.is-lit { opacity: 0.96; }
+.iso-svg .led-line { stroke: color-mix(in srgb, var(--ink) 86%, var(--surface)); stroke-width: 5; transition: stroke 0.3s ease; }
+.iso-svg .led.is-lit .led-line { stroke: var(--accent); }
+.iso-svg .region { fill: color-mix(in srgb, var(--accent) 10%, transparent); stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 2; opacity: 0.6; transition: opacity 0.3s ease, fill 0.3s ease; }
+.iso-svg .region.is-hot { opacity: 1; fill: color-mix(in srgb, var(--accent) 32%, transparent); }
+.iso-svg .lift { transition: transform 0.5s ease; }
+.iso-svg .product.is-lifted .lift { transform: translateY(-13px); }
+.iso-svg .pack-body { fill: var(--ink); }
+.iso-svg .puck { fill: var(--revisit); }
+.iso-svg .strap { stroke: var(--ink); stroke-width: 1.5; }
+.iso-svg .shirt path { fill: color-mix(in srgb, var(--revisit) 45%, var(--surface)); stroke: var(--ink); stroke-width: 1; }
+.iso-svg .cam-body { fill: var(--surface); stroke: var(--ink); stroke-width: 1.2; transition: fill 0.25s ease; }
+.iso-svg .cam-lens { fill: var(--ink); }
+.iso-svg .cam.is-hot .cam-body { fill: var(--accent); stroke: var(--accent); }
+.iso-svg .cam.is-hot .cam-lens { fill: #fff; }
+.iso-svg .cam-cone { fill: color-mix(in srgb, var(--accent) 22%, transparent); stroke: none; opacity: 0; transition: opacity 0.3s ease; }
+.iso-svg .cam.is-hot .cam-cone { opacity: 1; }
+.iso-svg .ring { fill: none; stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.iso-svg .ant-body { fill: var(--surface); stroke: var(--ink); stroke-width: 1.2; transition: fill 0.25s ease; }
+.iso-svg .ant.is-hot .ant-body { fill: var(--revisit); stroke: var(--revisit); }
+.iso-svg .ant .ring { stroke: var(--revisit); }
+.iso-svg .ant.is-hot .ring { animation: isoring 1.3s ease-out infinite; }
+.iso-svg .spk-body { fill: var(--surface); stroke: var(--ink); stroke-width: 1.2; transition: fill 0.25s ease; }
+.iso-svg .spk-cone { fill: var(--ink); }
+.iso-svg .spk.is-hot .spk-body { fill: var(--ink); }
+.iso-svg .spk.is-hot .spk-cone { fill: var(--accent); }
+.iso-svg .spk .ring { stroke: var(--accent); }
+.iso-svg .spk.is-hot .ring { animation: isoring 1s ease-out infinite; }
+.iso-svg .ring-2 { animation-delay: 0.45s !important; }
+@keyframes isoring { from { transform: scale(0.35); opacity: 0.9; } to { transform: scale(1.15); opacity: 0; } }
+.iso-svg .mesh circle { fill: var(--ink); opacity: 0.14; animation: isotwinkle 6s ease-in-out infinite; }
+@keyframes isotwinkle { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.5; } }
+.is-check .iso-svg .mesh circle { fill: var(--accent); opacity: 0.85; animation-duration: 1.2s; }
+.iso-svg .visitor { color: var(--ink); transition: transform 0.9s cubic-bezier(.3,.7,.3,1); }
+.iso-svg .visitor .shadow { fill: rgba(0,0,0,0.28); }
+.iso-svg .fig-shoe { fill: var(--accent); }
+.iso-svg .visitor .halo { fill: color-mix(in srgb, var(--accent) 18%, transparent); }
+.iso-svg .visitor .dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.pf-stage.hide-cams .cams, .pf-stage.hide-rfid .rfid, .pf-stage.hide-sound .sound, .pf-stage.hide-led .led, .pf-stage.hide-mesh .mesh { display: none; }
 /* the clips */
 .prose .clips { margin: 0 0 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .prose .clip { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -933,10 +1055,38 @@
 .prose .lessons b { font-weight: 750; }
 @media (prefers-reduced-motion: reduce) {
   .pf-svg .v-visitor, .pf-svg .f-fix, .pf-svg .f-visitor, .pf-svg .v-led-ambient, .pf-svg .v-led-popup, .pf-svg .v-link, .pf-svg .v-box rect, .pf-svg .f-zone rect, .pf-svg .f-cam circle { transition: none !important; }
+  .iso-svg .visitor, .iso-svg .lift, .iso-svg .led-popup, .iso-svg .zone-r, .iso-svg .region, .iso-svg .led-right, .iso-svg .led-line { transition: none !important; }
+  .iso-svg .mesh circle { animation: none !important; opacity: 0.18; }
+  .iso-svg .ring { animation: none !important; }
+  .iso-svg .ant.is-hot .ring, .iso-svg .spk.is-hot .ring { opacity: 0.6; transform: scale(0.7); }
 }
 @media (max-width: 960px) {
   .pf-body { grid-template-columns: 1fr; }
   .pf-stage { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 760px) {
+  .pf-wide .pf-side { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .pf-wide .pf-note, .pf-wide .pf-k, .pf-wide .pf-log { grid-column: 1; grid-row: auto; }
+  .pf-wide .pf-k { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--hair); }
+  .pf-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .pf-scroll .iso-svg { min-width: 640px; }
+  .pf-scroll .f-svg { min-width: 460px; }
+  .pf-hint { display: block; }
+  .pf-svg.f-svg .v-mono { font-size: 10.5px; }
+  .pf-svg.f-svg .f-zone-t { font-size: 9.5px; }
+  .pf-svg.f-svg .f-fix-t, .pf-svg.f-svg .f-cam-t { font-size: 9px; }
+  .pf-svg.f-svg .f-clock-t { font-size: 10px; }
+  .pf-svg.f-svg .iso-t { font-size: 11px; }
+  .pf-svg.f-svg .zone-t, .pf-svg.f-svg .wall-t { font-size: 10px; }
+  .pf-svg.f-svg .fix-t, .pf-svg.f-svg .room-t, .pf-svg.f-svg .prod-t, .pf-svg.f-svg .led-t { font-size: 9px; }
+  .pf-svg.f-svg .core-t { font-size: 10.5px; }
+  .iso-svg .iso-t { font-size: 13.5px; }
+  .iso-svg .zone-t, .iso-svg .wall-t { font-size: 12.5px; }
+  .iso-svg .fix-t, .iso-svg .room-t, .iso-svg .prod-t, .iso-svg .led-t { font-size: 11.5px; }
+  .iso-svg .core-t { font-size: 13px; }
+  .iso-svg .hw-t { font-size: 9px; }
+  .pf-views { margin-left: 0; }
+  .pf-layers { padding: 8px 12px 10px; gap: 2px 14px; }
 }
 @media (max-width: 760px) {
   .prose .clips { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }

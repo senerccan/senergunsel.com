@@ -24,6 +24,7 @@
 <script type="module" src="/assets/js/site.js"></script>
 <script type="module" src="/assets/js/backhouse.js"></script>
 <script type="module" src="/assets/js/ua.js"></script>
+<script type="module" src="/assets/js/ua-store.js"></script>
 </head>
 <body data-zone="G01">
 <a class="skip-link" href="#main">Skip to the case study</a>
@@ -93,6 +94,35 @@
               <figcaption>With Simon Pestridge, Under Armour's SVP and Managing Director for APAC, on soft-opening day.</figcaption>
             </figure>
           </div>
+
+          <h2 id="drawn">The store, drawn</h2>
+          <p>The concept plan, redrawn so the page can show what the store does. Roughly to scale: the entrance and its gate line at the front, the green carpet with the rug just inside it, the court painted on the floor, the core (the stage) at the centre under the chrome hand, the giant ball at the front left, the LED strips high on the walls, the fixtures by zone, the IT room and the storage annex at the back, and the hardware in the ceiling. Press a trigger and a visitor walks in; the store answers. Switch to the plan to see it the way the concept deck drew it, and turn the hardware layers off to see the building alone. Where the cameras, antennas and speakers sit here is illustrative, not the store's plan.</p>
+          <figure class="pf pf-wide" id="store3d" aria-labelledby="store3d-t">
+            <figcaption class="pf-head"><span class="pf-t" id="store3d-t">The store, in three dimensions</span><span class="pf-views" role="group" aria-label="View"><button type="button" data-view="iso" aria-pressed="true">Isometric</button><button type="button" data-view="plan" aria-pressed="false">Plan</button></span><span class="tag tag-accent">Playable</span></figcaption>
+            <div class="pf-body">
+              <div class="pf-stage pf-scroll" data-stage role="group" aria-label="The store drawing (scrolls sideways on small screens)" tabindex="0"></div>
+              <div class="pf-side">
+                <p class="pf-hint">Drag the drawing sideways to see all of it.</p>
+                <p class="pf-note" data-note></p>
+                <p class="pf-k">What the store logs</p>
+                <ul class="pf-log" data-log></ul>
+              </div>
+            </div>
+            <div class="pf-controls" role="group" aria-label="Triggers">
+              <button type="button" data-trigger="pack" aria-pressed="false">Pull the backpack</button>
+              <button type="button" data-trigger="zone" aria-pressed="false">Walk into running</button>
+              <button type="button" data-trigger="shirt" aria-pressed="false">Grab the shirt</button>
+              <button type="button" data-trigger="check" aria-pressed="false">Systems check</button>
+            </div>
+            <div class="pf-layers" role="group" aria-label="Layers">
+              <label><input type="checkbox" data-layer="cams" checked> Cameras</label>
+              <label><input type="checkbox" data-layer="rfid" checked> RFID antennas</label>
+              <label><input type="checkbox" data-layer="sound" checked> Speakers</label>
+              <label><input type="checkbox" data-layer="led" checked> Screens</label>
+              <label><input type="checkbox" data-layer="mesh" checked> LED mesh</label>
+            </div>
+            <p class="visually-hidden" aria-live="polite" data-live></p>
+          </figure>
 
           <h2>Operator first, then teacher</h2>
           <p>I started as the sole operator of the store's proprietary intelligent-store platform, handling the software and running the analytics. By the end of the project, Under Armour's retail, creative, marketing and operations teams were running it themselves, because I trained them and wrote the handover documentation.</p>
@@ -164,11 +194,12 @@
 
           <h2>Every floor change becomes a test</h2>
           <p>When merchandising reset the floor by moving the store's modular fixtures and SKUs, I re-mapped the store's full digital layout (in retail, the floorset) in under 24 hours with minimal downtime. That turned each floor change into a repeatable test cycle: move something, measure it, keep what works. The map is everything: every count the store makes depends on knowing which product sits in which box, in which zone, under which camera.</p>
-          <figure class="pf" id="floor" aria-labelledby="floor-t">
+          <figure class="pf pf-wide" id="floor" aria-labelledby="floor-t">
             <figcaption class="pf-head"><span class="pf-t" id="floor-t">The floor, mapped and re-mapped</span><span class="tag tag-accent">Playable</span></figcaption>
             <div class="pf-body">
-              <div class="pf-stage" data-stage></div>
+              <div class="pf-stage pf-scroll" data-stage role="group" aria-label="The floor map (scrolls sideways on small screens)" tabindex="0"></div>
               <div class="pf-side">
+                <p class="pf-hint">Drag the map sideways to see all of it.</p>
                 <p class="pf-note" data-note></p>
                 <p class="pf-k">On the map</p>
                 <ul class="pf-log" data-log></ul>
