@@ -509,8 +509,8 @@ function zoneButton(z, selKey, n) {
     z.suite ? 'in-suite' : '', z.format === 'HALF' ? 'is-half' : '', z.format === 'JOIN' ? 'is-join' : ''].concat(liveClasses(z.code)).filter(Boolean).join(' ');
   return '<button type="button" class="' + cls + '" data-zone="' + esc(z.key) + '" data-code="' + esc(z.code) + '" aria-pressed="' + (z.key === selKey) + '"' +
     ' aria-label="' + esc(z.code + ', ' + z.title + '. ' + statusLine(z)) + '"' +
-    ' style="' + heatVars(z) + '--i:' + n + ';' + gridPos(z) + '">' +
-    (z.hatch ? '<span class="zone-hatch" aria-hidden="true"></span>' : '') +
+    ' style="' + heatVars(z) + '--i:' + n + ';--prio:' + (z.hatch ? 0 : Math.max(0, Math.min(1, Number(z.forecast) || 0))).toFixed(2) + ';' + gridPos(z) + '">' +
+    (z.hatch ? '<span class="zone-hatch" aria-hidden="true"></span>' : '<span class="zone-door" aria-hidden="true"></span>') +
     '<span class="zone-heat breathe" aria-hidden="true"></span>' + bloom('top:' + z.g.top + ';bottom:' + z.g.bottom) +
     '<span class="zone-hint" aria-hidden="true" style="top:' + z.g.top + ';bottom:' + z.g.bottom + '">' + (HINTS[z.hint] ? HINTS[z.hint]() : '') + '</span>' +
     '<span class="zone-top" aria-hidden="true"><span class="zone-label"><span class="zl-sign">' + esc(z.code) + '<span class="zl-place"> · <span lang="' + langTag() + '">' + esc(sign(lang, z.place)) + '</span></span></span>' +
@@ -639,11 +639,40 @@ function suiteMark(placed, z) {
   return 'in-suite' + (rooms[0] === z ? ' suite-first' : '') + (rooms[rooms.length - 1] === z ? ' suite-last' : '');
 }
 
+const FIGURE = '<svg viewBox="0 0 42 80" aria-hidden="true"><g transform="rotate(24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><g transform="rotate(-22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:var(--accent)"/></g><line x1="21.5" y1="18" x2="19" y2="47" stroke="currentColor" stroke-width="7.5" stroke-linecap="round"/><g transform="rotate(22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:var(--accent)"/></g><g transform="rotate(-24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><circle cx="22" cy="9" r="7.5" fill="currentColor"/><rect x="22" y="6.2" width="10" height="3.4" rx="1.2" style="fill:var(--accent)"/></svg>';
+// The lift: the stick figure rides a cab beside the floor buttons and moves with the floors.
+let liftTimer = null;
+function placeCab(move) {
+  const box = $('#elevator');
+  const cab = box && $('.lift-cab', box);
+  const btn = box && $('.floor-btn[aria-pressed="true"]', box);
+  if (!cab || !btn) return;
+  const row = getComputedStyle(box).flexDirection.startsWith('row');
+  const x = row ? btn.offsetLeft + btn.offsetWidth / 2 - cab.offsetWidth / 2 : btn.offsetLeft - cab.offsetWidth - 6;
+  const y = row ? btn.offsetTop + btn.offsetHeight + 4 : btn.offsetTop + btn.offsetHeight / 2 - cab.offsetHeight / 2;
+  cab.style.transform = 'translate(' + Math.round(x) + 'px, ' + Math.round(y) + 'px)';
+  const shaft = $('.lift-shaft', box);
+  if (shaft) {
+    const btns = $$('.floor-btn', box);
+    if (row) { shaft.hidden = true; }
+    else {
+      shaft.hidden = false;
+      const top = btns[0].offsetTop + btns[0].offsetHeight / 2, bottom = btns[btns.length - 1].offsetTop + btns[btns.length - 1].offsetHeight / 2;
+      shaft.style.top = top + 'px'; shaft.style.height = (bottom - top) + 'px'; shaft.style.left = (btn.offsetLeft - cab.offsetWidth / 2 - 6) + 'px';
+    }
+  }
+  if (move) {
+    cab.classList.add('is-moving');
+    clearTimeout(liftTimer);
+    liftTimer = setTimeout(() => cab.classList.remove('is-moving'), 800);
+  }
+}
 function renderElevator() {
   const box = $('#elevator');
   if (!box) return;
   const lang = currentLang();
-  $$('.floor-btn', box).forEach((b) => b.remove());
+  $$('.floor-btn, .lift-shaft, .lift-cab', box).forEach((b) => b.remove());
+  box.insertAdjacentHTML('beforeend', '<span class="lift-shaft" aria-hidden="true"></span><span class="lift-cab" aria-hidden="true">' + FIGURE + '</span>');
   FLOORS.slice().reverse().forEach((f) => {
     const b = document.createElement('button');
     b.type = 'button';
@@ -679,16 +708,19 @@ function renderFloor() {
   } else if (floorState.view === 'aisle') {
     html = '<ul class="aisle" aria-label="Projects on this floor">' + placed.map((z, n) => aisleRow(z, selKey, false, n, suiteMark(placed, z))).join('') + '</ul>';
   } else {
-    html = '<div class="plan-scroll"><div class="plan' + (floorState.view === 'model' ? ' model' : '') + '">' +
+    html = '<div class="plan-scroll"><div class="plan' + (floorState.view === 'model' ? ' model' : '') + '" data-floor="' + esc(fl.key) + '">' +
       '<div class="plan-grid">' + planItems(placed, suites, (z, n) => zoneButton(z, selKey, n), (s, rooms, n) => suiteBlock(s, rooms, selKey, n)) +
-      fillers.map((f, n) => fillerCell(f, placed.length + n)).join('') + '</div>' +
-      '</div></div>';
+      fillers.map((f, n) => fillerCell(f, placed.length + n)).join('') +
+      (fl.key === 'G' ? '<span class="plan-windows" aria-hidden="true"></span><span class="plan-door" aria-hidden="true"><i></i><b>' + esc(sign(currentLang(), 'door')) + '</b></span>' : '<span class="plan-lift" aria-hidden="true"><b>' + esc(sign(currentLang(), 'elevator')) + '</b></span>') +
+      '</div></div></div>';
   }
   stageEl.innerHTML = html;
   renderPanel();
   renderNote();
   $$('.floor-btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.floor === fl.key)));
   $$('[data-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === floorState.view)));
+  placeCab(renderFloor.movedFloor);
+  renderFloor.movedFloor = false;
   live.afterRender();
 }
 function renderPanel() {
@@ -1018,6 +1050,7 @@ function initFloor() {
     }
     const floorBtn = e.target.closest('.floor-btn');
     if (floorBtn) {
+      renderFloor.movedFloor = true;
       const fl = FLOORS.find((f) => f.key === floorBtn.dataset.floor);
       goFloor(fl.key, floorState.sel[fl.key] || fl.zones[0].key);
       return;
@@ -1139,3 +1172,5 @@ initHeadline();
 initFloor();
 initLocator();
 initReceipt();
+
+window.addEventListener('resize', () => placeCab(false));

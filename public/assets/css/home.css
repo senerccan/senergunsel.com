@@ -219,11 +219,23 @@
 
 .floor-body { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 24px; }
 .elevator {
-  flex: none; width: 72px;
-  padding: 14px 0 16px;
+  position: relative;
+  flex: none; width: 104px;
+  padding: 14px 0 16px 30px;
   border: 1px solid var(--line); background: var(--surface);
   display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
+/* The lift: the stick figure rides a cab beside the buttons and moves with the floors. */
+.lift-shaft { position: absolute; width: 0; border-left: 1px dashed var(--muted); pointer-events: none; }
+.lift-cab {
+  position: absolute; left: 0; top: 0; width: 22px; height: 34px;
+  border: 1.5px solid var(--ink); border-radius: 3px; background: var(--surface); color: var(--ink);
+  display: flex; align-items: center; justify-content: center; pointer-events: none;
+  transition: transform 0.75s cubic-bezier(.2,.8,.2,1);
+}
+.lift-cab svg { width: 11px; height: 21px; display: block; }
+.lift-cab.is-moving svg { animation: liftbob 0.75s ease-in-out; }
+@keyframes liftbob { 0% { transform: translateY(0); } 35% { transform: translateY(-2px) scaleY(1.04); } 70% { transform: translateY(1px) scaleY(0.97); } 100% { transform: translateY(0); } }
 .elevator-sign { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .floor-btn {
   width: 44px; height: 44px; margin: 0; padding: 0;
@@ -240,10 +252,22 @@
 .floor-label .fl-purpose { color: var(--muted); }
 .floor-stage { transition: opacity 0.18s ease, transform 0.3s cubic-bezier(.2,.8,.2,1); }
 .floor-stage.is-moving { opacity: 0; transform: translateY(8px); }
-.plan-scroll { overflow-x: auto; padding: 12px 0 4px 10px; }
+.plan-scroll { overflow-x: auto; padding: 12px 0 26px 10px; }
 .plan { min-width: 800px; transform-origin: 50% 100%; transition: transform 0.7s cubic-bezier(.2,.8,.2,1); }
 /* Each project is its own room: its own walls, with corridors between rooms,
-   inside the store's outer wall. */
+   inside the store's outer wall. The ground floor has a shopfront and an entrance;
+   the floors above have the lift. Every open room has a mat at its door, wider the
+   more the room is worth a visit. */
+.plan-windows { position: absolute; left: 32px; right: 32px; top: -3px; height: 3px; background: repeating-linear-gradient(90deg, var(--revisit) 0 44px, var(--line) 44px 54px); opacity: 0.55; pointer-events: none; }
+.plan-door { position: absolute; left: 50%; bottom: -3px; width: 72px; height: 3px; transform: translateX(-50%); background: var(--ground); pointer-events: none; }
+.plan-door i { position: absolute; left: -3px; right: -3px; bottom: -4px; height: 10px; border-left: 3px solid var(--line); border-right: 3px solid var(--line); }
+.plan-door b { position: absolute; left: 50%; top: 9px; transform: translateX(-50%); font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.plan-lift { position: absolute; right: 12px; bottom: 4px; pointer-events: none; display: flex; align-items: center; gap: 6px; }
+.plan-lift::before { content: ""; width: 10px; height: 14px; border: 1px solid var(--muted); border-radius: 1px; background: linear-gradient(90deg, transparent 49%, var(--muted) 49% 51%, transparent 51%); opacity: 0.8; }
+.plan-lift b { font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.zone-door { position: absolute; left: 50%; bottom: 0; height: 3px; width: calc(16px + var(--prio, 0) * 48px); transform: translateX(-50%); background: var(--accent); opacity: 0.85; pointer-events: none; transition: width 0.3s ease, opacity 0.3s ease; }
+.zone:hover .zone-door, .zone.is-sel .zone-door { opacity: 1; width: calc(28px + var(--prio, 0) * 56px); }
+@media (prefers-reduced-motion: reduce) { .lift-cab { transition: none; } .lift-cab.is-moving svg { animation: none; } .zone-door { transition: none; } }
 .plan-grid {
   position: relative;
   display: grid;
@@ -727,7 +751,9 @@
   .section-intro { font-size: 16px; }
   .floor-controls { display: none; }
   .floor-body { flex-direction: column; gap: 14px; }
-  .elevator { width: auto; flex-direction: row-reverse; justify-content: flex-end; padding: 0; border: 0; background: transparent; gap: 8px; }
+  .elevator { width: auto; flex-direction: row-reverse; justify-content: flex-end; padding: 0 0 36px; border: 0; background: transparent; gap: 8px; }
+  .lift-cab { width: 20px; height: 30px; }
+  .lift-cab svg { width: 10px; height: 19px; }
   .elevator-sign { display: none; }
   .floor-btn { background: transparent; }
   .floor-main { flex: 1 1 auto; width: 100%; }

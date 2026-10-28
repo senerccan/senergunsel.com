@@ -1,7 +1,7 @@
 // G01 · the back of house: the project's Notion hub drawn as a plan, the launch plan as a
 // strip, and the systems the store is made of. Counts and dates come from backhouse-data.js;
 // the room descriptions are written here. Process facts only: no names, no store data.
-import { COUNTS, SYSTEMS, LANES, PLAN } from './backhouse-data.js';
+import { COUNTS, SYSTEMS } from './backhouse-data.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -66,8 +66,8 @@ function showRoom(id) {
     '<p class="bh-panel-f"><span>' + (r.id === 'agent' ? 'Does' : r.id === 'archive' ? 'Each page' : 'Fields') + '</span>' + r.fields.map((f) => '<span class="bh-field">' + esc(f) + '</span>').join('') + '</p>';
 }
 
-/* ---------------------------------------------------------------- The launch plan strip */
-const chart = { plan: { idx: 0, api: null }, sys: { idx: 0, api: null } };
+/* ---------------------------------------------------------------- Shared chart bits */
+const chart = { sys: { idx: 0, api: null } };
 function tipShow(el, html, x, y) {
   let tip = $('.tip', el);
   if (!tip) { tip = document.createElement('div'); tip.className = 'tip'; tip.setAttribute('aria-hidden', 'true'); el.appendChild(tip); }
@@ -81,95 +81,129 @@ function tipShow(el, html, x, y) {
 }
 function tipHide(el) { const tip = $('.tip', el); if (tip) tip.hidden = true; }
 
-function drawPlan() {
-  const el = $('[data-chart="plan"]', lab);
-  const W = Math.max(el.parentElement.clientWidth, 680); // the scroller's width; phones scroll the strip sideways
-  const t0 = Date.UTC(2025, 5, 1), t1 = Date.UTC(2026, 3, 1);
-  const m = { l: 112, r: 16, t: 26, b: 8 };
-  const x = (iso) => m.l + ((day(iso) - t0) / (t1 - t0)) * (W - m.l - m.r);
-  const CH = 6.3, rowH = 22, laneGap = 8;
-  // pack each lane's items into rows by their drawn extent (bar or mark plus its label)
-  const lanes = LANES.map(([key, name]) => {
-    const items = PLAN.filter((p) => p.lane === key).map((p) => {
-      const x0 = x(p.start), x1 = p.kind === 'bar' ? Math.max(x(p.end), x0 + 4) : x0;
-      const lw = p.label.length * CH + 8;
-      const inside = p.kind === 'bar' && x1 - x0 > lw + 6;
-      let lx0, lx1, anchor;
-      if (inside) { lx0 = x0; lx1 = x1; anchor = 'in'; }
-      else if (x1 + 8 + lw < W - m.r) { lx0 = x0; lx1 = x1 + 8 + lw; anchor = 'right'; }
-      else { lx0 = x0 - 8 - lw; lx1 = x1; anchor = 'left'; }
-      return { ...p, x0, x1, lx0: Math.min(lx0, x0 - (p.kind === 'bar' ? 0 : 7)), lx1: Math.max(lx1, x1 + (p.kind === 'bar' ? 0 : 7)), anchor };
-    }).sort((a, b) => a.x0 - b.x0 || a.x1 - b.x1);
-    const rows = [];
-    items.forEach((it) => {
-      let r = rows.findIndex((end) => it.lx0 > end + 6);
-      if (r < 0) { r = rows.length; rows.push(it.lx1); } else rows[r] = it.lx1;
-      it.row = r;
-    });
-    return { key, name, items, rows: rows.length };
-  });
-  const H = m.t + lanes.reduce((h, l) => h + l.rows * rowH + laneGap * 2, 0) + m.b;
-  let svg = '', y = m.t;
-  // months
-  for (let mo = 0; mo < 10; mo++) {
-    const d = new Date(Date.UTC(2025, 5 + mo, 1));
-    const iso = d.toISOString().slice(0, 10), xx = x(iso);
-    svg += '<line class="grid" x1="' + xx.toFixed(1) + '" x2="' + xx.toFixed(1) + '" y1="' + (m.t - 6) + '" y2="' + (H - m.b) + '"></line>';
-    svg += '<text class="tick" x="' + (xx + 4).toFixed(1) + '" y="' + (m.t - 10) + '">' + MONTHS[d.getUTCMonth()] + (d.getUTCMonth() === 0 ? ' ' + d.getUTCFullYear() : '') + '</text>';
-  }
-  const pos = [];
-  lanes.forEach((lane, li) => {
-    const laneH = lane.rows * rowH + laneGap * 2;
-    if (li) svg += '<line class="sep" x1="0" x2="' + W + '" y1="' + y + '" y2="' + y + '"></line>';
-    svg += '<text class="lane" x="0" y="' + (y + laneGap + 15) + '">' + esc(lane.name) + '</text>';
-    lane.items.forEach((it) => {
-      const cy = y + laneGap + it.row * rowH + rowH / 2;
-      if (it.kind === 'bar') {
-        svg += '<rect class="pl-bar" x="' + it.x0.toFixed(1) + '" y="' + (cy - 7) + '" width="' + (it.x1 - it.x0).toFixed(1) + '" height="14"></rect>';
-        if (it.anchor === 'in') svg += '<text class="pl-in" x="' + (it.x0 + 6).toFixed(1) + '" y="' + (cy + 4) + '">' + esc(it.label) + '</text>';
-        else if (it.anchor === 'right') svg += '<text class="pl-t" x="' + (it.x1 + 8).toFixed(1) + '" y="' + (cy + 4) + '">' + esc(it.label) + '</text>';
-        else svg += '<text class="pl-t" x="' + (it.x0 - 8).toFixed(1) + '" y="' + (cy + 4) + '" text-anchor="end">' + esc(it.label) + '</text>';
-      } else {
-        const cls = it.kind === 'open' ? 'pl-open' : it.kind === 'ghost' ? 'pl-ghost' : 'pl-mark';
-        if (it.kind === 'open') svg += '<circle class="' + cls + '" cx="' + it.x0.toFixed(1) + '" cy="' + cy + '" r="6"></circle>';
-        else svg += '<rect class="' + cls + '" x="' + (it.x0 - 5).toFixed(1) + '" y="' + (cy - 5) + '" width="10" height="10" transform="rotate(45 ' + it.x0.toFixed(1) + ' ' + cy + ')"></rect>';
-        const tcls = it.kind === 'open' ? 'pl-t pl-t-open' : it.kind === 'ghost' ? 'pl-t pl-t-ghost' : 'pl-t';
-        if (it.anchor === 'left') svg += '<text class="' + tcls + '" x="' + (it.x0 - 10).toFixed(1) + '" y="' + (cy + 4) + '" text-anchor="end">' + esc(it.label) + '</text>';
-        else svg += '<text class="' + tcls + '" x="' + (it.x0 + 10).toFixed(1) + '" y="' + (cy + 4) + '">' + esc(it.label) + '</text>';
-      }
-      pos.push({ x: it.kind === 'bar' ? (it.x0 + it.x1) / 2 : it.x0, y: cy, x0: it.lx0, x1: it.lx1, it, lane: lane.name });
-    });
-    y += laneH;
-  });
-  svg += '<rect class="pl-focus" width="0" height="0" visibility="hidden"></rect>';
-  pos.forEach((p, i) => { svg += '<rect class="hit" data-i="' + i + '" x="' + p.x0.toFixed(1) + '" y="' + (p.y - rowH / 2) + '" width="' + Math.max(12, p.x1 - p.x0).toFixed(1) + '" height="' + rowH + '"></rect>'; });
-  el.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true" focusable="false">' + svg + '</svg>';
-  el.style.minWidth = W + 'px';
-  const what = (p) => p.it.kind === 'bar' ? fmt(p.it.start) + ' to ' + fmt(p.it.end, true) + ', ' + weeks(p.it.start, p.it.end) + ' week' + (weeks(p.it.start, p.it.end) === 1 ? '' : 's') : fmt(p.it.start, true);
-  const wrap = el.closest('.chart'), scroller = el.parentElement;
-  scroller.tabIndex = 0;
-  scroller.setAttribute('role', 'group');
-  scroller.setAttribute('aria-label', 'The store launch plan, June 2025 to March 2026, by team: ' + pos.map((p) => p.it.label + ' (' + p.lane + ', ' + what(p) + ')').join('; ') + '. Use the arrow keys to step through the items.');
-  let sr = $('.chart-sr', wrap);
-  if (!sr) { sr = document.createElement('p'); sr.className = 'chart-sr visually-hidden'; sr.setAttribute('aria-live', 'polite'); wrap.appendChild(sr); }
-  chart.plan.api = {
-    count: pos.length,
-    show(i) {
-      const p = pos[i];
-      const f = $('.pl-focus', el);
-      f.setAttribute('x', (p.x0 - 3).toFixed(1)); f.setAttribute('y', p.y - rowH / 2); f.setAttribute('width', (Math.max(12, p.x1 - p.x0) + 6).toFixed(1)); f.setAttribute('height', rowH); f.setAttribute('visibility', 'visible');
-      if (p.x - scroller.scrollLeft < 0 || p.x - scroller.scrollLeft > scroller.clientWidth) scroller.scrollLeft = Math.max(0, p.x - scroller.clientWidth / 2);
-      tipShow(wrap, '<b>' + esc(p.it.label) + '</b><span class="tip-k">' + esc(p.lane) + '</span><span>' + esc(what(p)) + '</span>', p.x - scroller.scrollLeft, p.y);
-      sr.textContent = p.it.label + ', ' + p.lane + ': ' + what(p) + '.';
-    },
-    hide() { const f = $('.pl-focus', el); if (f) f.setAttribute('visibility', 'hidden'); tipHide(wrap); }
-  };
-  fillPlanTable(pos);
+/* ---------------------------------------------------------------- The race to opening */
+// Five phases from the project's own status language, months only: nothing internal
+// is dated here beyond the public opening day. The dragon is the project; the pearl is
+// opening day, and a dragon chases a pearl.
+const RACE = {
+  start: '2025-06-01', end: '2026-02-01', open: '2026-01-23',
+  phases: [
+    { n: 1, name: 'Vision and concept', from: '2025-06-01', to: '2025-09-01', note: 'concept, design, architecture' },
+    { n: 2, name: 'Blueprint', from: '2025-09-01', to: '2025-10-01', note: 'tech prep, product plan, approvals' },
+    { n: 3, name: 'Execution prep', from: '2025-10-01', to: '2025-11-01', note: 'materials, tech testing, construction start' },
+    { n: 4, name: 'Build-out, integration, test', from: '2025-11-01', to: '2026-01-10', note: 'construction, tech integration, fixtures, team workshop' },
+    { n: 5, name: 'Launch and learn', from: '2026-01-10', to: '2026-01-23', note: 'product and visual merchandising, programming, soft opening, opening' },
+  ],
+};
+const race = { raf: null, t0: 0, p: 0, done: false, started: false, lastPhase: -1 };
+const RACE_MS = 9000;
+const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+function dragonHead() {
+  return '<g class="dr-head"><path class="dr-fill" d="M-12 -9 L14 -5 L19 0 L14 6 L-12 9 Z"/><path class="dr-line" d="M-7 -9 L-3 -21 M1 -8 L7 -19"/><path class="dr-whisker" d="M15 -2 q10 -7 17 -2 M15 3 q10 7 17 2"/><circle class="dr-eye" cx="3" cy="-2" r="2.4"/><path class="dr-line" d="M-12 -4 l-5 -6 M-12 4 l-5 6"/></g>';
 }
-function fillPlanTable(pos) {
-  const d = $('[data-table="plan"]', lab);
-  if (!d || !d.closest('details').open) return;
-  d.innerHTML = tableHtml(['Item', 'Team', 'Start', 'End'], pos.map((p) => [esc(p.it.label), esc(p.lane), fmt(p.it.start, true), p.it.kind === 'bar' ? fmt(p.it.end, true) : '']), 'The launch plan, item by item');
+function drawRace() {
+  const el = $('[data-chart="race"]', lab);
+  if (!el) return;
+  const W = el.clientWidth;
+  const narrow = W < 560;
+  const m = { l: 12, r: 12 };
+  const H = 170, trackY = 112, barY = 30;
+  const t0 = day(RACE.start), t1 = day(RACE.end);
+  const x = (iso) => m.l + ((day(iso) - t0) / (t1 - t0)) * (W - m.l - m.r);
+  const xOpen = x(RACE.open);
+  let svg = '';
+  // the phases as bands under the track
+  RACE.phases.forEach((ph, i) => {
+    const a = x(ph.from), b = x(ph.to);
+    svg += '<rect class="rc-phase rc-p' + ph.n + '" data-phase="' + i + '" x="' + a.toFixed(1) + '" y="' + (trackY - 26) + '" width="' + (b - a).toFixed(1) + '" height="52"></rect>';
+    const label = narrow || b - a < 110 ? String(ph.n) : ph.n + ' · ' + ph.name;
+    svg += '<text class="rc-phase-t" x="' + ((a + b) / 2).toFixed(1) + '" y="' + (trackY + 42) + '" text-anchor="middle">' + esc(label) + '</text>';
+  });
+  // months
+  for (let mo = 0; mo < 9; mo++) {
+    const d = new Date(Date.UTC(2025, 5 + mo, 1)), iso = d.toISOString().slice(0, 10), xx = x(iso);
+    svg += '<line class="rc-tick" x1="' + xx.toFixed(1) + '" x2="' + xx.toFixed(1) + '" y1="' + (trackY - 26) + '" y2="' + (trackY + 26) + '"></line>';
+    if (mo < 8) svg += '<text class="rc-month" x="' + (xx + 4).toFixed(1) + '" y="' + (trackY - 31) + '">' + MONTHS[d.getUTCMonth()] + (d.getUTCMonth() === 0 && !narrow ? ' 2026' : '') + '</text>';
+  }
+  svg += '<line class="rc-track" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + trackY + '" y2="' + trackY + '"></line>';
+  // the bar above, and its counter
+  svg += '<rect class="rc-bar-bg" x="' + m.l + '" y="' + barY + '" width="' + (W - m.l - m.r) + '" height="10"></rect>';
+  svg += '<rect class="rc-bar" x="' + m.l + '" y="' + barY + '" width="0" height="10"></rect>';
+  svg += '<text class="rc-count" x="' + m.l + '" y="' + (barY - 10) + '">WEEK 0 OF 34</text>';
+  svg += '<text class="rc-phase-now" x="' + (W - m.r) + '" y="' + (barY - 10) + '" text-anchor="end"></text>';
+  // the pearl: opening day
+  svg += '<g class="rc-pearl" transform="translate(' + xOpen.toFixed(1) + ' ' + trackY + ')"><circle class="rc-pearl-ring" r="15"/><circle class="rc-pearl-dot" r="7"/></g>';
+  svg += '<text class="rc-open" x="' + xOpen.toFixed(1) + '" y="' + (trackY + 62) + '" text-anchor="' + (narrow ? 'end' : 'middle') + '">OPENED JAN 23, 2026</text>';
+  // the dragon
+  svg += '<g class="rc-dragon" transform="translate(' + m.l + ' ' + trackY + ')"><path class="dr-body-outer" d=""/><path class="dr-body-inner" d=""/>' + dragonHead() + '</g>';
+  el.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc('The race to opening: ' + RACE.phases.map((p) => p.n + ' ' + p.name).join(', ') + '. June 2025 to the opening on January 23, 2026, 34 weeks.') + '">' + svg + '</svg>';
+  race.geom = { x, xOpen, trackY, m, W };
+  raceFrame(race.done ? 1 : race.p, 0, true);
+}
+function phaseAt(p) {
+  const { x, xOpen, m } = race.geom;
+  const px = m.l + p * (xOpen - 30 - m.l);
+  let k = 0;
+  RACE.phases.forEach((ph, i) => { if (px >= x(ph.from) - 0.5) k = i; });
+  return k;
+}
+function raceFrame(p, t, still) {
+  const g = race.geom; if (!g) return;
+  const el = $('[data-chart="race"]', lab);
+  const px = g.m.l + p * (g.xOpen - 30 - g.m.l);
+  $('.rc-bar', el).setAttribute('width', Math.max(0, px - g.m.l).toFixed(1));
+  const weeks = Math.round(p * 34);
+  $('.rc-count', el).textContent = p >= 1 ? 'WEEK 34 OF 34 · OPEN' : 'WEEK ' + weeks + ' OF 34';
+  const k = phaseAt(p);
+  $('.rc-phase-now', el).textContent = (p >= 1 ? 'THE DOORS OPEN' : RACE.phases[k].name.toUpperCase());
+  $$('.rc-phase', el).forEach((r, i) => r.classList.toggle('is-now', i === k && p < 1));
+  const dragon = $('.rc-dragon', el);
+  dragon.setAttribute('transform', 'translate(' + px.toFixed(1) + ' ' + g.trackY + ') scale(1.35)');
+  // the body: a wave trailing the head, wriggling as it goes
+  const seg = 11, len = Math.min(120, 30 + p * 110), wig = still ? 0 : 1;
+    let pts = [];
+  for (let i = 0; i <= seg; i++) {
+    const f = i / seg;
+    const bx = -10 - f * len;
+    const by = Math.sin(f * 7 - t * 0.012) * 7 * (0.3 + f) * wig + (still ? Math.sin(f * 7) * 5 * (0.3 + f) : 0);
+    pts.push([bx, by]);
+  }
+  const d = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
+  $('.dr-body-outer', el).setAttribute('d', d);
+  $('.dr-body-inner', el).setAttribute('d', d);
+  $('.rc-pearl', el).classList.toggle('is-won', p >= 1);
+  el.closest('.rc-card').classList.toggle('is-won', p >= 1);
+  if (k !== race.lastPhase) {
+    race.lastPhase = k;
+    const live = $('[data-out="live"]', lab);
+    if (live && !still) live.textContent = p >= 1 ? 'The doors open: January 23, 2026.' : 'Phase ' + RACE.phases[k].n + ', ' + RACE.phases[k].name + ': ' + RACE.phases[k].note + '.';
+  }
+}
+function runRace() {
+  cancelAnimationFrame(race.raf);
+  race.done = false; race.lastPhase = -1; race.started = true;
+  if (reduced()) { race.p = 1; race.done = true; raceFrame(1, 0, true); return; }
+  race.t0 = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - race.t0) / RACE_MS);
+    race.p = easeInOut(t);
+    raceFrame(race.p, now - race.t0, false);
+    if (t < 1) race.raf = requestAnimationFrame(step);
+    else { race.done = true; raceFrame(1, 0, true); }
+  };
+  race.raf = requestAnimationFrame(step);
+}
+function reduced() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+function wireRace() {
+  const card = $('.rc-card', lab);
+  if (!card) return;
+  $('[data-race-run]', lab).addEventListener('click', runRace);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting && !race.started) { runRace(); io.disconnect(); } });
+    }, { threshold: 0.5 });
+    io.observe(card);
+  } else runRace();
 }
 
 /* ---------------------------------------------------------------- The systems */
@@ -252,7 +286,7 @@ function wire(el, key) {
 }
 
 function draw() {
-  if ($('[data-chart="systems"]', lab).clientWidth > 0) { drawPlan(); drawSystems(); }
+  if ($('[data-chart="systems"]', lab).clientWidth > 0) { drawRace(); drawSystems(); }
 }
 function init() {
   if (!lab) return;
@@ -264,7 +298,7 @@ function init() {
     if (b && lab.contains(b)) showRoom(b.dataset.room);
   });
   $$('details.numbers', lab).forEach((d) => d.addEventListener('toggle', draw));
-  wire($('[data-chart="plan"]', lab).parentElement, 'plan');
+  wireRace();
   wire($('[data-chart="systems"]', lab), 'sys');
   if ('ResizeObserver' in window) {
     let w = 0;

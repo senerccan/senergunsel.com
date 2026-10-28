@@ -776,30 +776,34 @@
 .bh-legend .q-why { color: var(--atext); }
 .bh-legend .q-status { color: var(--revisit, #2A5BD7); }
 .bh-legend .q-next { color: var(--ink2); }
-/* the launch strip */
-.bh-planchart { min-height: 0; }
-.bh-scroll { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
-.bh-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.bh-scroll > div { width: 100%; }
-.bh-scroll-hint { display: none; margin: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.bh .chart .sep { stroke: var(--hair); stroke-width: 1; }
-.bh .chart .lane { fill: var(--ink); font-weight: 600; font-size: 11.5px; }
-.bh .chart .lab { fill: var(--ink); font-size: 12px; }
-.bh .chart .pl-bar { fill: var(--ink2); }
-.bh .chart .pl-in { fill: var(--onink); font-size: 10.5px; }
-:root[data-theme="after"] .bh .chart .pl-in { fill: var(--ground); }
-.bh .chart .pl-t { fill: var(--ink2); font-size: 10.5px; }
-.bh .chart .pl-mark { fill: var(--ink); }
-.bh .chart .pl-ghost { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 2 2; }
-.bh .chart .pl-t-ghost { fill: var(--muted); }
-.bh .chart .pl-open { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
-.bh .chart .pl-t-open { fill: var(--atext); font-weight: 700; }
-.bh .chart .pl-focus, .bh .chart .sy-focus { fill: color-mix(in srgb, var(--accent) 12%, transparent); stroke: var(--accent); stroke-width: 1; pointer-events: none; }
-.bh .chart .hit { fill: transparent; cursor: crosshair; }
-.chart-legend .lg-plbar::before { width: 14px; height: 8px; background: var(--ink2); }
-.chart-legend .lg-plmark::before { width: 8px; height: 8px; background: var(--ink); transform: rotate(45deg); }
-.chart-legend .lg-plghost::before { width: 8px; height: 8px; background: transparent; box-shadow: inset 0 0 0 1.2px var(--muted); transform: rotate(45deg); }
-.chart-legend .lg-plopen::before { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+/* the race to opening: a bar that fills on its own, a dragon on the calendar, the pearl at opening day */
+.rc-chart { min-height: 170px; }
+.rc-run { margin: 0; min-height: 32px; padding: 0 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.rc-run:hover { border-color: var(--ink); }
+.bh .chart .rc-phase { fill: color-mix(in srgb, var(--ink) 4%, transparent); stroke: var(--hair); stroke-width: 1; transition: fill 0.3s ease; }
+.bh .chart .rc-phase.is-now { fill: color-mix(in srgb, var(--accent) 14%, transparent); stroke: var(--accent); }
+.bh .chart .rc-phase-t { fill: var(--ink2); font-size: 10.5px; }
+.bh .chart .rc-tick { stroke: var(--hair); stroke-width: 1; }
+.bh .chart .rc-month { fill: var(--muted); font-size: 10.5px; }
+.bh .chart .rc-track { stroke: var(--ink); stroke-width: 1.5; }
+.bh .chart .rc-bar-bg { fill: var(--hair); }
+.bh .chart .rc-bar { fill: var(--accent); }
+.bh .chart .rc-count, .bh .chart .rc-phase-now { fill: var(--ink); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bh .chart .rc-pearl-dot { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; transition: fill 0.4s ease; }
+.bh .chart .rc-pearl-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0.35; transform-box: fill-box; transform-origin: center; }
+.bh .chart .rc-pearl.is-won .rc-pearl-dot { fill: var(--accent); stroke: var(--accent); }
+.bh .chart .rc-pearl.is-won .rc-pearl-ring { animation: pearlpulse 1.8s ease-out infinite; }
+@keyframes pearlpulse { 0% { transform: scale(0.5); opacity: 0.9; } 100% { transform: scale(2); opacity: 0; } }
+.bh .chart .rc-open { fill: var(--atext); font-size: 10.5px; font-weight: 600; }
+.bh .chart .dr-fill { fill: var(--ink); }
+.bh .chart .dr-line { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linecap: round; }
+.bh .chart .dr-whisker { stroke: var(--accent); stroke-width: 1.4; fill: none; stroke-linecap: round; }
+.bh .chart .dr-eye { fill: var(--accent); }
+.bh .chart .dr-body-outer { fill: none; stroke: var(--ink); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.bh .chart .dr-body-inner { fill: none; stroke: var(--surface); stroke-width: 2; stroke-dasharray: 3 5; stroke-linecap: round; }
+.rc-phases { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px 14px; font-size: 12.5px; line-height: 1.4; color: var(--ink2); }
+.rc-phases b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .bh .chart .rc-pearl.is-won .rc-pearl-ring { animation: none; opacity: 0.6; } }
 /* the systems */
 .bh .chart .sy-rest { fill: var(--hair); }
 .bh .chart .sy-done { fill: var(--ink); }
@@ -822,7 +826,6 @@
   .bh-room { padding: 9px 8px 8px; }
   .bh-name { font-size: 14px; }
   .bh-q, .bh-legend { display: none; }
-  .bh-scroll-hint { display: block; }
 }
 
 /* ---------- G01 · the store story: rug runners, the gallery, two playable figures, the clips ----------
