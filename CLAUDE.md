@@ -46,6 +46,9 @@ keeps creative control: propose, then build what he approves. Address him as Sen
 - The G07 model (`model.js`) follows the Excel workbook's rules, and `model-data.js` holds the workbook's inputs.
   If the workbook changes, regenerate `model-data.js` from it and re-check the numbers rather than editing by hand.
 - Store signage (not content) is translated in `signs.js` into EN, TR, FR and 中文.
+- Every page that gets shared has its own social card (1200×630, `scripts/og-*.html`, rendered by
+  `scripts/render-images.py` with the dev server up); never point two pages at one card, since LinkedIn shows them
+  side by side. After a card changes, run the URL through LinkedIn's Post Inspector so the profile picks it up.
 - The Under Armour store's layout lives once, in metres, in `public/assets/js/ua-layout.js` (from the September
   2025 concept plan, which Sener confirmed is the real one). `ua-store.js` draws it in isometric and as a plan;
   `ua.js` draws the floor-change map on the same plan. Hardware positions there are illustrative and the page
