@@ -393,6 +393,10 @@
 .zone.is-dwelling .zl-dwell i { animation: sflpulse 1.4s ease-in-out infinite; }
 .zl-code, .zl-word { white-space: pre; }
 .zone.is-narrow .zl-code, .zone.is-narrow .zl-word { display: none; }
+/* A narrow room has no width for the clock and the tag side by side (about 87px for both), so while the clock
+   runs the tag steps aside, and it comes back with the room number. */
+.zone-top .tag { transition: opacity 0.2s ease; }
+.zone.is-narrow.is-dwelling .zone-top .tag, .zone.is-narrow.is-settling .zone-top .tag { opacity: 0; }
 .zone-bottom { position: relative; display: flex; flex-direction: column; gap: 7px; }
 .zone-kind, .zp-kind {
   align-self: flex-start;
