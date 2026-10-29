@@ -1,0 +1,76 @@
+<!doctype html>
+<!-- Template for /assets/img/og-express.png (1200x630), the social card for the Express lane. Rendered by scripts/render-images.py like og-card.html. The receipt lists the Express lane's three projects to see first and the resume. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/assets/css/site.css">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #F1F1EE; }
+  .card { position: relative; width: 1200px; height: 630px; display: flex; flex-direction: column; color: #121211; font-family: var(--sans); }
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 40px 56px 0; }
+  .brand { gap: 16px; }
+  .brand-mark { width: 56px; height: 56px; }
+  .brand-mark svg { width: 24px; height: 45px; }
+  .brand-name { font-size: 22px; }
+  .brand-sub { font-size: 15px; }
+  .tools { font-family: var(--mono); font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .body { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 44px; padding: 0 56px; }
+  .text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+  .kind { align-self: flex-start; padding: 4px 10px; border: 1.5px solid #121211; font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 74px; line-height: 0.98; font-weight: 800; letter-spacing: -0.04em; }
+  .sub { margin: 0; font-size: 25px; line-height: 1.35; color: #4A4A45; max-width: 26ch; }
+  .shot { flex: none; width: 528px; height: 352px; border: 2px solid #121211; background: #fff; box-shadow: 10px 10px 0 #121211; }
+  .shot svg { display: block; }
+  .foot { height: 64px; background: #121211; color: #F1F1EE; display: flex; align-items: center; justify-content: space-between; padding: 0 56px; font-family: var(--mono); font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .foot i { display: inline-block; width: 12px; height: 12px; margin-right: 12px; border-radius: 50%; background: #FF4F00; vertical-align: 1px; }
+  .foot b { font-family: var(--sans); text-transform: none; letter-spacing: 0.01em; font-size: 22px; }
+
+  .receipt { width: 440px; height: auto; padding: 26px 30px 22px; box-sizing: border-box; font-family: var(--mono); color: #121211; }
+  :where(.receipt p, .receipt ol) { margin: 0; padding: 0; list-style: none; }
+  .r-head { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 14px; border-bottom: 2px dashed #121211; text-transform: uppercase; letter-spacing: 0.08em; }
+  .r-head b { font-size: 19px; }
+  .r-head span { font-size: 14px; color: #4A4A45; }
+  .r-items { padding: 14px 0 10px; display: flex; flex-direction: column; gap: 10px; border-bottom: 2px dashed #121211; }
+  .r-items li { display: grid; grid-template-columns: 46px 1fr auto; align-items: baseline; font-size: 16px; }
+  .r-code { color: #66665F; }
+  .r-name { font-family: var(--sans); font-size: 18px; font-weight: 600; }
+  .r-tag { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #B33800; }
+  .r-total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 14px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .r-total b { font-family: var(--sans); font-size: 26px; letter-spacing: -0.01em; text-transform: none; }
+  .r-bars { display: block; width: 100%; height: 34px; }
+  .r-foot { padding-top: 10px; text-align: center; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: #4A4A45; }
+  h1, .sub { text-wrap: balance; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <span class="brand">
+      <span class="brand-mark"><svg viewBox="0 0 42 80"><g transform="rotate(24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><g transform="rotate(-22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:#FF4F00"/></g><line x1="21.5" y1="18" x2="19" y2="47" stroke="currentColor" stroke-width="7.5" stroke-linecap="round"/><g transform="rotate(22 19 46)"><line x1="19" y1="46" x2="19" y2="74" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="14" y="72.5" width="14" height="7" rx="3.5" style="fill:#FF4F00"/></g><g transform="rotate(-24 21 24)"><line x1="21" y1="24" x2="21" y2="44" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/></g><circle cx="22" cy="9" r="7.5" fill="currentColor"/><rect x="22" y="6.2" width="10" height="3.4" rx="1.2" style="fill:#FF4F00"/></svg></span>
+      <span class="brand-text"><span class="brand-name">Sener Can Gunsel</span><span class="brand-sub">Express lane · Flagship Store 001</span></span>
+    </span>
+    <span class="tools">Resume · Contact</span>
+  </div>
+  <div class="body">
+    <div class="text">
+      <span class="kind">The 30-second version</span>
+      <h1>Sener in 30 seconds</h1>
+      <p class="sub">Retail data &amp; insights analyst in New York: the resume, three projects and how to reach me.</p>
+    </div>
+    <div class="shot receipt">
+      <p class="r-head"><b>Flagship Store 001</b><span>Express lane · Register 01</span></p>
+      <ol class="r-items">
+        <li><span class="r-code">G01</span><span class="r-name">Under Armour flagship</span><span class="r-tag">Case study</span></li>
+        <li><span class="r-code">G02</span><span class="r-name">Same store, two streets</span><span class="r-tag">Playable</span></li>
+        <li><span class="r-code">G03</span><span class="r-name">Web Catcher</span><span class="r-tag">Playable</span></li>
+        <li><span class="r-code"></span><span class="r-name">Resume</span><span class="r-tag">PDF</span></li>
+      </ol>
+      <p class="r-total"><span>Total time</span><b>30 sec</b></p>
+      <svg class="r-bars" viewBox="0 0 300 34" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="3" height="34" fill="#121211"/><rect x="5" y="0" width="4" height="34" fill="#121211"/><rect x="13" y="0" width="2" height="34" fill="#121211"/><rect x="17" y="0" width="6" height="34" fill="#121211"/><rect x="25" y="0" width="3" height="34" fill="#121211"/><rect x="32" y="0" width="2" height="34" fill="#121211"/><rect x="38" y="0" width="2" height="34" fill="#121211"/><rect x="42" y="0" width="2" height="34" fill="#121211"/><rect x="47" y="0" width="4" height="34" fill="#121211"/><rect x="53" y="0" width="2" height="34" fill="#121211"/><rect x="57" y="0" width="6" height="34" fill="#121211"/><rect x="66" y="0" width="2" height="34" fill="#121211"/><rect x="72" y="0" width="2" height="34" fill="#121211"/><rect x="76" y="0" width="6" height="34" fill="#121211"/><rect x="84" y="0" width="6" height="34" fill="#121211"/><rect x="94" y="0" width="4" height="34" fill="#121211"/><rect x="100" y="0" width="2" height="34" fill="#121211"/><rect x="104" y="0" width="6" height="34" fill="#121211"/><rect x="112" y="0" width="3" height="34" fill="#121211"/><rect x="118" y="0" width="2" height="34" fill="#121211"/><rect x="124" y="0" width="2" height="34" fill="#121211"/><rect x="130" y="0" width="3" height="34" fill="#121211"/><rect x="137" y="0" width="2" height="34" fill="#121211"/><rect x="141" y="0" width="6" height="34" fill="#121211"/><rect x="151" y="0" width="2" height="34" fill="#121211"/><rect x="156" y="0" width="2" height="34" fill="#121211"/><rect x="162" y="0" width="2" height="34" fill="#121211"/><rect x="168" y="0" width="2" height="34" fill="#121211"/><rect x="174" y="0" width="2" height="34" fill="#121211"/><rect x="179" y="0" width="6" height="34" fill="#121211"/><rect x="188" y="0" width="3" height="34" fill="#121211"/><rect x="194" y="0" width="6" height="34" fill="#121211"/><rect x="203" y="0" width="3" height="34" fill="#121211"/><rect x="209" y="0" width="2" height="34" fill="#121211"/><rect x="213" y="0" width="2" height="34" fill="#121211"/><rect x="217" y="0" width="6" height="34" fill="#121211"/><rect x="226" y="0" width="6" height="34" fill="#121211"/><rect x="235" y="0" width="3" height="34" fill="#121211"/><rect x="242" y="0" width="4" height="34" fill="#121211"/><rect x="249" y="0" width="6" height="34" fill="#121211"/><rect x="257" y="0" width="2" height="34" fill="#121211"/><rect x="263" y="0" width="4" height="34" fill="#121211"/><rect x="269" y="0" width="3" height="34" fill="#121211"/><rect x="274" y="0" width="4" height="34" fill="#121211"/><rect x="281" y="0" width="2" height="34" fill="#121211"/><rect x="287" y="0" width="2" height="34" fill="#121211"/><rect x="293" y="0" width="6" height="34" fill="#121211"/></svg>
+      <p class="r-foot">Thanks for walking in.</p>
+    </div>
+  </div>
+  <div class="foot"><span><i></i>Resume · Projects · Contact</span><b>senergunsel.com</b></div>
+</div>
+</body>
+</html>
